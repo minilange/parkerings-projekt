@@ -8,7 +8,7 @@ import RegisterCar from './components/RegisterCar.vue'
       <Header/>
   </header>
 
-  <body>
+  <body class="pt-5">
     <RegisterCar/>
   </body>
 </template>
