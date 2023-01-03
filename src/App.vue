@@ -1,6 +1,6 @@
 <script setup>
 import Header from './components/Header.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import RegisterCar from './components/RegisterCar.vue'
 </script>
 
 <template>
@@ -8,9 +8,9 @@ import TheWelcome from './components/TheWelcome.vue'
       <Header/>
   </header>
 
-  <main>
-    <TheWelcome />
-  </main>
+  <body>
+    <RegisterCar/>
+  </body>
 </template>
 
 <style scoped>
