@@ -8,12 +8,25 @@
     </div>
 
     <div class="row">
-      <div class="col-lg-6 intro-text">
-        <h2>Intro text here</h2>
+      <div class="col-lg-7 intro-text">
+        <!-- <h2>Intro text here</h2> -->
       </div>
-      <div class="col-lg-6 action-prompt">
-        <button class="btn btn-primary">REGISTER PARKING</button>
-        <button class="btn btn-primary">REGISTER CAR</button>
+      <div class="col-lg-5 mt-5 action-prompt">
+        <div class="mx-auto row">
+          <div class="row d-flex justify-content-center">
+            <h3>Welcome!</h3>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium iste voluptate laborum illo! Nihil architecto saepe sit earum officia harum tempora, praesentium inventore nostrum amet quis? Similique itaque sunt illo?</p>
+            <p>[PARKING INFO?]</p>
+          </div>
+          
+          <div class="col-xl-12 d-flex justify-content-around">
+            <button id="parkingBtn" class="btn btn-primary btn-dark" @click="$router.push('/register')">REGISTER PARKING</button>
+            <button id="carPlusBtn" class="btn btn-primary btn-dark" @click="$router.push('/register-car')">
+              <font-awesome-icon icon="fa-solid fa-car" />
+              <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -26,6 +39,28 @@ export default {
 </script>
 
 <style scoped>
+#parkingBtn {
+  width: 80%;
+  border-radius: 12px;
+}
+#carPlusBtn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+#carPlus {
+  bottom: 8px;
+}
+.action-prompt {
+  /* border: 1px solid white; */
+  border-radius: 12px;
+  height: 80vh;
+  padding: 20px;
+  color: black;
+  background-color: #f2f1ed;
+  box-shadow: 0px 0px 50px 12px black;
+}
+
 .circle1 {
   display: none;
   background-color: black;
@@ -64,11 +99,5 @@ export default {
 }
 .circle2:hover {
   background-color: gray;
-}
-.action-prompt {
-  border: 1px solid white;
-  border-radius: 12px;
-  height: 80vh;
-  background: rgba(0, 0, 0, 0.4);
 }
 </style>

@@ -3,3 +3,32 @@
 html {
     scroll-behavior: smooth;
 }  
+
+/* NAVBAR */
+.navbar-top {
+    box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.50) !important;
+}
+.navbar-side {
+    /* box-shadow: 0px 10px 10px 10px rgba(0, 0, 0, 0.35); */
+    /* background-color: rgba(0, 0, 0, 0.5) !important; */
+    /* background-color: rgba(0, 0, 0, 1) !important; */
+}
+.navbar-nav > .nav-item > span {
+    font-weight: 100;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+}
+.navbar-nav > .nav-item:hover > span {
+    color: #a7a7a7;
+}
+/* .action-prompt {
+border-radius: 12px;
+height: 80vh;
+padding: 20px;
+color: black;
+background-color: #f2f1ed;
+box-shadow: 0px 0px 50px 12px black;
+} */
