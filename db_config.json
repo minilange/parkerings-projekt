@@ -1,0 +1,9 @@
+{
+    "server": "tcp:parking-project.database.windows.net",
+    "database": "parking-project",
+    "user": "parkadmin",
+    "pwd": "parking123!",
+    "driver": "ODBC Driver 18 for SQL Server",
+    "port": "1433",
+    "conn": "Driver={driver};Server={server},{port};Database={database};Uid={user};Pwd={pwd};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+}
