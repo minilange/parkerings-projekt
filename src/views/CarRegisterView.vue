@@ -1,12 +1,7 @@
 <template>
-    <div class="col-xl-6">
-
-    </div>
-    <div>
-
-    </div>
-    <div class="container mt-5">
-        <div class="action-prompt m-auto">
+    <div class="container mt-5 row">
+        <div class="col-lg-7"></div>
+        <div class="col-lg-5 action-prompt m-auto">
             <h3 class="text-center">NEW CAR</h3>
             <hr>
             <form>
@@ -19,9 +14,16 @@
                 <label for="numberPlate">Number plate</label>
                 <br />
                 <input name="numberPlate" id="numberPlate" type="text" pattern="[A-Z]{2}[0-9]{5}"
-                    title="Please follow Danish number plate structure" />
+                    title="Please follow Danish number plate structure" v-model="inputNumberplate" />
+
+                <p id="searchStatus">{{ response }}</p>
 
                 <br />
+
+                <div id="carInfo">
+                    <p>Brand: {{ carBrand }}</p>
+                    <p>Model: {{ carModel }}</p>
+                </div>
 
                 <input type="submit" value="Submit" />
             </form>
@@ -48,7 +50,47 @@ function validFileType(file) {
 }
 
 export default {
+    data() {
+        return {
+            inputNumberplate: '',
+            carModel: '',
+            carBrand: '',
+            response: '',
+            numberPlatePattern: /[A-Z]{2}[0-9]{5}/g 
+        }
+    },
+    watch: {
+        inputNumberplate(newNumber) {
+            // When manual input of numberplate changes
+            // console.log(newNumber, oldNumber);
+            this.inputNumberplate = this.inputNumberplate.toUpperCase();
+
+            if(this.numberPlatePattern.test(newNumber) === true) {
+                this.getPlateInput();
+            } else {
+                console.log('NOT RIGHT PATTERN')
+            }
+        }
+
+    },
     methods: {
+        async getPlateInput() {
+            // CALL API WITH event.target.value as parameter
+            this.response = 'Searching';
+            // console.log(event.target.value);
+            try {
+                // const res = await fetch('API URL');
+                // this.response = (await res.json()).answer;
+                this.response = 'SEARCH COMPLETED';
+                this.carBrand = 'TEST BRAND';
+                this.carModel = 'TEST MODEL';
+                console.log(this.response);
+            } catch (error) {
+                console.log(error);
+                this.response = 'Error: ' + error;
+            }
+
+        },
         getPlate(event) {
             try {
                 const picture = document.getElementById("plateImage");
@@ -63,6 +105,8 @@ export default {
                     else {
                         for (const file of curFiles) {
                             if (validFileType(file)) {
+                                // CALL API!
+                                
                                 let img = document.getElementById("previewImg");
                                 img.src = URL.createObjectURL(file);
                                 console.log(file);
@@ -85,17 +129,7 @@ export default {
 }
 </script>
 
-
 <style scoped>
-.action-prompt {
-    border: 1px solid white;
-    border-radius: 12px;
-    padding: 15px;
-    height: 50%;
-    width: 50%;
-    position: relative;
-    background: rgba(0, 0, 0, 0.4);
-}
 
 .btn-transparent {
     background: transparent;

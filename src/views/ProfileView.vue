@@ -1,5 +1,3 @@
-
-
 <template>
     <div class="container py-5">
         <div class="row">
@@ -144,13 +142,5 @@ p {
 </style>
 
 <script>
-  // @ is an alias to /src
-  import ProfilePagenation from '@/components/ProfilePagenation.vue'
-
-  export default {
-    name: 'ProfileView',
-    components: {
-      ProfilePagenation
-    }
-  }
+  
 </script>

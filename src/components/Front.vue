@@ -12,15 +12,15 @@
         <!-- <h2>Intro text here</h2> -->
       </div>
       <div class="col-lg-5 mt-5 action-prompt">
-        <div class="mx-auto row">
+        <div class="mx-auto row h-100">
           <div class="row d-flex justify-content-center">
             <h3>Welcome!</h3>
             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium iste voluptate laborum illo! Nihil architecto saepe sit earum officia harum tempora, praesentium inventore nostrum amet quis? Similique itaque sunt illo?</p>
             <p>[PARKING INFO?]</p>
           </div>
           
-          <div class="col-xl-12 d-flex justify-content-around">
-            <button id="parkingBtn" class="btn btn-primary btn-dark" @click="$router.push('/register')">REGISTER PARKING</button>
+          <div class="col-xl-12 d-flex justify-content-around front-actions mt-auto">
+            <button id="parkingBtn" class="btn btn-primary btn-dark" @click="$router.push('/new-parking')">NEW PARKING</button>
             <button id="carPlusBtn" class="btn btn-primary btn-dark" @click="$router.push('/register-car')">
               <font-awesome-icon icon="fa-solid fa-car" />
               <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: 'RegisterCar',
+  name: 'FrontPage',
 }
 </script>
 
@@ -51,6 +51,11 @@ export default {
 #carPlus {
   bottom: 8px;
 }
+.front-actions {
+  max-height: 60px;
+  margin-bottom: 35px;
+}
+
 .action-prompt {
   /* border: 1px solid white; */
   border-radius: 12px;

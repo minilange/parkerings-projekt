@@ -1,16 +1,16 @@
 <script>
   // @ is an alias to /src
-  import RegisterCar from '@/components/RegisterCar.vue'
+  import FrontPage from '@/components/Front.vue';
 
   export default {
     name: 'HomeView',
     components: {
-      RegisterCar
+      FrontPage
     }
   }
 </script>
 
 <template>
-  <RegisterCar />
+  <FrontPage />
 </template>
 

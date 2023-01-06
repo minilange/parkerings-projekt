@@ -1,27 +1,28 @@
 <template>
   <!-- <div id="navbarShadow" class="navbar-gradient-shadow navbar-top"></div> -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-top">
-      <div class="container-fluid">
-      <a href="" class="d-lg-none navbar-brand">Login</a>
-          <router-link class="navbar-brand fw-bold text-white" to="/">
-            <!-- EASIER<span class="text-secondary fw-bold">PARK</span> -->
-            <img src="../assets/easierpark-logo.png" height="25" />
-          </router-link>
-          <button type="button" class="navbar-toggler on-top" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
-              <div class="navbar-nav ms-auto gap-lg-5 fw-bold">
-                <router-link class="nav-item nav-link text-white d-none d-lg-block" to="/login"><span>LOGIN</span></router-link>
-                <router-link class="nav-item nav-link text-white" to="/register-car"><span>PARK</span></router-link>
-                <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link>
-                <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
-                <!-- IF LOGGED IN -->
-                <router-link class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
-              </div>
-          </div>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-top">
+    <div class="container-fluid">
+      <router-link class="navbar-brand d-lg-none fw-bold text-white" to="/login">Login</router-link>
+      <router-link class="navbar-brand fw-bold text-white" to="/">
+        <!-- EASIER<span class="text-secondary fw-bold">PARK</span> -->
+        <img src="../assets/easierpark-logo.png" height="25" />
+      </router-link>
+      <button type="button" class="navbar-toggler on-top" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
+        <div class="navbar-nav ms-auto gap-lg-5 fw-bold">
+          <router-link class="nav-item nav-link text-white d-none d-lg-block"
+            to="/login"><span>LOGIN</span></router-link>
+          <router-link class="nav-item nav-link text-white" to="/park"><span>PARK</span></router-link>
+          <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link>
+          <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
+          <!-- IF LOGGED IN -->
+          <router-link class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
+        </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 </template>
 
 <script>
@@ -34,7 +35,8 @@ export default {
 .on-top {
   z-index: 99999;
 }
-.navbar-brand > img {
+
+.navbar-brand>img {
   margin-left: 20px;
 }
 
@@ -54,7 +56,7 @@ export default {
     z-index: 9999;
   }
 
-  .navbar-brand > img {
+  .navbar-brand>img {
     margin-left: 0px;
   }
 

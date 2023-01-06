@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
 import LoginView from '../views/LoginView.vue'
 import ParkView from '../views/ParkView.vue'
+import NewParkingView from '../views/NewParkingView.vue'
 import AreaView from '../views/AreaView.vue'
 import NotFound from '../views/NotFoundView.vue'
 import RegisterView from '../views/RegisterView.vue'
@@ -29,6 +30,11 @@ const routes = [
     path: '/park',
     name: 'park',
     component: ParkView
+  },
+  {
+    path: '/new-parking',
+    name: 'newparking',
+    component: NewParkingView
   },
   {
     path: '/areas',

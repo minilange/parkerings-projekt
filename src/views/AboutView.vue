@@ -1,8 +1,8 @@
 <template>
 <div class="container mt-5">
   <div class="row">
-      <div class="col-lg-6 intro-text">
-        <h2>ABOUT</h2>
+      <div class="col-lg-6 mb-5 intro-text">
+        <h2>ABOUT US</h2>
       </div>
       <div class="col-lg-6 action-prompt">
         <div class="description mt-4">
@@ -18,7 +18,7 @@
         <div class="feedback mt-2 mb-4">
           <h4>Feedback:</h4>
           <p>Thank you for using our parking app! We value your feedback and would love to hear about your experience. Please take a moment to rate your parking spot and leave a review. Your feedback will help us improve the app and provide a better service for all our users. Thank you for your support!</p>
-          <button class="btn btn-primary btn-transparent">Feedback</button>
+          <button class="btn btn-primary btn-dark">Feedback</button>
         </div>
       </div>
     </div>

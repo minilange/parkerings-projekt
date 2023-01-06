@@ -5,14 +5,14 @@
       <hr>
       <form>
         <div class="form-floating mb-3">
-          <input type="email" class="form-control" id="floatingEmail" placeholder="name@gmail.com">
+          <input v-model="form.email" type="email" class="form-control" id="floatingEmail" placeholder="name@gmail.com">
           <label for="floatingEmail">Email address</label>
         </div>
         <div class="form-floating mb-3">
           <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
           <label for="floatingPassword">Password</label>
         </div>
-        <button type="submit" class=" btn-transparent btn btn-primary">Login</button>
+        <button v-on:click="loginUser()" class=" btn-transparent btn btn-dark">Login</button>
       </form>
       <router-link class="text-center nav-link text-white" to="/register"><span>Need an account?</span></router-link>
     </div>
@@ -21,23 +21,11 @@
 
 <style scoped>
   .action-prompt {
-    border: 1px solid white;
-    border-radius: 12px;
-    padding: 15px;
     height: 50%;
     width: 50%;
-    position: relative;
-    background: rgba(0, 0, 0, 0.4);
   }
 
-  .btn-transparent {
-    background: transparent;
-    color: white;
-    border-color: white;
-  }
-
-  .btn-transparent:hover {
-    background: white;
+  span {
     color: black;
   }
 
@@ -45,3 +33,38 @@
     color:black !important;
   }
 </style>
+
+<script>
+import axios from 'axios'
+
+export default {
+  data() {
+    return {
+        form:{
+          email:'',
+          password:''
+        }
+    }
+  },
+  watch: {
+  },
+  methods:{
+    loginUser: function() {
+      axios.get( '/login', {
+        params: {
+          login: this.form
+        }
+      })
+      .then( response => {
+        // SET GLOBAL VARIABLES
+      console.log(response);
+      })
+      .catch( error => {
+        console.warn('login', error )
+      });
+    },
+  }
+}
+
+
+</script>
