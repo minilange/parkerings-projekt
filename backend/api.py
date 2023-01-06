@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from datetime import datetime
 from hashlib import sha512
 from flask import Flask, request, Response
@@ -27,9 +28,7 @@ def register():
                 ccCode: str
 
             Returns:
-                200: Everything went smoothly
-                400: Query has illegal syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
 
     """
 
@@ -40,7 +39,7 @@ def register():
 
     # Check if all required arg keys are present
     if not all(arg in required for arg in args):
-        return Response("", 400)
+        return Response("", ResponseCodes.inv_syntax)
 
     state = insert("INSERT INTO users ([firstname], [lastname], [email], [password], [phone], [ccCode]) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{ccCode}')".format(
         fname=args.get("firstname"),
@@ -74,9 +73,8 @@ def login():
             }
 
             Returns:
-                200: Everything went smoothly (sends user_data)
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
+                    Successful: user_data
     """
 
     args = request.args
@@ -84,20 +82,38 @@ def login():
     required = ["email", "password"]
 
     if not all(arg in required for arg in args):
-        return Response("", 400)
+        return Response("", ResponseCodes.inv_syntax)
 
-    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email] = '{email}' and [password] = '{password}'".format(
+    user = select("SELECT [passowrd] from users WHERE email='{email}'".format(
+        email=args.get("email")
+    ))
+
+    if isinstance(int, user):
+        return Response("", user)
+
+    if len(user) != 1:
+        return Response("", ResponseCodes.no_email)
+
+    password = user[0]
+
+    if hash_password(args.get("password")) != password:
+        return Response("", )
+
+    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
 
+    if isinstance(int, user):
+        return Response("", user)
+
     if len(user) != 1:
-        return Response("", 401)
+        return Response("", ResponseCodes.inv_pwd)
 
     formatted = format_result(
         user, ["firstname", "lastname", "email", "phone", "ccCode"])
 
-    return Response(json.dumps(formatted[0]), 200)
+    return Response(json.dumps(formatted[0]), ResponseCodes.success)
 
 
 @app.route("/api/areas/", methods=["POST", "GET"])
@@ -113,9 +129,7 @@ def areas():
                 longitude: float
 
             Returns:
-                200: Everything went smoothly
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
 
         GET:
             Required args:
@@ -133,9 +147,8 @@ def areas():
             ]
 
             Returns:
-                200: Everything went smoothly (sends area_data)
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
+                    Successful: area_data
 
     """
 
@@ -145,7 +158,7 @@ def areas():
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         state = insert("INSERT INTO Areas ([areaName], [address], [latitude], [longitude]) VALUES ('{areaName}', '{address}', {latitude}, {longitude})".format(
             areaName=args.get("areaName"),
@@ -161,12 +174,12 @@ def areas():
         areas = select(
             "SELECT [areaId], [areaName], [address], [langitude], [longitude] FROM areas")
 
-        if isinstance(list, areas):
-            formatted = format_result(
-                areas, ["areaId", "areaName", "address", "langitude", "longitude"])
-            return Response(json.dumps(formatted), 200)
-        else:
+        if isinstance(int, areas):
             return Response("", areas)
+
+        formatted = format_result(
+            areas, ["areaId", "areaName", "address", "langitude", "longitude"])
+        return Response(json.dumps(formatted), ResponseCodes.success)
 
 
 @app.route("/api/regLicenseplates/", methods=["POST", "GET"])
@@ -182,15 +195,13 @@ def reg_licenseplates():
                 type: str
 
             Returns:
-                200: Everything went smoothly
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
 
         GET: 
             Required args:
                 None
 
-            area_data:
+            car_data:
             [
                 {
                     licenseplate: str,
@@ -201,9 +212,8 @@ def reg_licenseplates():
             ]
 
             Returns: 
-                200: Everything went smoothly (sends area_data)
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
+                    Successful: car_data
     """
 
     if request.method == "POST":
@@ -212,7 +222,7 @@ def reg_licenseplates():
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         state = insert("INSERT INTO RegisteredLicenseplates([licenseplate], [brand], [model], [type]) VALUES ('{licenseplate}', '{brand}', '{model}', '{type}')".format(
             licenseplate=args.get("licenseplate"),
@@ -224,13 +234,16 @@ def reg_licenseplates():
         return Response("", state)
     else:
 
-        areas = select(
+        licenseplates = select(
             "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplate")
 
-        formatted = format_result(
-            areas, ["licenseplate", "brand", "model", "type"])
+        if isinstance(int, licenseplates):
+            return Response("", licenseplates)
 
-        return Response(json.dumps(formatted), 200)
+        formatted = format_result(
+            licenseplates, ["licenseplate", "brand", "model", "type"])
+
+        return Response(json.dumps(formatted), ResponseCodes.success)
 
 
 @app.route("/api/userLicenseplates/", methods=["POST", "GET"])
@@ -244,9 +257,7 @@ def user_licenseplate():
                 licenseplate: str
 
             Returns:
-                200: Everything went smoothly
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
 
         GET:
             Required args:
@@ -262,9 +273,8 @@ def user_licenseplate():
 
 
             Returns:
-                200: Everything went smoothly (sends licenseplate_data)
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
+                    Successful: licenseplate_data
 
     """
     args = request.args
@@ -274,7 +284,7 @@ def user_licenseplate():
         required = ["userId", "licenseplate"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
             userId=args.get("userId"),
@@ -288,7 +298,7 @@ def user_licenseplate():
         required = ["userId"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         licenseplates = select(
             "SELECT [userId], [licenseplate] FROM userLicenseplates WHERE userId={userId}".format(
@@ -298,7 +308,7 @@ def user_licenseplate():
         formatted = format_result(
             licenseplates, ["userId", "licenseplate"])
 
-        return Response(json.dumps(formatted), 200)
+        return Response(json.dumps(formatted), ResponseCodes.success)
 
 
 @app.route("/api/parkings/", methods=["POST", "GET"])
@@ -317,15 +327,13 @@ def parkings():
                 timestamp: str
 
             Returns:
-                200: Everything went smoothly
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
 
         GET:
             Required args:
                 userId: int
 
-            parkings_data:
+            parking_data:
             [
                 {
                     licenseplate: str,
@@ -340,9 +348,8 @@ def parkings():
 
 
             Returns:            
-                200: Everything went smoothly (sends licenseplate_data)
-                400: Query has invalid syntax
-                401: Failed to execute query
+                ResponseCode: HTTP code to describe finish state
+                    Successful: parking_data
     """
 
     args = request.args
@@ -353,7 +360,7 @@ def parkings():
                     "minutes", "price", "state", "timestamp"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
             licenseplate=args.get("licenseplate"),
@@ -370,7 +377,7 @@ def parkings():
         required = ["userId"]
 
         if not all(arg in required for arg in args):
-            return Response("", 400)
+            return Response("", ResponseCodes.inv_syntax)
 
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
@@ -379,7 +386,7 @@ def parkings():
         formatted = format_result(
             areas, ["licenseplate", "userId", "areaId", "minutes", "price", "state", "timestamp"])
 
-        return Response(json.dumps(formatted), 200)
+        return Response(json.dumps(formatted), ResponseCodes.success)
 
 
 def insert(query: str):
@@ -391,7 +398,7 @@ def insert(query: str):
     """
 
     if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
-        return 400
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
     try:
@@ -399,9 +406,9 @@ def insert(query: str):
             conn.exec_driver_sql(query)
     except Exception as e:
         print(e)
-        return 401
+        return ResponseCodes.failed_query
 
-    return 200
+    return ResponseCodes.success
 
 
 def select(query: str):
@@ -412,7 +419,7 @@ def select(query: str):
             List: Fetched result from db
     """
     if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
-        return 400
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
 
@@ -421,7 +428,7 @@ def select(query: str):
             result = conn.exec_driver_sql(query).all()
     except Exception as e:
         print(e)
-        return 401
+        return ResponseCodes.failed_query
 
     return result
 
@@ -453,7 +460,7 @@ def format_result(data: list[tuple], keys: list[str]):
             result = [
                 {"key1": 1, "key2": 1, "key3": 3},
                 {"key1": 4, "key2": 5, "key3": 6},
-                ]
+            ]
 
         Args:
             data (list): A list of tuples return from database
@@ -538,5 +545,19 @@ def hash_password(password: str):
     """
     return sha512(f"{repr(password)},{hash_key}".encode("utf-8")).hexdigest()
 
+
+class ResponseCodes(Enum):
+    """
+        200 - success:       A successful call to DB
+        400 - failed_query:  Query was not allowed to execute
+        401 - inv_pwd:       Password did not corresepond with a user
+        403 - inv_syntax:    Query contained some invalid syntax
+        406 - no_email:      Email did not belong to a user
+    """
+    success = 200
+    failed_query = 400
+    inv_pwd = 401
+    inv_syntax = 403
+    no_email = 406
 
 app.run(host="0.0.0.0", port=5050)
