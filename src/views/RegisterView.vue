@@ -143,7 +143,7 @@ export default {
   watch: {},
   methods: {
     compareDialCode: function (a, b) {
-      return a.dial_code - b.dial_code;
+      return a.dial_code.slice(1, a.dial_code.length) - b.dial_code.slice(1, b.dial_code.length);
     },
     registerUser: function () {
       axios
