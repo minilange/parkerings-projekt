@@ -29,61 +29,61 @@ PRINT('')
 
 
 CREATE TABLE Countries (
-	Countrycode NVARCHAR(3) PRIMARY KEY,
-	Phonecode INT,
-	Name NVARCHAR(255)
+	countrycode NVARCHAR(3) PRIMARY KEY,
+	phonecode INT,
+	name NVARCHAR(255)
 )
 PRINT('Initiated Countries')
 
 CREATE TABLE Areas (
-	AreaID INT IDENTITY(1,1) PRIMARY KEY,
-	AreaName NVARCHAR(255),
-	Address NVARCHAR(255),
-	Latitude FLOAT,
-	Longitude FLOAT
+	areaId INT IDENTITY(1,1) PRIMARY KEY,
+	areaName NVARCHAR(255),
+	address NVARCHAR(255),
+	latitude FLOAT,
+	longitude FLOAT
 )
 PRINT('Initiated Areas')
 
 CREATE TABLE RegisteredLicenseplates (
-	Licenseplates NVARCHAR(7) PRIMARY KEY,
-	Brand NVARCHAR(255),
-	Model NVARCHAR(255),
-	Type NVARCHAR(100)
+	licenseplates NVARCHAR(7) PRIMARY KEY,
+	brand NVARCHAR(255),
+	model NVARCHAR(255),
+	type NVARCHAR(100)
 )
 PRINT('Initiated RegisteredLicenseplates')
 
 CREATE TABLE Users (
-	UserId INT IDENTITY(1,1) PRIMARY KEY,
-	Firstname NVARCHAR(255),
-	Lastname NVARCHAR(255),
-	Email NVARCHAR(255) UNIQUE,
-	Password NVARCHAR(255),
-	Phone NVARCHAR(15),
-	Countrycode NVARCHAR(3),
-	FOREIGN KEY (Countrycode) REFERENCES Countries(Countrycode)
+	userId INT IDENTITY(1,1) PRIMARY KEY,
+	firstname NVARCHAR(255),
+	lastname NVARCHAR(255),
+	email NVARCHAR(255) UNIQUE,
+	password NVARCHAR(255),
+	phone NVARCHAR(15),
+	countrycode NVARCHAR(3),
+	FOREIGN KEY (countrycode) REFERENCES Countries(countrycode)
 )
 PRINT('Initiated Users')
 
 CREATE TABLE Parkings (
-	ParkingId INT IDENTITY(1,1) PRIMARY KEY,
-	Licenseplates NVARCHAR(7),
-	UserId INT,
-	AreaId INT,
-	Minutes INT,
-	Price INT,
-	State NVARCHAR(50),
-	Timestamp DATETIME2,
-	FOREIGN KEY (Licenseplates) REFERENCES RegisteredLicenseplates(Licenseplates),
-	FOREIGN KEY (UserId) REFERENCES Users(UserId),
-	FOREIGN KEY (AreaId) REFERENCES Areas(AreaId)
+	parkingId INT IDENTITY(1,1) PRIMARY KEY,
+	licenseplates NVARCHAR(7),
+	userId INT,
+	areaId INT,
+	minutes INT,
+	price INT,
+	state NVARCHAR(50),
+	timestamp DATETIME2,
+	FOREIGN KEY (licenseplates) REFERENCES RegisteredLicenseplates(licenseplates),
+	FOREIGN KEY (userId) REFERENCES Users(userId),
+	FOREIGN KEY (areaId) REFERENCES Areas(areaId)
 )
 PRINT('Initiated Parkings')
 
 CREATE TABLE UserLicenseplates (
-	UserId INT,
-	Licenseplates NVARCHAR(7),
-	FOREIGN KEY (UserId) REFERENCES Users(UserId),
-	FOREIGN KEY (Licenseplates) REFERENCES RegisteredLicenseplates(Licenseplates)
+	userId INT,
+	licenseplates NVARCHAR(7),
+	FOREIGN KEY (userId) REFERENCES Users(userId),
+	FOREIGN KEY (licenseplates) REFERENCES RegisteredLicenseplates(licenseplates)
 )
 PRINT('Initiated UserLicenseplates')
 

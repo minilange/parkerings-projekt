@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from hashlib import sha512
 from flask import Flask, request, Response
 from flask_cors import CORS
@@ -10,28 +11,44 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 hash_key = "parking_project"
 
-# @app.route("/api/", methods=["GET", "POST"])
-
 
 @app.route("/api/register/", methods=["POST"])
 def register():
+    """
+        An api endpoint for registering a user
+
+        POST:
+            Required args:
+                firstname: str
+                lastname: str
+                email: str
+                password: str
+                phone: str
+                ccCode: str
+
+            Returns:
+                200: Everything went smoothly
+                400: Query has illegal syntax
+                401: Failed to execute query
+
+    """
 
     args = request.args
 
     required = ["firstname", "lastname",
-                "email", "password", "phone", "country"]
+                "email", "password", "phone", "ccCode"]
 
     # Check if all required arg keys are present
     if not all(arg in required for arg in args):
         return Response("", 400)
 
-    state = insert("INSERT INTO users (firstname, lastname, email, password, phone, countrycode) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{country}')".format(
+    state = insert("INSERT INTO users ([firstname], [lastname], [email], [password], [phone], [ccCode]) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{ccCode}')".format(
         fname=args.get("firstname"),
         lname=args.get("lastname"),
         email=args.get("email"),
         encrypted=hash_password(args.get("password")),
         phone=args.get("phone"),
-        country=args.get("country")
+        country=args.get("ccCode")
     ))
 
     return Response("", state)
@@ -39,6 +56,28 @@ def register():
 
 @app.route("/api/login/", methods=["GET"])
 def login():
+    """
+        An api endpoint for logging in as an existing user
+
+        GET:
+            Required args:
+                email: str
+                password: str
+
+            user_data: 
+            {
+                firstname: str,
+                lastname: str,
+                email: str,
+                phone: str,
+                ccCode: str
+            }
+
+            Returns:
+                200: Everything went smoothly (sends user_data)
+                400: Query has invalid syntax
+                401: Failed to execute query
+    """
 
     args = request.args
 
@@ -47,7 +86,7 @@ def login():
     if not all(arg in required for arg in args):
         return Response("", 400)
 
-    user = select("SELECT [firstname], [lastname], [email], [phone] FROM users WHERE [email] = '{email}' and [password] = '{password}'".format(
+    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email] = '{email}' and [password] = '{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
@@ -56,79 +95,276 @@ def login():
         return Response("", 401)
 
     formatted = format_result(
-        user, ["firstname", "lastname", "email", "phone"])
+        user, ["firstname", "lastname", "email", "phone", "ccCode"])
 
-    return json.dumps(formatted[0])
-
-
-@app.route("/api/countries/", methods=["GET"])
-def countries():
-
-    countries = select("SELECT [country], [phonecode], [name] FROM countries")
-
-    formatted = format_result(countries, ["country", "phonecode", "name"])
-
-    return json.dumps(formatted)
+    return Response(json.dumps(formatted[0]), 200)
 
 
-@app.route("/api/areas/", methods=["GET"])
+@app.route("/api/areas/", methods=["POST", "GET"])
 def areas():
+    """
+        An api endpoint to insert and extract parking areas
 
-    areas = select(
-        "SELECT [areaId], [areaName], [address], [langitude], [longitude] FROM areas")
+        POST:
+            Required args:
+                areaName: str
+                address: str
+                latitude: float
+                longitude: float
 
-    formatted = format_result(
-        areas, ["areaId", "areaName", "address", "langitude", "longitude"])
+            Returns:
+                200: Everything went smoothly
+                400: Query has invalid syntax
+                401: Failed to execute query
 
-    return json.dumps(formatted)
+        GET:
+            Required args:
+                None
 
+            area_data:
+            [
+                {
+                    areaId: int,
+                    areaName: str,
+                    address: str,
+                    latitude: float,
+                    longitude: float
+                }
+            ]
 
-@app.route("/api/regLicenseplates/", methods=["GET"])
-def reg_licenseplates():
+            Returns:
+                200: Everything went smoothly (sends area_data)
+                400: Query has invalid syntax
+                401: Failed to execute query
 
-    areas = select(
-        "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplate")
+    """
 
-    formatted = format_result(
-        areas, ["licenseplate", "brand", "model", "type"])
+    if request.method == "POST":
 
-    return json.dumps(formatted)
+        args = request.args
+        required = ["areaName", "address", "latitude", "longitude"]
 
+        if not all(arg in required for arg in args):
+            return Response("", 400)
 
-@app.route("/api/userLicenseplates/", methods=["GET"])
-def user_licenseplate():
-
-    args = request.args
-
-    required = ["userId"]
-
-    if not all(arg in required for arg in args):
-        return Response("", 400)
-
-    licenseplates = select(
-        "SELECT [userId], [licenseplates] FROM userLicenseplates WHERE userId={userId}".format(
-            userId=args.get("userId")
+        state = insert("INSERT INTO Areas ([areaName], [address], [latitude], [longitude]) VALUES ('{areaName}', '{address}', {latitude}, {longitude})".format(
+            areaName=args.get("areaName"),
+            address=args.get("address"),
+            latitude=args.get("latitude"),
+            longitude=args.get("longitude")
         ))
 
-    formatted = format_result(
-        licenseplates, ["userId", "licenseplates"])
+        return Response("", state)
 
-    return json.dumps(formatted)
+    else:
+
+        areas = select(
+            "SELECT [areaId], [areaName], [address], [langitude], [longitude] FROM areas")
+
+        if isinstance(list, areas):
+            formatted = format_result(
+                areas, ["areaId", "areaName", "address", "langitude", "longitude"])
+            return Response(json.dumps(formatted), 200)
+        else:
+            return Response("", areas)
+
+
+@app.route("/api/regLicenseplates/", methods=["POST", "GET"])
+def reg_licenseplates():
+    """
+        An api endpoint that lets you register a new licenseplate and look up all plates for a specific user
+
+        POST:
+            Required args:
+                licenseplate: str
+                brand: str
+                model: str
+                type: str
+
+            Returns:
+                200: Everything went smoothly
+                400: Query has invalid syntax
+                401: Failed to execute query
+
+        GET: 
+            Required args:
+                None
+
+            area_data:
+            [
+                {
+                    licenseplate: str,
+                    brand: str,
+                    model: str,
+                    type: str
+                }
+            ]
+
+            Returns: 
+                200: Everything went smoothly (sends area_data)
+                400: Query has invalid syntax
+                401: Failed to execute query
+    """
+
+    if request.method == "POST":
+
+        args = request.args
+        required = ["licenseplate", "brand", "model", "type"]
+
+        if not all(arg in required for arg in args):
+            return Response("", 400)
+
+        state = insert("INSERT INTO RegisteredLicenseplates([licenseplate], [brand], [model], [type]) VALUES ('{licenseplate}', '{brand}', '{model}', '{type}')".format(
+            licenseplate=args.get("licenseplate"),
+            brand=args.get("brand"),
+            model=args.get("model"),
+            type=args.get("type")
+        ))
+
+        return Response("", state)
+    else:
+
+        areas = select(
+            "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplate")
+
+        formatted = format_result(
+            areas, ["licenseplate", "brand", "model", "type"])
+
+        return Response(json.dumps(formatted), 200)
+
+
+@app.route("/api/userLicenseplates/", methods=["POST", "GET"])
+def user_licenseplate():
+    """
+        An api endpint that lets you set a saved licenseplate for a specific user as well as reading it
+
+        POST:
+            Required args:
+                userId: str
+                licenseplate: str
+
+            Returns:
+                200: Everything went smoothly
+                400: Query has invalid syntax
+                401: Failed to execute query
+
+        GET:
+            Required args:
+                userId: str
+
+            licenseplate_data:
+            [
+                {
+                    userId: str,
+                    licenseplate: str
+                }
+            ]
+
+
+            Returns:
+                200: Everything went smoothly (sends licenseplate_data)
+                400: Query has invalid syntax
+                401: Failed to execute query
+
+    """
+    args = request.args
+
+    if request.method == "POST":
+
+        required = ["userId", "licenseplate"]
+
+        if not all(arg in required for arg in args):
+            return Response("", 400)
+
+        state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
+            userId=args.get("userId"),
+            licenseplate=args.get("licenseplate")
+        ))
+
+        return Response("", state)
+
+    else:
+
+        required = ["userId"]
+
+        if not all(arg in required for arg in args):
+            return Response("", 400)
+
+        licenseplates = select(
+            "SELECT [userId], [licenseplate] FROM userLicenseplates WHERE userId={userId}".format(
+                userId=args.get("userId")
+            ))
+
+        formatted = format_result(
+            licenseplates, ["userId", "licenseplate"])
+
+        return Response(json.dumps(formatted), 200)
 
 
 @app.route("/api/parkings/", methods=["POST", "GET"])
 def parkings():
+    """
+        An api endpoint for extracting and inserting a parking
+
+        POST:
+            Required args:
+                licenseplate: str
+                userId: int
+                areaId: int
+                minutes: int
+                price: int
+                state: str
+                timestamp: str
+
+            Returns:
+                200: Everything went smoothly
+                400: Query has invalid syntax
+                401: Failed to execute query
+
+        GET:
+            Required args:
+                userId: int
+
+            parkings_data:
+            [
+                {
+                    licenseplate: str,
+                    userId: int,
+                    areaId: int,
+                    minutes: int,
+                    price: int,
+                    state: str,
+                    timestamp: str
+                }
+            ]
+
+
+            Returns:            
+                200: Everything went smoothly (sends licenseplate_data)
+                400: Query has invalid syntax
+                401: Failed to execute query
+    """
 
     args = request.args
 
     if request.method == "POST":
+
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
 
         if not all(arg in required for arg in args):
             return Response("", 400)
 
-        return
+        state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
+            licenseplate=args.get("licenseplate"),
+            userId=args.get("userId"),
+            minutes=args.get("minutes"),
+            price=args.get("price"),
+            state=args.get("state"),
+            timetamp=args.get("timetamp")
+        ))
+
+        return Response("", state)
 
     else:
         required = ["userId"]
@@ -136,24 +372,17 @@ def parkings():
         if not all(arg in required for arg in args):
             return Response("", 400)
 
-        areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId = '{userId}'".format(
+        areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
         ))
 
         formatted = format_result(
             areas, ["licenseplate", "userId", "areaId", "minutes", "price", "state", "timestamp"])
 
-        return json.dumps(formatted)
+        return Response(json.dumps(formatted), 200)
 
 
-@app.route("/api/test/", methods=["GET"])
-def test():
-    print(hash_password("This is a test password"))
-
-    return json.dumps("test")
-
-
-def insert(query):
+def insert(query: str):
     """
         A function to make sure that the inersted query in fact is an insert query
 
@@ -161,7 +390,7 @@ def insert(query):
             int: Based on if insert was successful
     """
 
-    if "insert" not in query.lower():
+    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
         return 400
 
     db_engine = connect()
@@ -175,15 +404,15 @@ def insert(query):
     return 200
 
 
-def select(query):
+def select(query: str):
     """
         A function to make sure that the inersted query in fact is a select query
 
         Returns:
             List: Fetched result from db
     """
-    if "select" not in query.lower():
-        return []
+    if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
+        return 400
 
     db_engine = connect()
 
@@ -192,7 +421,7 @@ def select(query):
             result = conn.exec_driver_sql(query).all()
     except Exception as e:
         print(e)
-        return []
+        return 401
 
     return result
 
@@ -213,33 +442,100 @@ def connect():
     return create_engine(conn_str)
 
 
-def format_result(data, keys):
+def format_result(data: list[tuple], keys: list[str]):
+    """
+        Formats all data inputs from tuple to dict with selected keys
+
+        Example:
+            data = [(1, 2, 3), (4, 5, 6)]
+            keys = ["key1", "key2", "key3"]
+
+            result = [
+                {"key1": 1, "key2": 1, "key3": 3},
+                {"key1": 4, "key2": 5, "key3": 6},
+                ]
+
+        Args:
+            data (list): A list of tuples return from database
+            keys (list): A list of keys that match 1:1 with data indices
+
+        Returns:
+            list: A list of dict with selected key, value pairs
+
+    """
 
     formatted = [{k: format_val(v) for k, v in zip(keys, row)} for row in data]
 
     return formatted
 
 
-def format_val(v):
+def format_val(k, v):
+    """
+        Converts value into an int or float if possible
 
-    if is_convertable(v, int):
-        return int(v)
+        Args:
+            k (str): a string key
+            v (str): a string input 
 
-    elif is_convertable(v, float):
-        return float(v)
-    else:
-        return v
+        Returns:
+            str: Converted input if possible to 
+    """
+
+    types = [int, float, format_datetime, str]
+
+    for type in types:
+        if is_convertable(k, v, type):
+            return type(v)
 
 
-def is_convertable(val, type):
+def is_convertable(key: str, val: str, data_type: type):
+    """
+        Takes two arguments and checks if the selected value is convertable to the selected type
+
+        Args:
+            key: (str) a specific key that is checked for
+            val: (any) a specific value to check for
+            type: (any) a specific type to check for
+
+        Returns:
+            bool: Whether or not the value is convertable
+    """
     try:
-        type(val)
+        if key in ["phone", "ccCode"]:
+            return False
+
+        if callable(data_type):
+            format_datetime(val)
+
+        data_type(val)
         return True
-    except:
+    except ValueError:
         return False
 
 
+def format_datetime(datetime: datetime):
+    """
+        Converts a datetime object to a string
+
+        Args:
+            datetime (Datetime): A timestamp
+
+        Returns:
+            str: Timestamp as a string
+    """
+    return datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def hash_password(password: str):
+    """
+        Generates a hashed key from selected parameter
+
+        Args:
+            password (str): a password that needs to be hashed
+
+        Returns:
+            str: The hashed value from selected password
+    """
     return sha512(f"{repr(password)},{hash_key}".encode("utf-8")).hexdigest()
 
 
