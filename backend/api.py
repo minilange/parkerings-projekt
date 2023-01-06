@@ -560,4 +560,5 @@ class ResponseCodes(Enum):
     inv_syntax = 403
     no_email = 406
 
+
 app.run(host="0.0.0.0", port=5050)
