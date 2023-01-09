@@ -1,13 +1,17 @@
 <template>
-
   <div class="container mt-5 mx-auto row">
     <div class="col-lg-7 action-prompt m-auto">
       <h3 class="text-center">NEW PARKING</h3>
-      <hr>
+      <hr />
 
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
-        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+        <form
+          id="userAccountSetupForm"
+          name="userAccountSetupForm"
+          enctype="multipart/form-data"
+          method="POST"
+        >
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal">Choose an area</h2>
@@ -18,11 +22,16 @@
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-                @click="navigateToFormStep">Next</button>
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
+                Next
+              </button>
             </div>
           </section>
-
 
           <!-- Step 2 Content, default hidden on page load. -->
           <section id="step-2" class="form-step d-none">
@@ -33,13 +42,24 @@
               <label for="carInput">Choose a car...</label>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="1"
-                @click="navigateToFormStep">Prev</button>
-              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
-                @click="navigateToFormStep">Next</button>
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="1"
+                @click="navigateToFormStep"
+              >
+                Prev
+              </button>
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="3"
+                @click="navigateToFormStep"
+              >
+                Next
+              </button>
             </div>
           </section>
-
 
           <!-- Step 3 Content, default hidden on page load. -->
           <section id="step-3" class="form-step d-none">
@@ -49,8 +69,14 @@
               <p>[SHOW DIAL HERE]</p>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-                @click="navigateToFormStep">Prev</button>
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
+                Prev
+              </button>
               <button class="button btn submit-btn" type="submit">Save</button>
             </div>
           </section>
@@ -113,6 +139,9 @@ document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn)
 
 export default {
   methods: {
+    getNumberPlate(plateNumber) {
+      console.log(plateNumber);
+    },
     navigateToFormStep(stepNumber) {
       /**
        * Hide all form steps.
@@ -141,7 +170,10 @@ export default {
       /**
        * Mark the current form step as active.
        */
-      formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-completed");
+      formStepCircle.classList.remove(
+        "form-stepper-unfinished",
+        "form-stepper-completed"
+      );
       formStepCircle.classList.add("form-stepper-active");
       /**
        * Loop through each form step circles.
@@ -161,14 +193,16 @@ export default {
           /**
            * Mark the form step as completed.
            */
-          formStepCircle.classList.remove("form-stepper-unfinished", "form-stepper-active");
+          formStepCircle.classList.remove(
+            "form-stepper-unfinished",
+            "form-stepper-active"
+          );
           formStepCircle.classList.add("form-stepper-completed");
         }
       }
-    }
-  }
-
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -201,7 +235,7 @@ h2 {
 
 .button {
   padding: 0.7rem 1.5rem;
-  border: 1px solid #4361ee;
+  border: 1px solid #5e5e5e;
   background-color: #4361ee;
   color: #fff;
   border-radius: 5px;
@@ -258,14 +292,14 @@ ul.form-stepper .form-stepper-circle span {
   justify-content: space-between;
 }
 
-ul.form-stepper>li:not(:last-of-type) {
+ul.form-stepper > li:not(:last-of-type) {
   margin-bottom: 0.625rem;
   -webkit-transition: margin-bottom 0.4s;
   -o-transition: margin-bottom 0.4s;
   transition: margin-bottom 0.4s;
 }
 
-.form-stepper-horizontal>li:not(:last-of-type) {
+.form-stepper-horizontal > li:not(:last-of-type) {
   margin-bottom: 0 !important;
 }
 
@@ -369,4 +403,3 @@ ul.form-stepper li a .form-stepper-circle {
   cursor: default;
 }
 </style>
-

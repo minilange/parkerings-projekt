@@ -7,6 +7,7 @@ html {
 /* NAVBAR */
 .navbar-top {
     padding-bottom: 0;
+    /* width: 100vh; */
     box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 0.6);
     background-color: rgba(0, 0, 0, 0.6) !important;
 }
@@ -18,7 +19,7 @@ html {
 }
 
 .navbar-nav>.nav-item>span {
-    font-weight: 100;
+    font-weight: 200;
     -webkit-transition: all .5s;
     -moz-transition: all .5s;
     -o-transition: all .5s;

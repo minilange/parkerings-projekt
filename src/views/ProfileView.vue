@@ -16,18 +16,16 @@
                                 <i class="fas fa-globe fa-lg text-warning"></i>
                                 <h5 class="mb-0">REGISTERED CARS:</h5>
                             </li>
-                            <li class="list-group-item p-3">
-                                <p class="mb-0">HX21789</p>
-                            </li>
-                            <li class="list-group-item p-3">
-                                <p class="mb-0">CD65739</p>
-                            </li>
-                            <li class="list-group-item p-3">
-                                <p class="mb-0">YH98345</p>
-                            </li>
-                            <li class="list-group-item p-3">
-                                <p class="mb-0">XE21789</p>
-                            </li>
+                            <div v-if="registeredCars.length > 0">
+                                <li class="list-group-item p-3" v-for="numberplate in registeredCars" :key="numberplate">
+                                    <p class="mb-0">{{ numberplate }}</p>
+                                </li>
+                            </div>
+                            <div v-else>
+                                <li class="list-group-item p-3">
+                                    <p class="mb-0">You don't have any registered cars yet...</p>
+                                </li>
+                            </div>
                         </ul>
                     </div>
                 </div>
@@ -37,46 +35,46 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">First Name</p>
+                                <p class="mb-0">First Name:</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">[First_name]</p>
+                                <p class="mb-0">{{user.firstname}}</p>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Last Name</p>
+                                <p class="mb-0">Last Name:</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">[Last_name]</p>
+                                <p class="mb-0">{{user.lastname}}</p>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Email</p>
+                                <p class="mb-0">Email:</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">[Email]</p>
+                                <p class="mb-0">{{user.email}}</p>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Mobil</p>
+                                <p class="mb-0">Mobil:</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">[Mobil]</p>
+                                <p class="mb-0">{{user.mobile}}</p>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Address</p>
+                                <p class="mb-0">Address:</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">[Address]</p>
+                                <p class="mb-0">{{user.address}}</p>
                             </div>
                         </div>
                     </div>
@@ -86,48 +84,36 @@
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
-                                <h5 class="mb-0">PARKING HISTORY:</h5>
-                                <li class="list-group-item p-3">
-                                    <p class="text-muted mb-0">[Date]</p>
-                                    <p class="mb-0">
-                                        Date: January 1, 2020
+                                <h5 class="mb-0">LATEST PARKING:</h5>
+                                <div v-if="latestParking.date != ''">
+                                    <li class="list-group-item py-3">
+                                        <p class="mb-0">
+                                            Date:
+                                        </p>
+                                        <p class="mb-0">{{latestParking.date}}</p>
+                                    </li>
+                                    <li class="list-group-item py-3">
+                                        <p class="mb-0">
+                                            Location:
+                                        </p>
+                                        <p class="mb-0">{{latestParking.location}}</p>
+                                    </li>
+                                    <li class="list-group-item py-3">
+                                        <p class="mb-0">
+                                            Cost:
+                                        </p>
+                                        <p class="mb-0">{{latestParking.date}}</p>
+                                        </li>
+                                </div>
+                                <div v-else>
+                                    <p class="my-3">
+                                        You don't have any parkings yet...
                                     </p>
-                                </li>
-                                <li class="list-group-item p-3">
-                                    <p class="text-muted mb-0">[Location]</p>
-                                    <p class="mb-0">
-                                        Location: 456 Market Street
-                                    </p>
-                                </li>
-                                <li class="list-group-item p-3">
-                                    <p class="text-muted mb-0">[Cost]</p>
-                                    <p class="mb-0">
-                                        Cost: $20</p>
-                                </li>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-4 mb-md-0">
-                            <div class="card-body">
-                                <h5 class="mb-0">Settings:</h5>
-                                <li class="list-group-item p-3">
-                                    <p class="mb-0">
-                                        Language preference
-                                        Favorite Locations
-                                        Payment options
-                                        Vehicle information 
-                                        Nofications options 
-                                        idk
-                                        </p>
-                                </li>
-                            </div>  
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
@@ -142,5 +128,48 @@ p {
 </style>
 
 <script>
-  
+import axios from 'axios'
+
+export default {
+  data() {
+    return {
+        user:{
+            firstname: "",
+            lastname: "",
+            email: "",
+            mobile: "",
+            address: "",
+        },
+        registeredCars: [],
+        latestParking:{
+            date: "",
+            location: "",
+            cost: ""
+        }
+    }
+  },
+  watch: {
+  },
+  methods:{
+    getNumberplates: function() {
+      axios.get( '/api/userLicenseplates', {
+        params: {
+            userLicenseplates: "username"
+        }
+      })
+      .then( response => {
+        this.registeredCars = response;
+      console.log(response);
+      })
+      .catch( error => {
+        console.warn('userLicenseplates', error )
+      });
+    },
+  },
+  mounted() {
+    console.log(this.msg) // 'hello'
+  }
+}
+
+
 </script>

@@ -1,149 +1,155 @@
 <template>
-    <div class="container mt-5 row">
-        <div class="col-lg-7"></div>
-        <div class="col-lg-5 action-prompt m-auto">
-            <h3 class="text-center">NEW CAR</h3>
-            <hr>
-            <form>
-                <input id="plateImage" type="file" accept="image/*" />
-                <p>Simply scan your car's license plate, and have it registered automatically!</p>
-                <button class="btn btn-primary btn-dark" @click="getPlate">SCAN NUMBER PLATE</button>
-                <img id="previewImg" src="" width="200" />
+  <div class="container mt-5 row">
+    <div class="col-lg-7"></div>
+    <div class="col-lg-5 action-prompt m-auto">
+      <h3 class="text-center">NEW CAR</h3>
+      <hr />
+      <form>
+        <input id="plateImage" type="file" accept="image/*" />
+        <p>Simply scan your car's license plate, and have it registered automatically!</p>
+        <button class="btn btn-primary btn-dark" @click="getPlate">
+          SCAN NUMBER PLATE
+        </button>
+        <img id="previewImg" src="" width="200" />
 
-                <p>Or manually input the info here:</p>
-                <label for="numberPlate">Number plate</label>
-                <br />
-                <input name="numberPlate" id="numberPlate" type="text" pattern="[A-Z]{2}[0-9]{5}"
-                    title="Please follow Danish number plate structure" v-model="inputNumberplate" />
+        <p>Or manually input the info here:</p>
+        <label for="numberPlate">Number plate</label>
+        <br />
+        <input
+          name="numberPlate"
+          id="numberPlate"
+          type="text"
+          pattern="[A-Z]{2}[0-9]{5}"
+          title="Please follow Danish number plate structure"
+          v-model="inputNumberplate"
+        />
+        <button @click="getPlateInput">Search for car</button>
 
-                <p id="searchStatus">{{ response }}</p>
+        <p id="searchStatus">{{ response }}</p>
 
-                <br />
+        <br />
 
-                <div id="carInfo">
-                    <p>Brand: {{ carBrand }}</p>
-                    <p>Model: {{ carModel }}</p>
-                </div>
-
-                <input type="submit" value="Submit" />
-            </form>
+        <div id="carInfo">
+          <p>Brand: {{ carBrand }}</p>
+          <p>Model: {{ carModel }}</p>
         </div>
+
+        <input type="submit" value="Submit" />
+      </form>
     </div>
+  </div>
 </template>
 
 <script>
 const fileTypes = [
-    "image/apng",
-    "image/bmp",
-    "image/gif",
-    "image/jpeg",
-    "image/pjpeg",
-    "image/png",
-    "image/svg+xml",
-    "image/tiff",
-    "image/webp",
-    "image/x-icon"
+  "image/apng",
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/pjpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon",
 ];
 
 function validFileType(file) {
-    return fileTypes.includes(file.type);
+  return fileTypes.includes(file.type);
 }
 
 export default {
-    data() {
-        return {
-            inputNumberplate: '',
-            carModel: '',
-            carBrand: '',
-            response: '',
-            numberPlatePattern: /[A-Z]{2}[0-9]{5}/g 
-        }
+  data() {
+    return {
+      inputNumberplate: "",
+      carModel: "",
+      carBrand: "",
+      response: "",
+      numberPlatePattern: /[A-Z]{2}[0-9]{5}/g,
+    };
+  },
+  watch: {
+    inputNumberplate(newNumber) {
+      // When manual input of numberplate changes
+      // console.log(newNumber, oldNumber);
+      this.inputNumberplate = this.inputNumberplate.toUpperCase();
+
+      if (this.numberPlatePattern.test(newNumber) === true) {
+        this.getPlateInput();
+      } else {
+        console.log("NOT RIGHT PATTERN");
+      }
     },
-    watch: {
-        inputNumberplate(newNumber) {
-            // When manual input of numberplate changes
-            // console.log(newNumber, oldNumber);
-            this.inputNumberplate = this.inputNumberplate.toUpperCase();
+  },
+  methods: {
+    async getPlateInput() {
+      // CALL API WITH event.target.value as parameter
+      this.response = "Searching";
+      this.carBrand = "";
+      this.carModel = "";
 
-            if(this.numberPlatePattern.test(newNumber) === true) {
-                this.getPlateInput();
-            } else {
-                console.log('NOT RIGHT PATTERN')
-            }
-        }
-
+      // console.log(event.target.value);
+      try {
+        // const res = await fetch("");
+        // this.response = (await res.json()).answer;
+        this.response = "SEARCH COMPLETED";
+        this.carBrand = "TEST BRAND";
+        this.carModel = "TEST MODEL";
+        console.log(this.response);
+      } catch (error) {
+        console.log(error);
+        this.response = "Error: " + error;
+      }
     },
-    methods: {
-        async getPlateInput() {
-            // CALL API WITH event.target.value as parameter
-            this.response = 'Searching';
-            // console.log(event.target.value);
-            try {
-                // const res = await fetch('API URL');
-                // this.response = (await res.json()).answer;
-                this.response = 'SEARCH COMPLETED';
-                this.carBrand = 'TEST BRAND';
-                this.carModel = 'TEST MODEL';
-                console.log(this.response);
-            } catch (error) {
-                console.log(error);
-                this.response = 'Error: ' + error;
+    getPlate(event) {
+      try {
+        const picture = document.getElementById("plateImage");
+        console.log(picture);
+
+        if (picture.value != "") {
+          const curFiles = picture.files;
+          console.log(curFiles);
+          if (curFiles.length === 0) {
+            console.log("No files currently selected for upload");
+          } else {
+            for (const file of curFiles) {
+              if (validFileType(file)) {
+                // CALL API!
+
+                let img = document.getElementById("previewImg");
+                img.src = URL.createObjectURL(file);
+                console.log(file);
+              } else {
+                console.log("NOT A VALID FILE");
+              }
             }
-
-        },
-        getPlate(event) {
-            try {
-                const picture = document.getElementById("plateImage");
-                console.log(picture);
-
-                if (picture.value != '') {
-                    const curFiles = picture.files;
-                    console.log(curFiles);
-                    if (curFiles.length === 0) {
-                        console.log("No files currently selected for upload");
-                    }
-                    else {
-                        for (const file of curFiles) {
-                            if (validFileType(file)) {
-                                // CALL API!
-                                
-                                let img = document.getElementById("previewImg");
-                                img.src = URL.createObjectURL(file);
-                                console.log(file);
-                            } else {
-                                console.log("NOT A VALID FILE");
-                            }
-                        }
-                    }
-                } else {
-                    alert("Please select a picture of your number plate")
-                }
-
-            } catch (error) {
-                console.log('Input picture: ' + error)
-            }
-
-            console.log(event.target.name);
+          }
+        } else {
+          alert("Please select a picture of your number plate");
         }
-    }
-}
+      } catch (error) {
+        console.log("Input picture: " + error);
+      }
+
+      console.log(event.target.name);
+    },
+  },
+};
 </script>
 
 <style scoped>
-
 .btn-transparent {
-    background: transparent;
-    color: white;
-    border-color: white;
+  background: transparent;
+  color: white;
+  border-color: white;
 }
 
 .btn-transparent:hover {
-    background: white;
-    color: black;
+  background: white;
+  color: black;
 }
 
-.form-floating>.label {
-    color: black !important;
+.form-floating > .label {
+  color: black !important;
 }
 </style>
-

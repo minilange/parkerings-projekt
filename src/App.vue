@@ -1,13 +1,13 @@
 <script setup>
-import Header from './components/Header.vue'
+import Header from "./components/Header.vue";
 </script>
 
 <template>
-  <Header/>
-  <RouterView />
-  <!-- <Footer/> -->
+  <!-- <div class="container"> -->
+    <Header />
+    <RouterView />
+    <!-- <Footer/> -->
+  <!-- </div> -->
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

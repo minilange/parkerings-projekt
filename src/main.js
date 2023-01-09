@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 import './assets/main.css'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
@@ -16,4 +17,6 @@ import { faCar, faPlus } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 library.add(faCar, faPlus)
 
-createApp(App).component('font-awesome-icon', FontAwesomeIcon).use(router).mount('#app')
+let app = createApp(App)
+app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(router).use(store).mount('#app')
