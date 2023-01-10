@@ -52,7 +52,7 @@ def register():
         email=args.get("email"),
         encrypted=hash_password(args.get("password")),
         phone=args.get("phone"),
-        country=args.get("ccCode")
+        ccCode=args.get("ccCode")
     ))
 
     return Response("", state.value)
