@@ -41,22 +41,76 @@
 </template>
 
 <script>
-const fileTypes = [
-  "image/apng",
-  "image/bmp",
-  "image/gif",
-  "image/jpeg",
-  "image/pjpeg",
-  "image/png",
-  "image/svg+xml",
-  "image/tiff",
-  "image/webp",
-  "image/x-icon",
-];
+import { mapActions } from "vuex";
 
-function validFileType(file) {
-  return fileTypes.includes(file.type);
-}
+// const fileTypes = [
+//   "image/apng",
+//   "image/bmp",
+//   "image/gif",
+//   "image/jpeg",
+//   "image/pjpeg",
+//   "image/png",
+//   "image/svg+xml",
+//   "image/tiff",
+//   "image/webp",
+//   "image/x-icon",
+// ];
+
+// function validFileType(file) {
+//   return fileTypes.includes(file.type);
+// }
+// async getPlateInput() {
+//       CALL API WITH event.target.value as parameter
+//       this.response = "Searching";
+//       this.carBrand = "";
+//       this.carModel = "";
+
+//       console.log(event.target.value);
+//       try {
+//         const res = await fetch("");
+//         this.response = (await res.json()).answer;
+//         this.response = "SEARCH COMPLETED";
+//         this.carBrand = "TEST BRAND";
+//         this.carModel = "TEST MODEL";
+//         console.log(this.response);
+//       } catch (error) {
+//         console.log(error);
+//         this.response = "Error: " + error;
+//       }
+//     },
+//     getPlate(event) {
+//       try {
+//         const picture = document.getElementById("plateImage");
+//         console.log(picture);
+
+//         if (picture.value != "") {
+//           const curFiles = picture.files;
+//           console.log(curFiles);
+//           if (curFiles.length === 0) {
+//             console.log("No files currently selected for upload");
+//           } else {
+//             for (const file of curFiles) {
+//               if (validFileType(file)) {
+//                 CALL API!
+
+//                 let img = document.getElementById("previewImg");
+//                 img.src = URL.createObjectURL(file);
+//                 console.log(file);
+//               } else {
+//                 console.log("NOT A VALID FILE");
+//               }
+//             }
+//           }
+//         } else {
+//           alert("Please select a picture of your number plate");
+//         }
+//       } catch (error) {
+//         console.log("Input picture: " + error);
+//       }
+
+//       console.log(event.target.name);
+//     },
+//   },
 
 export default {
   data() {
@@ -75,65 +129,16 @@ export default {
       this.inputNumberplate = this.inputNumberplate.toUpperCase();
 
       if (this.numberPlatePattern.test(newNumber) === true) {
-        this.getPlateInput();
+        // this.getPlateInput();
+        this.numberPlateLookup(newNumber);
       } else {
         console.log("NOT RIGHT PATTERN");
       }
     },
   },
-  methods: {
-    async getPlateInput() {
-      // CALL API WITH event.target.value as parameter
-      this.response = "Searching";
-      this.carBrand = "";
-      this.carModel = "";
-
-      // console.log(event.target.value);
-      try {
-        // const res = await fetch("");
-        // this.response = (await res.json()).answer;
-        this.response = "SEARCH COMPLETED";
-        this.carBrand = "TEST BRAND";
-        this.carModel = "TEST MODEL";
-        console.log(this.response);
-      } catch (error) {
-        console.log(error);
-        this.response = "Error: " + error;
-      }
-    },
-    getPlate(event) {
-      try {
-        const picture = document.getElementById("plateImage");
-        console.log(picture);
-
-        if (picture.value != "") {
-          const curFiles = picture.files;
-          console.log(curFiles);
-          if (curFiles.length === 0) {
-            console.log("No files currently selected for upload");
-          } else {
-            for (const file of curFiles) {
-              if (validFileType(file)) {
-                // CALL API!
-
-                let img = document.getElementById("previewImg");
-                img.src = URL.createObjectURL(file);
-                console.log(file);
-              } else {
-                console.log("NOT A VALID FILE");
-              }
-            }
-          }
-        } else {
-          alert("Please select a picture of your number plate");
-        }
-      } catch (error) {
-        console.log("Input picture: " + error);
-      }
-
-      console.log(event.target.name);
-    },
-  },
+  methods: mapActions({
+    numberPlateLookup: "numberPlateLookup",
+  }),
 };
 </script>
 

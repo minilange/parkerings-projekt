@@ -41,11 +41,7 @@
           <!-- CC_Code -->
           <div class="col-lg-3">
             <div class="form-floating mb-3">
-              <select
-                v-model="form.ccCode"
-                class="form-control"
-                id="floatingCC-code"
-              >
+              <select v-model="form.ccCode" class="form-control" id="floatingCC-code">
                 <option v-for="code in cc_codes" :value="code" :key="code">
                   {{ code.dial_code }}, {{ code.code }}
                 </option>
@@ -92,10 +88,7 @@
         <h5 class="text-danger" v-if="form.password != form.repeatPassword">
           Passwords doesn't match!
         </h5>
-        <button
-          v-on:click="registerUser()"
-          class="btn-transparent btn btn-dark"
-        >
+        <button v-on:click="registerUser()" :disabled="form.password != form.repeatPassword" class="btn-transparent btn btn-dark">
           Register
         </button>
       </form>
@@ -143,11 +136,21 @@ export default {
   watch: {},
   methods: {
     compareDialCode: function (a, b) {
-      return a.dial_code.slice(1, a.dial_code.length) - b.dial_code.slice(1, b.dial_code.length);
+      return (
+        a.dial_code.slice(1, a.dial_code.length) -
+        b.dial_code.slice(1, b.dial_code.length)
+      );
     },
     registerUser: function () {
       axios
-        .post("/register", this.form)
+        .post(this.$store.state.api + "/register/", {
+            firstname: this.form.firstname,
+            lastname: this.form.lastname,
+            email: this.form.email,
+            password: this.form.password,
+            phone: this.form.phone,
+            ccCode: this.form.ccCode.code
+        })
         .then((response) => {
           console.log(response);
         })

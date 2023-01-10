@@ -9,7 +9,7 @@
           <label for="floatingEmail">Email address</label>
         </div>
         <div class="form-floating mb-3">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <input v-model="form.password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
           <label for="floatingPassword">Password</label>
         </div>
         <button v-on:click="loginUser()" class=" btn-transparent btn btn-dark">Login</button>
@@ -46,11 +46,9 @@ export default {
         }
     }
   },
-  watch: {
-  },
   methods:{
     loginUser: function() {
-      axios.get( '/login', {
+      axios.get( 'app/login', {
         params: {
           login: this.form
         }
@@ -64,8 +62,6 @@ export default {
       });
     },
   },
-  mounted:{
-  }
 }
 
 

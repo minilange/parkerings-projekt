@@ -9,6 +9,7 @@ import NotFound from '../views/NotFoundView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CarRegisterView from '../views/CarRegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import AdminView from '../views/AdminView.vue'
 
 const routes = [
   {
@@ -55,6 +56,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileView
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: AdminView
   },
   {
     path: "/:catchAll(.*)",
