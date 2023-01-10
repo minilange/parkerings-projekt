@@ -3,3 +3,5 @@ flask-cors
 pyodbc
 sqlalchemy
 gunicorn
+easyocr
+imutils
