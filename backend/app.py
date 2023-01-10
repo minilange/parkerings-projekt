@@ -411,7 +411,7 @@ def insert(query: str):
     """
 
     if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax.value
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
     try:
@@ -419,9 +419,9 @@ def insert(query: str):
             conn.exec_driver_sql(query)
     except Exception as e:
         print(e)
-        return ResponseCodes.failed_query.value
+        return ResponseCodes.failed_query
 
-    return ResponseCodes.success.value
+    return ResponseCodes.success
 
 
 def select(query: str):
@@ -432,7 +432,7 @@ def select(query: str):
             List: Fetched result from db
     """
     if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax.value
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
 
