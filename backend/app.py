@@ -1,3 +1,4 @@
+import os
 import json
 from enum import Enum
 from datetime import datetime
@@ -7,11 +8,15 @@ from flask_cors import CORS
 from sqlalchemy import create_engine
 
 app = Flask(__name__)
-app.config["debug"] = True
+# app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 hash_key = "parking_project"
 
+
+@app.route("/", methods=["GET"])
+def default():
+    return json.dumps("This is the default page")
 
 @app.route("/api/register/", methods=["POST"])
 def register():
@@ -50,7 +55,7 @@ def register():
         country=args.get("ccCode")
     ))
 
-    return Response("", state)
+    return Response("", state.value)
 
 
 @app.route("/api/login/", methods=["GET"])
@@ -88,8 +93,8 @@ def login():
         email=args.get("email")
     ))
 
-    if isinstance(int, user):
-        return Response("", user)
+    if isinstance(user, ResponseCodes):
+        return Response("", user.value)
 
     if len(user) != 1:
         return Response("", ResponseCodes.no_email)
@@ -97,15 +102,15 @@ def login():
     password = user[0]
 
     if hash_password(args.get("password")) != password:
-        return Response("", )
+        return Response("", ResponseCodes.inv_pwd)
 
     user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
 
-    if isinstance(int, user):
-        return Response("", user)
+    if isinstance(user, ResponseCodes):
+        return Response("", user.value)
 
     if len(user) != 1:
         return Response("", ResponseCodes.inv_pwd)
@@ -167,15 +172,15 @@ def areas():
             longitude=args.get("longitude")
         ))
 
-        return Response("", state)
+        return Response("", state.value)
 
     else:
 
         areas = select(
             "SELECT [areaId], [areaName], [address], [langitude], [longitude] FROM areas")
 
-        if isinstance(int, areas):
-            return Response("", areas)
+        if isinstance(areas, ResponseCodes):
+            return Response("", areas.value)
 
         formatted = format_result(
             areas, ["areaId", "areaName", "address", "langitude", "longitude"])
@@ -231,14 +236,14 @@ def reg_licenseplates():
             type=args.get("type")
         ))
 
-        return Response("", state)
+        return Response("", state.value)
     else:
 
         licenseplates = select(
             "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplate")
 
-        if isinstance(int, licenseplates):
-            return Response("", licenseplates)
+        if isinstance(licenseplates, ResponseCodes):
+            return Response("", licenseplates.value)
 
         formatted = format_result(
             licenseplates, ["licenseplate", "brand", "model", "type"])
@@ -291,7 +296,7 @@ def user_licenseplate():
             licenseplate=args.get("licenseplate")
         ))
 
-        return Response("", state)
+        return Response("", state.value)
 
     else:
 
@@ -305,6 +310,9 @@ def user_licenseplate():
                 userId=args.get("userId")
             ))
 
+        if isinstance(licenseplates, ResponseCodes):
+            return Response("", licenseplates.value)
+        
         formatted = format_result(
             licenseplates, ["userId", "licenseplate"])
 
@@ -371,7 +379,7 @@ def parkings():
             timetamp=args.get("timetamp")
         ))
 
-        return Response("", state)
+        return Response("", state.value)
 
     else:
         required = ["userId"]
@@ -382,6 +390,9 @@ def parkings():
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
         ))
+            
+        if isinstance(areas, ResponseCodes):
+            return Response("", areas.value)
 
         formatted = format_result(
             areas, ["licenseplate", "userId", "areaId", "minutes", "price", "state", "timestamp"])
@@ -441,7 +452,7 @@ def connect():
             sqlalchemy.engine: A connection to the database
     """
 
-    with open("./db_config.json", "rt") as file:
+    with open(os.path.join("./db_config.json"), "rt") as file:
         config = json.load(file)
         conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(
             config["conn"].format(**config))
@@ -560,5 +571,5 @@ class ResponseCodes(Enum):
     inv_syntax = 403
     no_email = 406
 
-
-app.run(host="0.0.0.0", port=5050)
+# def main(a, b):
+    # app.run()
