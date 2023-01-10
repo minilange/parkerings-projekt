@@ -1,89 +1,87 @@
-IF OBJECT_ID(N'dbo.UserLicenseplates', N'U') IS NOT NULL  
-	DROP TABLE UserLicenseplates;
-	PRINT('Dropped UserLicensePlates')
 
-IF OBJECT_ID(N'dbo.Parkings', N'U') IS NOT NULL  
-	DROP TABLE Parkings;
-	PRINT('Dropped Parkings')
+IF (OBJECT_ID('dbo.UserLicenseplates', 'U') IS NOT NULL)
+BEGIN
+	DROP TABLE dbo.UserLicenseplates;
+	PRINT('DROPPED UserLicenseplates')
+END
 
-IF OBJECT_ID(N'dbo.Users', N'U') IS NOT NULL  
-	DROP TABLE Users;
-	PRINT('Dropped Users')
+IF (OBJECT_ID('dbo.Parkings','U') IS NOT NULL)
+BEGIN
+	DROP TABLE dbo.Parkings;
+	PRINT('DROPPED Parkings')
+END
 
-IF OBJECT_ID(N'dbo.RegisteredLicenseplates', N'U') IS NOT NULL  
-	DROP TABLE RegisteredLicenseplates;
-	PRINT('Dropped UserLicensePlates')
+IF (OBJECT_ID('dbo.RegisteredLicenseplates', 'U') IS NOT NULL) 
+BEGIN
+	DROP TABLE dbo.RegisteredLicenseplates;
+	PRINT('DROPPED RegisteredLicenseplates')
+END
 
-IF OBJECT_ID(N'dbo.Areas', N'U') IS NOT NULL  
-	DROP TABLE Areas;
-	PRINT('Dropped Areas')
+IF (OBJECT_ID('dbo.Users', 'U') IS NOT NULL)  
+BEGIN
+	DROP TABLE dbo.Users;
+	PRINT('DROPPED Users')
+END
 
-IF OBJECT_ID(N'dbo.Countries', N'U') IS NOT NULL  
-	DROP TABLE Countries;
-	PRINT('Dropped Countries')
-
-
+IF (OBJECT_ID('dbo.Areas', 'U') IS NOT NULL)
+BEGIN
+	DROP TABLE dbo.Areas;
+	PRINT('DROPPED Areas')
+END
+	   
 PRINT('')
 PRINT('------------------')
 PRINT('')
 
 
-CREATE TABLE Countries (
-	countrycode NVARCHAR(3) PRIMARY KEY,
-	phonecode INT,
-	name NVARCHAR(255)
-)
-PRINT('Initiated Countries')
-
 CREATE TABLE Areas (
-	areaId INT IDENTITY(1,1) PRIMARY KEY,
-	areaName NVARCHAR(255),
-	address NVARCHAR(255),
-	latitude FLOAT,
-	longitude FLOAT
+	[areaId] INT IDENTITY(1,1) PRIMARY KEY,
+	[areaName] NVARCHAR(255),
+	[address] NVARCHAR(255),
+	[latitude] FLOAT,
+	[longitude] FLOAT
 )
 PRINT('Initiated Areas')
 
 CREATE TABLE RegisteredLicenseplates (
-	licenseplates NVARCHAR(7) PRIMARY KEY,
-	brand NVARCHAR(255),
-	model NVARCHAR(255),
-	type NVARCHAR(100)
+	[licenseplate] NVARCHAR(7) PRIMARY KEY,
+	[brand] NVARCHAR(255),
+	[model] NVARCHAR(255),
+	[type] NVARCHAR(100)
 )
 PRINT('Initiated RegisteredLicenseplates')
 
 CREATE TABLE Users (
-	userId INT IDENTITY(1,1) PRIMARY KEY,
-	firstname NVARCHAR(255),
-	lastname NVARCHAR(255),
-	email NVARCHAR(255) UNIQUE,
-	password NVARCHAR(255),
-	phone NVARCHAR(15),
-	countrycode NVARCHAR(3),
-	FOREIGN KEY (countrycode) REFERENCES Countries(countrycode)
+	[userId] INT IDENTITY(1,1) PRIMARY KEY,
+	[firstname] NVARCHAR(255),
+	[lastname] NVARCHAR(255),
+	[email] NVARCHAR(255) UNIQUE,
+	[password] NVARCHAR(255),
+	[phone] NVARCHAR(15),
+	[ccCode] NVARCHAR(5)
 )
 PRINT('Initiated Users')
 
 CREATE TABLE Parkings (
-	parkingId INT IDENTITY(1,1) PRIMARY KEY,
-	licenseplates NVARCHAR(7),
-	userId INT,
-	areaId INT,
-	minutes INT,
-	price INT,
-	state NVARCHAR(50),
-	timestamp DATETIME2,
-	FOREIGN KEY (licenseplates) REFERENCES RegisteredLicenseplates(licenseplates),
-	FOREIGN KEY (userId) REFERENCES Users(userId),
-	FOREIGN KEY (areaId) REFERENCES Areas(areaId)
+	[parkingId] INT IDENTITY(1,1) PRIMARY KEY,
+	[licenseplate] NVARCHAR(7),
+	[userId] INT,
+	[areaId] INT,
+	[minutes] INT,
+	[price] INT,
+	[state] NVARCHAR(50),
+	[timestamp] DATETIME2,
+	FOREIGN KEY (licenseplate) REFERENCES dbo.RegisteredLicenseplates(licenseplate),
+	FOREIGN KEY (userId) REFERENCES dbo.Users(userId),
+	FOREIGN KEY (areaId) REFERENCES dbo.Areas(areaId)
 )
 PRINT('Initiated Parkings')
 
 CREATE TABLE UserLicenseplates (
-	userId INT,
-	licenseplates NVARCHAR(7),
+	[userId] INT,
+	[licenseplate] NVARCHAR(7),
 	FOREIGN KEY (userId) REFERENCES Users(userId),
-	FOREIGN KEY (licenseplates) REFERENCES RegisteredLicenseplates(licenseplates)
+	FOREIGN KEY (licenseplate) REFERENCES RegisteredLicenseplates(licenseplate)
 )
 PRINT('Initiated UserLicenseplates')
 

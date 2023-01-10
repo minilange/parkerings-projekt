@@ -44,7 +44,7 @@ def register():
 
     # Check if all required arg keys are present
     if not all(arg in required for arg in args):
-        return Response("", ResponseCodes.inv_syntax)
+        return Response("", ResponseCodes.inv_syntax.value)
 
     state = insert("INSERT INTO users ([firstname], [lastname], [email], [password], [phone], [ccCode]) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{ccCode}')".format(
         fname=args.get("firstname"),
@@ -87,7 +87,7 @@ def login():
     required = ["email", "password"]
 
     if not all(arg in required for arg in args):
-        return Response("", ResponseCodes.inv_syntax)
+        return Response("", ResponseCodes.inv_syntax.value)
 
     user = select("SELECT [passowrd] from users WHERE email='{email}'".format(
         email=args.get("email")
@@ -97,7 +97,7 @@ def login():
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("", ResponseCodes.no_email)
+        return Response("", ResponseCodes.no_email.value)
 
     password = user[0]
 
@@ -113,12 +113,12 @@ def login():
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("", ResponseCodes.inv_pwd)
+        return Response("", ResponseCodes.inv_pwd.value)
 
     formatted = format_result(
         user, ["firstname", "lastname", "email", "phone", "ccCode"])
 
-    return Response(json.dumps(formatted[0]), ResponseCodes.success)
+    return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
 
 @app.route("/api/areas/", methods=["POST", "GET"])
@@ -163,7 +163,7 @@ def areas():
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO Areas ([areaName], [address], [latitude], [longitude]) VALUES ('{areaName}', '{address}', {latitude}, {longitude})".format(
             areaName=args.get("areaName"),
@@ -177,14 +177,14 @@ def areas():
     else:
 
         areas = select(
-            "SELECT [areaId], [areaName], [address], [langitude], [longitude] FROM areas")
+            "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas")
 
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
 
         formatted = format_result(
-            areas, ["areaId", "areaName", "address", "langitude", "longitude"])
-        return Response(json.dumps(formatted), ResponseCodes.success)
+            areas, ["areaId", "areaName", "address", "latitude", "longitude"])
+        return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
 @app.route("/api/regLicenseplates/", methods=["POST", "GET"])
@@ -227,7 +227,7 @@ def reg_licenseplates():
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO RegisteredLicenseplates([licenseplate], [brand], [model], [type]) VALUES ('{licenseplate}', '{brand}', '{model}', '{type}')".format(
             licenseplate=args.get("licenseplate"),
@@ -240,7 +240,7 @@ def reg_licenseplates():
     else:
 
         licenseplates = select(
-            "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplate")
+            "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplates")
 
         if isinstance(licenseplates, ResponseCodes):
             return Response("", licenseplates.value)
@@ -248,7 +248,7 @@ def reg_licenseplates():
         formatted = format_result(
             licenseplates, ["licenseplate", "brand", "model", "type"])
 
-        return Response(json.dumps(formatted), ResponseCodes.success)
+        return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
 @app.route("/api/userLicenseplates/", methods=["POST", "GET"])
@@ -271,8 +271,10 @@ def user_licenseplate():
             licenseplate_data:
             [
                 {
-                    userId: str,
-                    licenseplate: str
+                    licenseplate: str,
+                    brand: str,
+                    model: str,
+                    type: str
                 }
             ]
 
@@ -289,7 +291,7 @@ def user_licenseplate():
         required = ["userId", "licenseplate"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
             userId=args.get("userId"),
@@ -303,10 +305,10 @@ def user_licenseplate():
         required = ["userId"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         licenseplates = select(
-            "SELECT [userId], [licenseplate] FROM userLicenseplates WHERE userId={userId}".format(
+            "SELECT [rl].[licenseplate], [rl].[brand], [rl].[model], [rl].[type] FROM userLicenseplates as ul INNER JOIN RegisteredLicenseplates as rl ON rl.licenseplate = ul.licenseplate WHERE userId={userId}".format(
                 userId=args.get("userId")
             ))
 
@@ -314,9 +316,9 @@ def user_licenseplate():
             return Response("", licenseplates.value)
         
         formatted = format_result(
-            licenseplates, ["userId", "licenseplate"])
+            licenseplates, ["licenseplate", "brand", "model", "type"])
 
-        return Response(json.dumps(formatted), ResponseCodes.success)
+        return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
 @app.route("/api/parkings/", methods=["POST", "GET"])
@@ -368,7 +370,7 @@ def parkings():
                     "minutes", "price", "state", "timestamp"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
             licenseplate=args.get("licenseplate"),
@@ -385,7 +387,7 @@ def parkings():
         required = ["userId"]
 
         if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax)
+            return Response("", ResponseCodes.inv_syntax.value)
 
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
@@ -397,7 +399,7 @@ def parkings():
         formatted = format_result(
             areas, ["licenseplate", "userId", "areaId", "minutes", "price", "state", "timestamp"])
 
-        return Response(json.dumps(formatted), ResponseCodes.success)
+        return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
 def insert(query: str):
@@ -409,7 +411,7 @@ def insert(query: str):
     """
 
     if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax
+        return ResponseCodes.inv_syntax.value
 
     db_engine = connect()
     try:
@@ -417,9 +419,9 @@ def insert(query: str):
             conn.exec_driver_sql(query)
     except Exception as e:
         print(e)
-        return ResponseCodes.failed_query
+        return ResponseCodes.failed_query.value
 
-    return ResponseCodes.success
+    return ResponseCodes.success.value
 
 
 def select(query: str):
@@ -430,7 +432,7 @@ def select(query: str):
             List: Fetched result from db
     """
     if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax
+        return ResponseCodes.inv_syntax.value
 
     db_engine = connect()
 
@@ -482,7 +484,7 @@ def format_result(data: list[tuple], keys: list[str]):
 
     """
 
-    formatted = [{k: format_val(v) for k, v in zip(keys, row)} for row in data]
+    formatted = [{k: format_val(k, v) for k, v in zip(keys, row)} for row in data]
 
     return formatted
 
@@ -499,20 +501,20 @@ def format_val(k, v):
             str: Converted input if possible to 
     """
 
-    types = [int, float, format_datetime, str]
+    types = [int, float, str]
 
     for type in types:
         if is_convertable(k, v, type):
             return type(v)
 
 
-def is_convertable(key: str, val: str, data_type: type):
+def is_convertable(key: str, val: str, data_type):
     """
         Takes two arguments and checks if the selected value is convertable to the selected type
 
         Args:
             key: (str) a specific key that is checked for
-            val: (any) a specific value to check for
+            val: (str) a specific value to check for
             type: (any) a specific type to check for
 
         Returns:
@@ -522,10 +524,7 @@ def is_convertable(key: str, val: str, data_type: type):
         if key in ["phone", "ccCode"]:
             return False
 
-        if callable(data_type):
-            format_datetime(val)
-
-        data_type(val)
+        data_type(str(val))
         return True
     except ValueError:
         return False
