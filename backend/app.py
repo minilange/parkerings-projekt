@@ -6,8 +6,9 @@ from hashlib import sha512
 from flask import Flask, request, Response
 from flask_cors import CORS
 from sqlalchemy import create_engine
+from werkzeug.datastructures import MultiDict
 
-app = Flask(__name__)
+app = Flask(__name__, )
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -17,6 +18,7 @@ hash_key = "parking_project"
 @app.route("/", methods=["GET"])
 def default():
     return json.dumps("This is the default page")
+
 
 @app.route("/api/register/", methods=["POST"])
 def register():
@@ -36,8 +38,7 @@ def register():
                 ResponseCode: HTTP code to describe finish state
 
     """
-
-    args = request.args
+    args = MultiDict(request.get_json())
 
     required = ["firstname", "lastname",
                 "email", "password", "phone", "ccCode"]
@@ -159,7 +160,7 @@ def areas():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
@@ -223,7 +224,7 @@ def reg_licenseplates():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
@@ -284,9 +285,10 @@ def user_licenseplate():
                     Successful: licenseplate_data
 
     """
-    args = request.args
 
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["userId", "licenseplate"]
 
@@ -301,6 +303,7 @@ def user_licenseplate():
         return Response("", state.value)
 
     else:
+        args = request.args
 
         required = ["userId"]
 
@@ -314,7 +317,7 @@ def user_licenseplate():
 
         if isinstance(licenseplates, ResponseCodes):
             return Response("", licenseplates.value)
-        
+
         formatted = format_result(
             licenseplates, ["licenseplate", "brand", "model", "type"])
 
@@ -362,9 +365,9 @@ def parkings():
                     Successful: parking_data
     """
 
-    args = request.args
-
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
@@ -384,6 +387,8 @@ def parkings():
         return Response("", state.value)
 
     else:
+        args = request.args
+
         required = ["userId"]
 
         if not all(arg in required for arg in args):
@@ -392,7 +397,7 @@ def parkings():
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
         ))
-            
+
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
 
@@ -484,7 +489,8 @@ def format_result(data: list[tuple], keys: list[str]):
 
     """
 
-    formatted = [{k: format_val(k, v) for k, v in zip(keys, row)} for row in data]
+    formatted = [{k: format_val(k, v)
+                  for k, v in zip(keys, row)} for row in data]
 
     return formatted
 
@@ -572,3 +578,6 @@ class ResponseCodes(Enum):
 
 # def main(a, b):
     # app.run()
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=5000)
