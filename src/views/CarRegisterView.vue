@@ -18,12 +18,13 @@
         <input
           name="numberPlate"
           id="numberPlate"
+          class="form-group"
           type="text"
           pattern="[A-Z]{2}[0-9]{5}"
           title="Please follow Danish number plate structure"
           v-model="inputNumberplate"
         />
-        <button @click="getPlateInput">Search for car</button>
+        <!-- <button class="btn btn-primary" @click="getPlateInput">Search for car</button> -->
 
         <p id="searchStatus">{{ response }}</p>
 
@@ -125,12 +126,12 @@ export default {
   watch: {
     inputNumberplate(newNumber) {
       // When manual input of numberplate changes
-      // console.log(newNumber, oldNumber);
       this.inputNumberplate = this.inputNumberplate.toUpperCase();
 
       if (this.numberPlatePattern.test(newNumber) === true) {
-        // this.getPlateInput();
-        this.numberPlateLookup(newNumber);
+        this.response = this.numberPlateLookup(newNumber);
+        this.carModel = this.response['model']
+        this.carBrand = this.response['brand']
       } else {
         console.log("NOT RIGHT PATTERN");
       }

@@ -6,28 +6,28 @@
 
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
-        <form
-          id="userAccountSetupForm"
-          name="userAccountSetupForm"
-          enctype="multipart/form-data"
-          method="POST"
-        >
+        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal">Choose an area</h2>
             <!-- Step 1 input fields -->
             <p>[SHOW MAP HERE]</p>
             <div class="form-floating mt-3">
-              <input type="text" class="form-control" id="areaInput" placeholder="Area" />
+              <select v-model="form.selectedArea" class="form-control" id="areaInput">
+                <option v-for="area in areas" :value="area" :key="area">
+                  {{ area.areaName }} - {{ area.address }}
+                </option>
+              </select>
+              <!-- CARL SKAL BESLUTTE SIG -->
+              <h5 class="text-danger">Carl skal vælge Radio buttons eller dropdown</h5>
+              <div v-for="area in areas" :value="area" :key="area">
+                <input type="radio" v-model="form.selectedArea" name="areaInput"> {{ area.areaName }} {{ area.address }}
+             </div>
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="2"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+                @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -38,24 +38,20 @@
             <h2 class="font-normal">Choose car</h2>
             <!-- Step 2 input fields -->
             <div class="form-floating mt-3">
-              <input type="text" class="form-control" id="carInput" placeholder="Car" />
+              <select v-model="form.selectedCar" class="form-control" id="carInput">
+                <option v-for="car in registeredCars" :value="car" :key="car">
+                  {{ car.brand }} {{ car.model }} - {{ car.licenseplate }}
+                </option>
+              </select>
               <label for="carInput">Choose a car...</label>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="1"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="1"
+                @click="navigateToFormStep">
                 Prev
               </button>
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="3"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
+                @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -69,12 +65,8 @@
               <p>[SHOW DIAL HERE]</p>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="2"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+                @click="navigateToFormStep">
                 Prev
               </button>
               <button class="button btn submit-btn" type="submit">Save</button>
@@ -86,8 +78,8 @@
         <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0 mt-4">
           <!-- Step 1 -->
           <li class="form-stepper-active text-center form-stepper-list" step="1">
-            <a class="mx-2">
-              <span class="form-stepper-circle">
+            <a class="mx-2" step_number="1">
+              <span class="form-stepper-circle" step_number="1">
                 <span>1</span>
               </span>
               <div class="label">Choose an area</div>
@@ -96,7 +88,7 @@
           <!-- Step 2 -->
           <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
             <a class="mx-2">
-              <span class="form-stepper-circle text-muted">
+              <span class="form-stepper-circle text-muted" step_number="2">
                 <span>2</span>
               </span>
               <div class="label text-muted">Choose a car</div>
@@ -105,7 +97,7 @@
           <!-- Step 3 -->
           <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
             <a class="mx-2">
-              <span class="form-stepper-circle text-muted">
+              <span class="form-stepper-circle text-muted" step_number="3">
                 <span>3</span>
               </span>
               <div class="label text-muted">Set time</div>
@@ -118,81 +110,64 @@
 </template>
 
 <script>
-/**
- * Select all form navigation buttons, and loop through them.
- */
-document.querySelectorAll(".btn-navigate-form-step").forEach((formNavigationBtn) => {
-  /**
-   * Add a click event listener to the button.
-   */
-  formNavigationBtn.addEventListener("click", () => {
-    /**
-     * Get the value of the step.
-     */
-    // const stepNumber = parseInt(formNavigationBtn.getAttribute("step_number"));
-    /**
-     * Call the function to navigate to the target form step.
-     */
-    // navigateToFormStep(stepNumber);
+import axios from "axios";
+
+document.querySelectorAll(".form-stepper-list a .form-stepper-circle").forEach((circle) => {
+  circle.addEventListener("click", () => {
+    console.log(circle);
+    let classList = circle.parentElement.parentElement.classList;
+    console.log(classList);
+
+    if (classList.contains('form-stepper-active') !== true && classList.contains('form-stepper-unfinished') !== true) {
+      const circleNumber = circle.getAttribute("step_number")
+      console.log('CHANGING TO: ' + circleNumber);
+      this.navigateToFormStep(circleNumber);
+    }
   });
 });
 
 export default {
+  data() {
+    return {
+      form: {
+        selectedCar: "",
+        selectedArea: ""
+      },
+      registeredCars: [],
+      areas: []
+    }
+  },
   methods: {
     getNumberPlate(plateNumber) {
+      // Python image recognition call
       console.log(plateNumber);
     },
     navigateToFormStep(stepNumber) {
-      /**
-       * Hide all form steps.
-       */
-      console.log(stepNumber);
-      stepNumber = stepNumber.target.attributes.step_number.value;
+      stepNumber = stepNumber.target.attributes.step_number.value; // Get target step value
 
       document.querySelectorAll(".form-step").forEach((formStepElement) => {
         formStepElement.classList.add("d-none");
       });
-      /**
-       * Mark all form steps as unfinished.
-       */
+
+      // Make all steps unfinished
       document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
         formStepHeader.classList.add("form-stepper-unfinished");
         formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
       });
-      /**
-       * Show the current form step (as passed to the function).
-       */
+
       document.querySelector("#step-" + stepNumber).classList.remove("d-none");
-      /**
-       * Select the form step circle (progress bar).
-       */
       const formStepCircle = document.querySelector('li[step="' + stepNumber + '"]');
-      /**
-       * Mark the current form step as active.
-       */
+      // Make current form step active
       formStepCircle.classList.remove(
         "form-stepper-unfinished",
         "form-stepper-completed"
       );
       formStepCircle.classList.add("form-stepper-active");
-      /**
-       * Loop through each form step circles.
-       * This loop will continue up to the current step number.
-       * Example: If the current step is 3,
-       * then the loop will perform operations for step 1 and 2.
-       */
+      // Loop through form step circles up to the current step
       for (let index = 0; index < stepNumber; index++) {
-        /**
-         * Select the form step circle (progress bar).
-         */
         const formStepCircle = document.querySelector('li[step="' + index + '"]');
-        /**
-         * Check if the element exist. If yes, then proceed.
-         */
         if (formStepCircle) {
-          /**
-           * Mark the form step as completed.
-           */
+          // Mark old step as completed
           formStepCircle.classList.remove(
             "form-stepper-unfinished",
             "form-stepper-active"
@@ -202,7 +177,32 @@ export default {
       }
     },
   },
+  mounted() {
+    axios
+      .get(this.$store.state.api + "/userLicenseplates/", {
+        params: {
+          userId: 1,
+        },
+      })
+      .then((response) => {
+        this.registeredCars = response.data;
+      })
+      .catch((error) => {
+        console.warn("userLicenseplates", error);
+      });
+      
+    axios
+      .get(this.$store.state.api + "/areas/")
+      .then((response) => {
+        this.areas = response.data;
+        console.log(this.areas)
+      })
+      .catch((error) => {
+        console.warn("areas", error);
+      });
+  },
 };
+
 </script>
 
 <style scoped>
@@ -292,14 +292,14 @@ ul.form-stepper .form-stepper-circle span {
   justify-content: space-between;
 }
 
-ul.form-stepper > li:not(:last-of-type) {
+ul.form-stepper>li:not(:last-of-type) {
   margin-bottom: 0.625rem;
   -webkit-transition: margin-bottom 0.4s;
   -o-transition: margin-bottom 0.4s;
   transition: margin-bottom 0.4s;
 }
 
-.form-stepper-horizontal > li:not(:last-of-type) {
+.form-stepper-horizontal>li:not(:last-of-type) {
   margin-bottom: 0 !important;
 }
 

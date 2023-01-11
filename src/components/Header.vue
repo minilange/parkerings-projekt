@@ -1,7 +1,7 @@
 <template>
   <!-- <div id="navbarShadow" class="navbar-gradient-shadow navbar-top"></div> -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-top">
-    <div class="container-fluid">
+    <div class="container-fluid container">
       <router-link class="navbar-brand d-lg-none fw-bold text-white" to="/login">Login</router-link>
       <router-link class="navbar-brand fw-bold text-white" to="/">
         <!-- EASIER<span class="text-secondary fw-bold">PARK</span> -->

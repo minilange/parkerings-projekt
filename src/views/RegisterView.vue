@@ -127,7 +127,7 @@ export default {
         email: "",
         password: "",
         phone: "",
-        ccCode: "",
+        ccCode: {},
         repeatPassword: "",
       },
       cc_codes: json.sort(this.compareDialCode),
@@ -142,15 +142,9 @@ export default {
       );
     },
     registerUser: function () {
+      this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: this.form.password, ccCode: this.form.ccCode.code}
       axios
-        .post(this.$store.state.api + "/register/", {
-            firstname: this.form.firstname,
-            lastname: this.form.lastname,
-            email: this.form.email,
-            password: this.form.password,
-            phone: this.form.phone,
-            ccCode: this.form.ccCode.code
-        })
+        .post(this.$store.state.api + "/register/", this.form.apiSend)
         .then((response) => {
           console.log(response);
         })

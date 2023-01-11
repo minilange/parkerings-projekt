@@ -13,10 +13,10 @@
       </div>
       <div class="col-lg-5 mt-5 action-prompt">
         <div class="mx-auto row h-100">
-          <div class="row d-flex justify-content-center">
+          <div class="row d-flex justify-content-center text-center">
             <h3>Welcome!</h3>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium iste voluptate laborum illo! Nihil architecto saepe sit earum officia harum tempora, praesentium inventore nostrum amet quis? Similique itaque sunt illo?</p>
-            <p>[PARKING INFO?]</p>
+            <p>EasierPark makes it <b>easy</b> to park. Just register a car, and get started with your first parking 👋</p>
+            <!-- <p>[PARKING INFO?]</p> -->
           </div>
           
           <div class="col-xl-12 d-flex justify-content-around front-actions mt-auto">
