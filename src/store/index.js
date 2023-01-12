@@ -18,7 +18,8 @@ export default new Vuex.Store({
     carInfo: {},
     admin: {},
     api: "https://parking-project-api.azurewebsites.net/api",
-    user: {}
+    user: {},
+    secret: "Th1s1s4S3cr3t"
   },
   getters: {
     getCarInfo: (state) => state.carInfo,

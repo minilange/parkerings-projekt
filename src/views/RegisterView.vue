@@ -117,6 +117,7 @@ span {
 <script>
 import json from "@/assets/CountryCodes.json";
 import axios from "axios";
+import SHA256 from "crypto-js/sha256"
 
 export default {
   data() {
@@ -142,7 +143,7 @@ export default {
       );
     },
     registerUser: function () {
-      this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: this.form.password, ccCode: this.form.ccCode.code}
+      this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: SHA256(this.form.password, this.$store.state.secret).toString(), ccCode: this.form.ccCode.code}
       axios
         .post(this.$store.state.api + "/register/", this.form.apiSend)
         .then((response) => {
