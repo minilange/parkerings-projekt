@@ -6,7 +6,12 @@
 
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
-        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+        <form
+          id="userAccountSetupForm"
+          name="userAccountSetupForm"
+          enctype="multipart/form-data"
+          method="POST"
+        >
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal">Choose an area</h2>
@@ -21,13 +26,18 @@
               <!-- CARL SKAL BESLUTTE SIG -->
               <h5 class="text-danger">Carl skal vælge Radio buttons eller dropdown</h5>
               <div v-for="area in areas" :value="area" :key="area">
-                <input type="radio" v-model="form.selectedArea" name="areaInput"> {{ area.areaName }} {{ area.address }}
-             </div>
+                <input type="radio" v-model="form.selectedArea" name="areaInput" />
+                {{ area.areaName }} {{ area.address }}
+              </div>
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-                @click="navigateToFormStep">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
                 Next
               </button>
             </div>
@@ -46,12 +56,20 @@
               <label for="carInput">Choose a car...</label>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="1"
-                @click="navigateToFormStep">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="1"
+                @click="navigateToFormStep"
+              >
                 Prev
               </button>
-              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
-                @click="navigateToFormStep">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="3"
+                @click="navigateToFormStep"
+              >
                 Next
               </button>
             </div>
@@ -65,8 +83,12 @@
               <p>[SHOW DIAL HERE]</p>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-                @click="navigateToFormStep">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
                 Prev
               </button>
               <button class="button btn submit-btn" type="submit">Save</button>
@@ -112,30 +134,35 @@
 <script>
 import axios from "axios";
 
-document.querySelectorAll(".form-stepper-list a .form-stepper-circle").forEach((circle) => {
-  circle.addEventListener("click", () => {
-    console.log(circle);
-    let classList = circle.parentElement.parentElement.classList;
-    console.log(classList);
+document
+  .querySelectorAll(".form-stepper-list a .form-stepper-circle")
+  .forEach((circle) => {
+    circle.addEventListener("click", () => {
+      console.log(circle);
+      let classList = circle.parentElement.parentElement.classList;
+      console.log(classList);
 
-    if (classList.contains('form-stepper-active') !== true && classList.contains('form-stepper-unfinished') !== true) {
-      const circleNumber = circle.getAttribute("step_number")
-      console.log('CHANGING TO: ' + circleNumber);
-      this.navigateToFormStep(circleNumber);
-    }
+      if (
+        classList.contains("form-stepper-active") !== true &&
+        classList.contains("form-stepper-unfinished") !== true
+      ) {
+        const circleNumber = circle.getAttribute("step_number");
+        console.log("CHANGING TO: " + circleNumber);
+        this.navigateToFormStep(circleNumber);
+      }
+    });
   });
-});
 
 export default {
   data() {
     return {
       form: {
         selectedCar: "",
-        selectedArea: ""
+        selectedArea: "",
       },
       registeredCars: [],
-      areas: []
-    }
+      areas: [],
+    };
   },
   methods: {
     getNumberPlate(plateNumber) {
@@ -190,19 +217,18 @@ export default {
       .catch((error) => {
         console.warn("userLicenseplates", error);
       });
-      
+
     axios
       .get(this.$store.state.api + "/areas/")
       .then((response) => {
         this.areas = response.data;
-        console.log(this.areas)
+        console.log(this.areas);
       })
       .catch((error) => {
         console.warn("areas", error);
       });
   },
 };
-
 </script>
 
 <style scoped>
@@ -292,14 +318,14 @@ ul.form-stepper .form-stepper-circle span {
   justify-content: space-between;
 }
 
-ul.form-stepper>li:not(:last-of-type) {
+ul.form-stepper > li:not(:last-of-type) {
   margin-bottom: 0.625rem;
   -webkit-transition: margin-bottom 0.4s;
   -o-transition: margin-bottom 0.4s;
   transition: margin-bottom 0.4s;
 }
 
-.form-stepper-horizontal>li:not(:last-of-type) {
+.form-stepper-horizontal > li:not(:last-of-type) {
   margin-bottom: 0 !important;
 }
 
@@ -361,10 +387,10 @@ ul.form-stepper li a .form-stepper-circle {
   color: black !important;
 }
 
-.form-stepper .form-stepper-active .form-stepper-circle:hover {
+/* .form-stepper .form-stepper-active .form-stepper-circle:hover {
   background-color: black !important;
   color: #fff !important;
-}
+} */
 
 .form-stepper .form-stepper-unfinished .form-stepper-circle {
   background-color: #f8f7ff;
@@ -380,10 +406,10 @@ ul.form-stepper li a .form-stepper-circle {
   color: #5e5e5e !important;
 }
 
-.form-stepper .form-stepper-completed .form-stepper-circle:hover {
+/* .form-stepper .form-stepper-completed .form-stepper-circle:hover {
   background-color: black !important;
   color: #fff !important;
-}
+} */
 
 .form-stepper .form-stepper-active span.text-muted {
   color: #fff !important;

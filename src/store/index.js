@@ -3,7 +3,6 @@ import axios from "axios"
 
 axios.interceptors.request.use(function (config) {
   // Do something before request is sent
-  console.log('axioes interceptor')
   console.log(config)
   return config;
 }, function (error) {
