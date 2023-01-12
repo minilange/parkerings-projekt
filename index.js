@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 8080
 
 const app = express();
 
-// enable cors :D
+// enable cors 
 
 app.use(cors());
 

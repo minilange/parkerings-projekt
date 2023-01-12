@@ -17,11 +17,13 @@ export default new Vuex.Store({
   state: {
     carInfo: {},
     admin: {},
-    api: "https://parking-project-api.azurewebsites.net/api"
+    api: "https://parking-project-api.azurewebsites.net/api",
+    user: {}
   },
   getters: {
     getCarInfo: (state) => state.carInfo,
-    getAdminInfo: (state) => state.carInfo
+    getAdminInfo: (state) => state.admin,
+    getUserInfo: (state) => state.user,
   },
   mutations: {
     SET_CAR(state, carInfo) {
@@ -29,12 +31,15 @@ export default new Vuex.Store({
     },
     SET_ADMIN_INFO(state, payload) {
       state.admin[payload.key] = payload.data
+    },
+    SET_USER_INFO(state, payload) {
+      state.admin[payload.key] = payload.data
     }
   },
   actions: {
     async numberPlateLookup(state, numberPlate) {
       try {
-        // Call PHP backend
+        // Call Python backend
         console.log(numberPlate);
         await axios.get(state.api + "/numberPlateLookup")
         .then((response) => {
@@ -79,7 +84,18 @@ export default new Vuex.Store({
       }).catch((error) => {
         console.log(error)
       })
-
+    },
+    async getParkings() {
+      // INCLUDE USERID?
+      console.log('getParkings');
+    //   await axios.get(this.state.api + "/parkings/")
+    //   .then((response) => {
+    //     console.log(response)
+    //     this.commit('SET_ADMIN_INFO', {"data": response.data, "key": 'parkings'})
+    //     return response.data
+    //   }).catch((error) => {
+    //     console.log(error)
+    //   })
     },
     
   },

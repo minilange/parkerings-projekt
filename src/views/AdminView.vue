@@ -1,12 +1,9 @@
 <template>
   <div class="container p-5">
-    <div class="row action-prompt" style="height: 100%;">
+    <div class="row action-prompt" style="height: 100%">
       <div class="col-lg-12">
         <div class="card mb-4 profile">
           <div class="card-body text-center">
-
-
-
             <h5 class="mb-0">Parkings</h5>
             <table class="table">
               <thead>
@@ -50,7 +47,8 @@
                   <td>{{ car.brand }}</td>
                   <td>{{ car.model }}</td>
                   <td>[CAR YEAR]</td>
-                  <td>{{ car.type }}
+                  <td>
+                    {{ car.type }}
                     <!-- <img :src="require(`../assets/carTypes/${carTypes[car.type]}`)" style="float: right" height="22"
                       width="50" alt="" /> -->
                   </td>
@@ -106,7 +104,9 @@
                     <td>{{ area.latitude }}</td>
                     <td>{{ area.longitude }}</td>
                     <td>
-                      <button class="btn btn-primary">EDIT  <font-awesome-icon icon="fas fa-edit" /></button>
+                      <button class="btn btn-primary">
+                        EDIT <font-awesome-icon icon="fas fa-edit" />
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -123,17 +123,17 @@
 export default {
   data() {
     return {
-      "cars": [],
-      "users": [],
-      "parkings": [],
-      "selected": {},
+      cars: [],
+      users: [],
+      parkings: [],
+      selected: {},
     };
   },
   watch: {},
   mounted() {
-    this.cars = this.$store.dispatch('getCars');
-    this.areas = this.$store.dispatch('getAreas')
-
+    this.cars = this.$store.dispatch("getCars");
+    this.areas = this.$store.dispatch("getAreas");
+    this.parkings = this.$store.dispatch("getParkings");
   },
 };
 </script>

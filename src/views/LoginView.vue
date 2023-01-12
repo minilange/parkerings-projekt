@@ -12,8 +12,8 @@
           <input v-model="form.password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
           <label for="floatingPassword">Password</label>
         </div>
-        <button v-on:click="loginUser()" class=" btn-transparent btn btn-dark">Login</button>
       </form>
+      <button v-on:click="loginUser()" class=" btn-transparent btn btn-dark">Login</button>
       <router-link class="text-center nav-link text-white" to="/register"><span>Need an account?</span></router-link>
     </div>
   </div>
@@ -48,9 +48,10 @@ export default {
   },
   methods:{
     loginUser: function() {
-      axios.get( 'app/login', {
+      axios.get(this.$store.state.api + '/login/', {
         params: {
-          login: this.form
+          email: this.form.email,
+          password: this.form.password
         }
       })
       .then( response => {

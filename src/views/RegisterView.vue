@@ -88,10 +88,10 @@
         <h5 class="text-danger" v-if="form.password != form.repeatPassword">
           Passwords doesn't match!
         </h5>
-        <button v-on:click="registerUser()" :disabled="form.password != form.repeatPassword" class="btn-transparent btn btn-dark">
-          Register
-        </button>
       </form>
+      <button v-on:click="registerUser()" :disabled="form.password != form.repeatPassword" class="btn-transparent btn btn-dark">
+        Register
+      </button>
       <router-link class="text-center nav-link text-white" to="/login"
         ><span>Already have an account?</span></router-link
       >
