@@ -90,7 +90,7 @@ def login():
     if not all(arg in required for arg in args):
         return Response("", ResponseCodes.inv_syntax.value)
 
-    user = select("SELECT [passowrd] from users WHERE email='{email}'".format(
+    user = select("SELECT [password] from users WHERE email='{email}'".format(
         email=args.get("email")
     ))
 
@@ -100,10 +100,10 @@ def login():
     if len(user) != 1:
         return Response("", ResponseCodes.no_email.value)
 
-    password = user[0]
+    password = user[0][0]
 
     if hash_password(args.get("password")) != password:
-        return Response("", ResponseCodes.inv_pwd)
+        return Response("", ResponseCodes.inv_pwd.value)
 
     user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
