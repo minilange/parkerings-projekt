@@ -36,6 +36,8 @@
 
 <script>
 import axios from 'axios'
+// import CryptoJS from "crypto-js"
+import SHA256 from 'crypto-js/sha256';
 
 export default {
   data() {
@@ -51,7 +53,7 @@ export default {
       axios.get(this.$store.state.api + '/login/', {
         params: {
           email: this.form.email,
-          password: this.form.password
+          password: SHA256(this.form.password, this.$store.state.secret).toString()
         }
       })
       .then( response => {
