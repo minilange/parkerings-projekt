@@ -1,7 +1,10 @@
+re
+cv2
+numpy
 flask
-flask-cors
 pyodbc
-sqlalchemy
-gunicorn
-easyocr
 imutils
+easyocr
+gunicorn
+sqlalchemy
+flask-cors
