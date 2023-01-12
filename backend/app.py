@@ -11,8 +11,9 @@ from hashlib import sha512
 from flask import Flask, request, Response
 from flask_cors import CORS
 from sqlalchemy import create_engine
+from werkzeug.datastructures import MultiDict
 
-app = Flask(__name__)
+app = Flask(__name__, )
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -42,8 +43,7 @@ def register():
                 ResponseCode: HTTP code to describe finish state
 
     """
-
-    args = request.args
+    args = MultiDict(request.get_json())
 
     required = ["firstname", "lastname",
                 "email", "password", "phone", "ccCode"]
@@ -58,7 +58,7 @@ def register():
         email=args.get("email"),
         encrypted=hash_password(args.get("password")),
         phone=args.get("phone"),
-        country=args.get("ccCode")
+        ccCode=args.get("ccCode")
     ))
 
     return Response("", state.value)
@@ -95,7 +95,7 @@ def login():
     if not all(arg in required for arg in args):
         return Response("", ResponseCodes.inv_syntax.value)
 
-    user = select("SELECT [passowrd] from users WHERE email='{email}'".format(
+    user = select("SELECT [password] from users WHERE email='{email}'".format(
         email=args.get("email")
     ))
 
@@ -103,14 +103,14 @@ def login():
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("", ResponseCodes.no_email.value)
+        return Response("No user linked to email", ResponseCodes.no_email.value)
 
-    password = user[0]
+    password = user[0][0]
 
     if hash_password(args.get("password")) != password:
-        return Response("", ResponseCodes.inv_pwd)
+        return Response("Invalid password", ResponseCodes.inv_pwd.value)
 
-    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
+    user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
@@ -122,7 +122,9 @@ def login():
         return Response("", ResponseCodes.inv_pwd.value)
 
     formatted = format_result(
-        user, ["firstname", "lastname", "email", "phone", "ccCode"])
+        user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])
+
+    print(formatted)
 
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
@@ -165,7 +167,7 @@ def areas():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
@@ -229,7 +231,7 @@ def reg_licenseplates():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
@@ -290,9 +292,10 @@ def user_licenseplate():
                     Successful: licenseplate_data
 
     """
-    args = request.args
 
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["userId", "licenseplate"]
 
@@ -307,6 +310,7 @@ def user_licenseplate():
         return Response("", state.value)
 
     else:
+        args = request.args
 
         required = ["userId"]
 
@@ -368,9 +372,9 @@ def parkings():
                     Successful: parking_data
     """
 
-    args = request.args
-
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
@@ -390,6 +394,8 @@ def parkings():
         return Response("", state.value)
 
     else:
+        args = request.args
+
         required = ["userId"]
 
         if not all(arg in required for arg in args):
@@ -481,17 +487,17 @@ def insert(query: str):
     """
 
     if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax.value
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
     try:
         with db_engine.begin() as conn:
             conn.exec_driver_sql(query)
     except Exception as e:
-        print(e)
-        return ResponseCodes.failed_query.value
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
 
-    return ResponseCodes.success.value
+    return ResponseCodes.success
 
 
 def select(query: str):
@@ -502,7 +508,7 @@ def select(query: str):
             List: Fetched result from db
     """
     if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
-        return ResponseCodes.inv_syntax.value
+        return ResponseCodes.inv_syntax
 
     db_engine = connect()
 
@@ -592,7 +598,7 @@ def is_convertable(key: str, val: str, data_type):
             bool: Whether or not the value is convertable
     """
     try:
-        if key in ["phone", "ccCode"]:
+        if key in ["phone"] and data_type != str:
             return False
 
         data_type(str(val))
@@ -643,3 +649,6 @@ class ResponseCodes(Enum):
 
 # def main(a, b):
     # app.run()
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=5000)
