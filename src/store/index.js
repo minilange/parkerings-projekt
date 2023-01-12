@@ -43,15 +43,15 @@ export default new Vuex.Store({
         // Call Python backend
         console.log(numberPlate);
         await axios.get(state.api + "/numberPlateLookup")
-        .then((response) => {
-          console.log(response)
-          return response;
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-        
-        
+          .then((response) => {
+            console.log(response)
+            return response;
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+
+
       } catch (error) {
         console.log('numberPlateLookup: ' + error)
       }
@@ -66,38 +66,38 @@ export default new Vuex.Store({
     async getCars() {
       console.log('** ' + this.state.api);
       await axios.get(this.state.api + "/regLicenseplates/")
-      .then((response) => {
-        console.log(response)
-        this.commit('SET_ADMIN_INFO', {"data": response.data, "key": 'cars'})
-        return response.data
-      }).catch((error) => {
-        console.log(error)
-      })
+        .then((response) => {
+          console.log(response)
+          this.commit('SET_ADMIN_INFO', { "data": response.data, "key": 'cars' })
+          return response.data
+        }).catch((error) => {
+          console.log(error)
+        })
 
     },
     async getAreas() {
       console.log('** ' + this.state.api);
       await axios.get(this.state.api + "/areas/")
-      .then((response) => {
-        console.log(response)
-        this.commit('SET_ADMIN_INFO', {"data": response.data, "key": 'areas'})
-        return response.data
-      }).catch((error) => {
-        console.log(error)
-      })
+        .then((response) => {
+          console.log(response)
+          this.commit('SET_ADMIN_INFO', { "data": response.data, "key": 'areas' })
+          return response.data
+        }).catch((error) => {
+          console.log(error)
+        })
     },
     async getParkings() {
       // INCLUDE USERID?
       console.log('getParkings');
-    //   await axios.get(this.state.api + "/parkings/")
-    //   .then((response) => {
-    //     console.log(response)
-    //     this.commit('SET_ADMIN_INFO', {"data": response.data, "key": 'parkings'})
-    //     return response.data
-    //   }).catch((error) => {
-    //     console.log(error)
-    //   })
+      //   await axios.get(this.state.api + "/parkings/")
+      //   .then((response) => {
+      //     console.log(response)
+      //     this.commit('SET_ADMIN_INFO', {"data": response.data, "key": 'parkings'})
+      //     return response.data
+      //   }).catch((error) => {
+      //     console.log(error)
+      //   })
     },
-    
+
   },
 })

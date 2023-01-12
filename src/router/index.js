@@ -10,6 +10,7 @@ import RegisterView from '../views/RegisterView.vue'
 import CarRegisterView from '../views/CarRegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import AdminView from '../views/AdminView.vue'
+import store from '../store/index.js'
 
 const routes = [
   {
@@ -55,7 +56,7 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component: ProfileView
+    component: ProfileView,
   },
   {
     path: '/admin',

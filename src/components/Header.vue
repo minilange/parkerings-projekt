@@ -2,7 +2,9 @@
   <!-- <div id="navbarShadow" class="navbar-gradient-shadow navbar-top"></div> -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-top">
     <div class="container-fluid container">
-      <router-link class="navbar-brand d-lg-none fw-bold text-white" to="/login">Login</router-link>
+      <div v-if="!this.$store.state.user.hasOwnProperty('userId')">
+        <router-link class="navbar-brand d-lg-none fw-bold text-white" to="/login">Login</router-link>
+      </div>
       <router-link class="navbar-brand fw-bold text-white" to="/">
         <!-- EASIER<span class="text-secondary fw-bold">PARK</span> -->
         <img src="../assets/easierpark-logo.png" height="25" />
@@ -12,13 +14,15 @@
       </button>
       <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
         <div class="navbar-nav ms-auto gap-lg-5 fw-bold">
-          <router-link class="nav-item nav-link text-white d-none d-lg-block"
-            to="/login"><span>LOGIN</span></router-link>
+          <div v-if="!this.$store.state.user.hasOwnProperty('userId')">
+            <router-link class="nav-item nav-link text-white d-none d-lg-block" to="/login"><span>LOGIN</span></router-link>
+          </div>
           <router-link class="nav-item nav-link text-white" to="/park"><span>PARK</span></router-link>
           <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link>
           <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
-          <!-- IF LOGGED IN -->
-          <router-link class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
+          <div v-if="this.$store.state.user.hasOwnProperty('userId')">
+            <router-link class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
+          </div>
         </div>
       </div>
     </div>

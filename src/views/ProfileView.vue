@@ -10,7 +10,7 @@
               class="rounded-circle img-fluid"
               style="width: 154px"
             />
-            <h5 class="my-2">[Name]</h5>
+            <h5 class="my-2">{{ this.$store.state.user.firstname }} {{ this.$store.state.user.lastname }}</h5>
           </div>
         </div>
         <div class="card mb-4 mb-lg-0 registered-cars">
@@ -51,7 +51,7 @@
                 <p class="mb-0">First Name:</p>
               </div>
               <div class="col-sm-9">
-                <p class="mb-0">{{ user.firstname }}</p>
+                <p class="mb-0">{{ this.$store.state.user.firstname }}</p>
               </div>
             </div>
             <hr />
@@ -60,7 +60,7 @@
                 <p class="mb-0">Last Name:</p>
               </div>
               <div class="col-sm-9">
-                <p class="mb-0">{{ user.lastname }}</p>
+                <p class="mb-0">{{ this.$store.state.user.lastname }}</p>
               </div>
             </div>
             <hr />
@@ -69,7 +69,7 @@
                 <p class="mb-0">Email:</p>
               </div>
               <div class="col-sm-9">
-                <p class="mb-0">{{ user.email }}</p>
+                <p class="mb-0">{{ this.$store.state.user.email }}</p>
               </div>
             </div>
             <hr />
@@ -78,7 +78,7 @@
                 <p class="mb-0">Mobil:</p>
               </div>
               <div class="col-sm-9">
-                <p class="mb-0">{{ user.mobile }}</p>
+                <p class="mb-0">{{ this.$store.state.user.phone }}</p>
               </div>
             </div>
           </div>
@@ -133,13 +133,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      user: {
-        firstname: "",
-        lastname: "",
-        email: "",
-        mobile: "",
-        address: "",
-      },
       registeredCars: [],
       latestParking: {
         date: "",
@@ -166,7 +159,7 @@ export default {
     axios
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
-          userId: 1,
+          userId: this.$store.state.user.userId,
         },
       })
       .then((response) => {
