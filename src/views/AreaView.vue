@@ -19,7 +19,7 @@ export default {
 
        // add tile layers
       leaflet
-        .tileLayer(  // add vores api :=(
+        .tileLayer(  // add vores api
           `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${process.env.VUE_APP_API_KEY}`,
           {
             maxZoom: 18,

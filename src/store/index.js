@@ -33,8 +33,8 @@ export default new Vuex.Store({
     SET_ADMIN_INFO(state, payload) {
       state.admin[payload.key] = payload.data
     },
-    SET_USER_INFO(state, payload) {
-      state.admin[payload.key] = payload.data
+    SET_USER_INFO(state, userInfo) {
+      state.user = userInfo
     }
   },
   actions: {
