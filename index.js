@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -13,8 +13,11 @@ const app = express();
 app.use(cors());
 
 // geo routes 
-app.get('/api/search', (req, res) => {
+app.get('/api/search/:query', (req, res) => {
+    try {
+        
+    }
     res.json({ succes: 'true' });
 })
 
-app.listen(PORT, () => console.log(`app has started on port: ${PORT}`));
+app.listen(PORT, () => console.log(`app has started on port: ${PORT}`)); */
