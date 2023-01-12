@@ -98,14 +98,14 @@ def login():
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("", ResponseCodes.no_email.value)
+        return Response("No user linked to email", ResponseCodes.no_email.value)
 
     password = user[0][0]
 
     if hash_password(args.get("password")) != password:
-        return Response("", ResponseCodes.inv_pwd.value)
+        return Response("Invalid password", ResponseCodes.inv_pwd.value)
 
-    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
+    user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
@@ -117,7 +117,9 @@ def login():
         return Response("", ResponseCodes.inv_pwd.value)
 
     formatted = format_result(
-        user, ["firstname", "lastname", "email", "phone", "ccCode"])
+        user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])
+
+    print(formatted)
 
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
@@ -423,7 +425,7 @@ def insert(query: str):
         with db_engine.begin() as conn:
             conn.exec_driver_sql(query)
     except Exception as e:
-        print(e)
+        print(f"This is the exception {e}")
         return ResponseCodes.failed_query
 
     return ResponseCodes.success
@@ -527,7 +529,7 @@ def is_convertable(key: str, val: str, data_type):
             bool: Whether or not the value is convertable
     """
     try:
-        if key in ["phone", "ccCode"]:
+        if key in ["phone"] and data_type != str:
             return False
 
         data_type(str(val))
