@@ -23,6 +23,7 @@ hash_key = "parking_project"
 def default():
     return json.dumps("This is the default page")
 
+
 @app.route("/api/register/", methods=["POST"])
 def register():
     """
@@ -319,7 +320,7 @@ def user_licenseplate():
 
         if isinstance(licenseplates, ResponseCodes):
             return Response("", licenseplates.value)
-        
+
         formatted = format_result(
             licenseplates, ["licenseplate", "brand", "model", "type"])
 
@@ -397,7 +398,7 @@ def parkings():
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
         ))
-            
+
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
 
@@ -407,36 +408,51 @@ def parkings():
         return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
-@app.route("/api/detectLicenseplate/", methods=["POST"])
+@app.route("/api/detectLicenseplate/", methods=["GET"])
 def detect_licenseplate():
 
-    
+    # print("Called detect licenseplates")
 
-    image = None
-        
-    img  = cv2.imread(image)
+    filestr = request.files["file"]
+
+    # print(filestr.filename)
+
+    file_bytes = np.fromstring(filestr.read(), np.uint8)
+
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+    # image_file = f"./temp_licenseplates/{filestr.filename.split('.')[0]}.jpg"
+
+    # cv2.imwrite(image_file, raw)
+
+    # img = cv2.imread(image_file)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
     edged = cv2.Canny(bfilter, 30, 200)
-    
-    keypoints = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    keypoints = cv2.findContours(
+        edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(keypoints)
-    # contours = sorted(contours, key=lambda x: len(cv2.approxPolyDP(x, 10, True)))[:50]
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[:50]
 
     for contour in contours:
         approx = cv2.approxPolyDP(contour, 10, True)
 
         mask = np.zeros(gray.shape, np.uint8)
-        new_image = cv2.drawContours(mask, [approx], 0,255, -1)
-        new_image = cv2.bitwise_and(img, img, mask=mask)
+        cv2.drawContours(mask, [approx], 0,255, -1)
+        cv2.bitwise_and(img, img, mask=mask)
 
-        (x,y) = np.where(mask==255)
-        (x1, y1) = (np.min(x), np.min(y))
-        (x2, y2) = (np.max(x), np.max(y))
-        cropped_image = gray[x1:x2+1, y1:y2+1]
-
+        try:
+            (x,y) = np.where(mask==255)
+            (x1, y1) = (np.min(x), np.min(y))
+            (x2, y2) = (np.max(x), np.max(y))
+            cropped_image = gray[x1:x2+1, y1:y2+1]
+        except ValueError as e:
+            print(e)
+            continue
+        
+        # print("moved past")
         reader = easyocr.Reader(['en'])
         result = reader.readtext(cropped_image)
 
@@ -449,7 +465,11 @@ def detect_licenseplate():
     plate = result[-1][-2].replace(" ", "")
     regex = re.compile('[^a-zA-Z0-9]')
 
-    return regex.sub('', plate)
+    licenseplate = regex.sub('', plate)
+
+    # formatted = format_result((licenseplate,), ["licenseplate"])
+
+    return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value) 
 
 
 def insert(query: str):
@@ -534,7 +554,8 @@ def format_result(data: list[tuple], keys: list[str]):
 
     """
 
-    formatted = [{k: format_val(k, v) for k, v in zip(keys, row)} for row in data]
+    formatted = [{k: format_val(k, v)
+                  for k, v in zip(keys, row)} for row in data]
 
     return formatted
 
