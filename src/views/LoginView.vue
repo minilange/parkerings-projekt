@@ -71,8 +71,7 @@ export default {
           },
         })
         .then((response) => {
-          this.$store.commit("SET_USER_INFO", (response.data));
-          this.$router.push('/')
+          this.$store.commit("SET_USER_INFO", response.data);
         })
         .catch((error) => {
           console.warn("login", error);

@@ -104,18 +104,23 @@
                     <td>{{ area.latitude }}</td>
                     <td>{{ area.longitude }}</td>
                     <td>
-                      <button class="btn btn-primary">
+                      <!-- <button class="btn btn-primary" @click="editArea(area.areaId)">
                         EDIT <font-awesome-icon icon="fas fa-edit" />
-                      </button>
+                      </button> -->
+                      <Modal
+                        edit="true"
+                        :areaId="area.areaId"
+                        :name="area.areaName"
+                        :address="area.address"
+                        :latitude="area.latitude"
+                        :longitude="area.longitude"
+                      />
                     </td>
                   </tr>
 
                   <tr>
                     <td colspan="6" class="d-flex justify-content-center">
-                      <!-- <button class="btn btn-primary">
-                        ADD NEW <font-awesome-icon icon="fas fa-plus" />
-                      </button> -->
-                      <Modal />
+                      <Modal edit="false" />
                     </td>
                   </tr>
                 </tbody>

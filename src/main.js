@@ -19,4 +19,4 @@ library.add(faCar, faPlus, faEdit)
 
 let app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
-app.use(router).use(store).mount('#app')
+app.use(store).use(router).mount('#app')
