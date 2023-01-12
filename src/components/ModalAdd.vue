@@ -1,20 +1,29 @@
 <template>
   <!-- Button trigger modal -->
-  <MDBBtn color="primary" aria-controls="exampleModal" @click="exampleModal = true">
-    Launch demo modal
+  <MDBBtn color="primary" aria-controls="areaModal" @click="areaModal = true">
+    ADD NEW <font-awesome-icon icon="fas fa-plus" />
   </MDBBtn>
   <MDBModal
-    id="exampleModal"
+    id="areaModal"
     tabindex="-1"
     labelledby="exampleModalLabel"
-    v-model="exampleModal"
+    v-model="areaModal"
   >
     <MDBModalHeader>
       <MDBModalTitle id="exampleModalLabel"> Modal title </MDBModalTitle>
     </MDBModalHeader>
-    <MDBModalBody>...</MDBModalBody>
+    <MDBModalBody>
+      <div class="container">
+        <form>
+          <div class="form-floating mb-3">
+            <!-- <input v-model="form.email" type="email" class="form-control" id="floatingEmail" placeholder="name@gmail.com">
+          <label for="floatingEmail">Email address</label> -->
+          </div>
+        </form>
+      </div>
+    </MDBModalBody>
     <MDBModalFooter>
-      <MDBBtn color="secondary" @click="exampleModal = false">Close</MDBBtn>
+      <MDBBtn color="secondary" @click="areaModal = false">Close</MDBBtn>
       <MDBBtn color="primary">Save changes</MDBBtn>
     </MDBModalFooter>
   </MDBModal>
@@ -40,9 +49,9 @@ export default {
     MDBBtn,
   },
   setup() {
-    const exampleModal = ref(false);
+    const areaModal = ref(false);
     return {
-      exampleModal,
+      areaModal,
     };
   },
 };

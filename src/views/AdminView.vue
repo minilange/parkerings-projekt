@@ -5,7 +5,7 @@
         <div class="card mb-4 profile">
           <div class="card-body text-center">
             <h5 class="mb-0">Parkings</h5>
-            <table class="table">
+            <table class="table table-responsive">
               <thead>
                 <tr>
                   <th scope="col">Parking ID</th>
@@ -31,7 +31,7 @@
         <div class="card mb-4">
           <div class="card-body">
             <h5 class="mb-0">Registered cars</h5>
-            <table class="table">
+            <table class="table table-responsive">
               <thead>
                 <tr>
                   <th scope="col">Number plate</th>
@@ -85,7 +85,7 @@
               </table> -->
               <h5 class="mb-0">Areas</h5>
 
-              <table class="table">
+              <table class="table table-responsive">
                 <thead>
                   <tr>
                     <th scope="col">ID</th>
@@ -109,6 +109,15 @@
                       </button>
                     </td>
                   </tr>
+
+                  <tr>
+                    <td colspan="6" class="d-flex justify-content-center">
+                      <!-- <button class="btn btn-primary">
+                        ADD NEW <font-awesome-icon icon="fas fa-plus" />
+                      </button> -->
+                      <Modal />
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -120,6 +129,8 @@
 </template>
 
 <script>
+import Modal from "@/components/ModalAdd.vue";
+
 export default {
   data() {
     return {
@@ -130,6 +141,9 @@ export default {
     };
   },
   watch: {},
+  components: {
+    Modal,
+  },
   mounted() {
     this.cars = this.$store.dispatch("getCars");
     this.areas = this.$store.dispatch("getAreas");
