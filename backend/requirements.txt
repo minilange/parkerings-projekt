@@ -1,5 +1,3 @@
-re
-cv2
 numpy
 flask
 pyodbc
@@ -8,3 +6,4 @@ easyocr
 gunicorn
 sqlalchemy
 flask-cors
+opencv-python
