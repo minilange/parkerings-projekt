@@ -1,0 +1,431 @@
+<template>
+  <div class="container mt-5 mx-auto row">
+    <div class="col-lg-7 action-prompt m-auto">
+      <h3 class="text-center">NEW PARKING</h3>
+      <hr />
+
+      <div id="multi-step-form-container">
+        <!-- Step Wise Form Content -->
+        <form
+          id="userAccountSetupForm"
+          name="userAccountSetupForm"
+          enctype="multipart/form-data"
+          method="POST"
+        >
+          <!-- Step 1 Content -->
+          <section id="step-1" class="form-step">
+            <h2 class="font-normal">Choose an area</h2>
+            <!-- Step 1 input fields -->
+            <p>[SHOW MAP HERE]</p>
+            <div class="form-floating mt-3">
+              <select v-model="form.selectedArea" class="form-control" id="areaInput">
+                <option v-for="area in areas" :value="area" :key="area">
+                  {{ area.areaName }} - {{ area.address }}
+                </option>
+              </select>
+              <!-- CARL SKAL BESLUTTE SIG -->
+              <h5 class="text-danger">Carl skal vælge Radio buttons eller dropdown</h5>
+              <div v-for="area in areas" :value="area" :key="area">
+                <input type="radio" v-model="form.selectedArea" name="areaInput" />
+                {{ area.areaName }} {{ area.address }}
+              </div>
+              <label for="areaInput">Area</label>
+            </div>
+            <div class="mt-3 d-flex justify-content-end">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
+                Next
+              </button>
+            </div>
+          </section>
+
+          <!-- Step 2 Content, default hidden on page load. -->
+          <section id="step-2" class="form-step d-none">
+            <h2 class="font-normal">Choose car</h2>
+            <!-- Step 2 input fields -->
+            <div class="form-floating mt-3">
+              <select v-model="form.selectedCar" class="form-control" id="carInput">
+                <option v-for="car in registeredCars" :value="car" :key="car">
+                  {{ car.brand }} {{ car.model }} - {{ car.licenseplate }}
+                </option>
+              </select>
+              <label for="carInput">Choose a car...</label>
+            </div>
+            <div class="mt-3 d-flex justify-content-between">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="1"
+                @click="navigateToFormStep"
+              >
+                Prev
+              </button>
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="3"
+                @click="navigateToFormStep"
+              >
+                Next
+              </button>
+            </div>
+          </section>
+
+          <!-- Step 3 Content, default hidden on page load. -->
+          <section id="step-3" class="form-step d-none">
+            <h2 class="font-normal">Set time</h2>
+            <!-- Step 3 input fields -->
+            <div class="form-floating mt-3">
+              <p>[SHOW DIAL HERE]</p>
+            </div>
+            <div class="mt-3 d-flex justify-content-between">
+              <button
+                class="button btn btn-navigate-form-step"
+                type="button"
+                step_number="2"
+                @click="navigateToFormStep"
+              >
+                Prev
+              </button>
+              <button class="button btn submit-btn" type="submit">Save</button>
+            </div>
+          </section>
+        </form>
+
+        <!-- Form Steps / Progress Bar -->
+        <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0 mt-4">
+          <!-- Step 1 -->
+          <li class="form-stepper-active text-center form-stepper-list" step="1">
+            <a class="mx-2" step_number="1">
+              <span class="form-stepper-circle" step_number="1">
+                <span>1</span>
+              </span>
+              <div class="label">Choose an area</div>
+            </a>
+          </li>
+          <!-- Step 2 -->
+          <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
+            <a class="mx-2">
+              <span class="form-stepper-circle text-muted" step_number="2">
+                <span>2</span>
+              </span>
+              <div class="label text-muted">Choose a car</div>
+            </a>
+          </li>
+          <!-- Step 3 -->
+          <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
+            <a class="mx-2">
+              <span class="form-stepper-circle text-muted" step_number="3">
+                <span>3</span>
+              </span>
+              <div class="label text-muted">Set time</div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+document
+  .querySelectorAll(".form-stepper-list a .form-stepper-circle")
+  .forEach((circle) => {
+    circle.addEventListener("click", () => {
+      console.log(circle);
+      let classList = circle.parentElement.parentElement.classList;
+      console.log(classList);
+
+      if (
+        classList.contains("form-stepper-active") !== true &&
+        classList.contains("form-stepper-unfinished") !== true
+      ) {
+        const circleNumber = circle.getAttribute("step_number");
+        console.log("CHANGING TO: " + circleNumber);
+        this.navigateToFormStep(circleNumber);
+      }
+    });
+  });
+
+export default {
+  data() {
+    return {
+      form: {
+        selectedCar: "",
+        selectedArea: "",
+      },
+      registeredCars: [],
+      areas: [],
+    };
+  },
+  methods: {
+    getNumberPlate(plateNumber) {
+      // Python image recognition call
+      console.log(plateNumber);
+    },
+    navigateToFormStep(stepNumber) {
+      stepNumber = stepNumber.target.attributes.step_number.value; // Get target step value
+
+      document.querySelectorAll(".form-step").forEach((formStepElement) => {
+        formStepElement.classList.add("d-none");
+      });
+
+      // Make all steps unfinished
+      document.querySelectorAll(".form-stepper-list").forEach((formStepHeader) => {
+        formStepHeader.classList.add("form-stepper-unfinished");
+        formStepHeader.classList.remove("form-stepper-active", "form-stepper-completed");
+      });
+
+      document.querySelector("#step-" + stepNumber).classList.remove("d-none");
+      const formStepCircle = document.querySelector('li[step="' + stepNumber + '"]');
+      // Make current form step active
+      formStepCircle.classList.remove(
+        "form-stepper-unfinished",
+        "form-stepper-completed"
+      );
+      formStepCircle.classList.add("form-stepper-active");
+      // Loop through form step circles up to the current step
+      for (let index = 0; index < stepNumber; index++) {
+        const formStepCircle = document.querySelector('li[step="' + index + '"]');
+        if (formStepCircle) {
+          // Mark old step as completed
+          formStepCircle.classList.remove(
+            "form-stepper-unfinished",
+            "form-stepper-active"
+          );
+          formStepCircle.classList.add("form-stepper-completed");
+        }
+      }
+    },
+  },
+  mounted() {
+    axios
+      .get(this.$store.state.api + "/userLicenseplates/", {
+        params: {
+          userId: 1,
+        },
+      })
+      .then((response) => {
+        this.registeredCars = response.data;
+      })
+      .catch((error) => {
+        console.warn("userLicenseplates", error);
+      });
+
+    axios
+      .get(this.$store.state.api + "/areas/")
+      .then((response) => {
+        this.areas = response.data;
+        console.log(this.areas);
+      })
+      .catch((error) => {
+        console.warn("areas", error);
+      });
+  },
+};
+</script>
+
+<style scoped>
+h1 {
+  text-align: center;
+}
+
+h2 {
+  margin: 0;
+}
+
+#multi-step-form-container {
+  height: 85%;
+  border: 0;
+  margin-top: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pl-0 {
+  padding-left: 0;
+}
+
+.button {
+  padding: 0.7rem 1.5rem;
+  border: 1px solid #5e5e5e;
+  background-color: #4361ee;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  border: 1px solid #0e9594;
+  background-color: #0e9594;
+}
+
+.mt-3 {
+  margin-top: 2rem;
+}
+
+.d-none {
+  display: none;
+}
+
+.form-step {
+  /* border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 20px; */
+  border: 0;
+  padding: 3rem;
+}
+
+.font-normal {
+  font-weight: normal;
+}
+
+ul.form-stepper {
+  counter-reset: section;
+  margin-bottom: 3rem;
+}
+
+ul.form-stepper .form-stepper-circle {
+  position: relative;
+}
+
+ul.form-stepper .form-stepper-circle span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+
+.form-stepper-horizontal {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+ul.form-stepper > li:not(:last-of-type) {
+  margin-bottom: 0.625rem;
+  -webkit-transition: margin-bottom 0.4s;
+  -o-transition: margin-bottom 0.4s;
+  transition: margin-bottom 0.4s;
+}
+
+.form-stepper-horizontal > li:not(:last-of-type) {
+  margin-bottom: 0 !important;
+}
+
+.form-stepper-horizontal li {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: start;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.form-stepper-horizontal li:not(:last-child):after {
+  position: relative;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  height: 1px;
+  content: "";
+  top: 32%;
+}
+
+.form-stepper-horizontal li:after {
+  background-color: #dee2e6;
+}
+
+.form-stepper-horizontal li.form-stepper-completed:after {
+  background-color: #5e5e5e;
+}
+
+.form-stepper-horizontal li:last-child {
+  flex: unset;
+}
+
+ul.form-stepper li a .form-stepper-circle {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin-right: 0;
+  line-height: 1.7rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.38);
+  border-radius: 50%;
+}
+
+.form-stepper .form-stepper-active .form-stepper-circle {
+  background-color: #d8956a !important;
+  color: #fff;
+  transition: 0.5s;
+}
+
+.form-stepper .form-stepper-active .label {
+  color: black !important;
+}
+
+/* .form-stepper .form-stepper-active .form-stepper-circle:hover {
+  background-color: black !important;
+  color: #fff !important;
+} */
+
+.form-stepper .form-stepper-unfinished .form-stepper-circle {
+  background-color: #f8f7ff;
+}
+
+.form-stepper .form-stepper-completed .form-stepper-circle {
+  background-color: #5e5e5e !important;
+  color: #fff;
+  transition: 0.5s;
+}
+
+.form-stepper .form-stepper-completed .label {
+  color: #5e5e5e !important;
+}
+
+/* .form-stepper .form-stepper-completed .form-stepper-circle:hover {
+  background-color: black !important;
+  color: #fff !important;
+} */
+
+.form-stepper .form-stepper-active span.text-muted {
+  color: #fff !important;
+}
+
+.form-stepper .form-stepper-completed span.text-muted {
+  color: #fff !important;
+}
+
+.form-stepper .label {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.form-stepper a {
+  text-decoration: none;
+  cursor: default;
+}
+</style>
