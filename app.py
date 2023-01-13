@@ -1,11 +1,17 @@
 import os
+import re
+import cv2
 import json
+import easyocr
+import imutils
+import numpy as np
 from enum import Enum
 from datetime import datetime
 from hashlib import sha512
 from flask import Flask, request, Response
 from flask_cors import CORS
 from sqlalchemy import create_engine
+from werkzeug.datastructures import MultiDict
 
 app = Flask(__name__)
 # app.config["debug"] = True
@@ -17,6 +23,7 @@ hash_key = "parking_project"
 @app.route("/", methods=["GET"])
 def default():
     return json.dumps("This is the default page")
+
 
 @app.route("/api/register/", methods=["POST"])
 def register():
@@ -36,8 +43,7 @@ def register():
                 ResponseCode: HTTP code to describe finish state
 
     """
-
-    args = request.args
+    args = MultiDict(request.get_json())
 
     required = ["firstname", "lastname",
                 "email", "password", "phone", "ccCode"]
@@ -89,7 +95,7 @@ def login():
     if not all(arg in required for arg in args):
         return Response("", ResponseCodes.inv_syntax.value)
 
-    user = select("SELECT [passowrd] from users WHERE email='{email}'".format(
+    user = select("SELECT [password] from users WHERE email='{email}'".format(
         email=args.get("email")
     ))
 
@@ -97,14 +103,14 @@ def login():
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("", ResponseCodes.no_email.value)
+        return Response("No user linked to email", ResponseCodes.no_email.value)
 
-    password = user[0]
+    password = user[0][0]
 
     if hash_password(args.get("password")) != password:
-        return Response("", ResponseCodes.inv_pwd)
+        return Response("Invalid password", ResponseCodes.inv_pwd.value)
 
-    user = select("SELECT [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
+    user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
         email=args.get("email"),
         password=hash_password(args.get("password"))
     ))
@@ -116,7 +122,9 @@ def login():
         return Response("", ResponseCodes.inv_pwd.value)
 
     formatted = format_result(
-        user, ["firstname", "lastname", "email", "phone", "ccCode"])
+        user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])
+
+    print(formatted)
 
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
@@ -159,7 +167,7 @@ def areas():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
@@ -223,7 +231,7 @@ def reg_licenseplates():
 
     if request.method == "POST":
 
-        args = request.args
+        args = MultiDict(request.get_json())
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
@@ -284,9 +292,10 @@ def user_licenseplate():
                     Successful: licenseplate_data
 
     """
-    args = request.args
 
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["userId", "licenseplate"]
 
@@ -301,6 +310,7 @@ def user_licenseplate():
         return Response("", state.value)
 
     else:
+        args = request.args
 
         required = ["userId"]
 
@@ -314,7 +324,7 @@ def user_licenseplate():
 
         if isinstance(licenseplates, ResponseCodes):
             return Response("", licenseplates.value)
-        
+
         formatted = format_result(
             licenseplates, ["licenseplate", "brand", "model", "type"])
 
@@ -362,9 +372,9 @@ def parkings():
                     Successful: parking_data
     """
 
-    args = request.args
-
     if request.method == "POST":
+
+        args = MultiDict(request.get_json())
 
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
@@ -384,6 +394,8 @@ def parkings():
         return Response("", state.value)
 
     else:
+        args = request.args
+
         required = ["userId"]
 
         if not all(arg in required for arg in args):
@@ -392,7 +404,7 @@ def parkings():
         areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
             userId=args.get("userId")
         ))
-            
+
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
 
@@ -400,6 +412,70 @@ def parkings():
             areas, ["licenseplate", "userId", "areaId", "minutes", "price", "state", "timestamp"])
 
         return Response(json.dumps(formatted), ResponseCodes.success.value)
+
+
+@app.route("/api/detectLicenseplate/", methods=["GET"])
+def detect_licenseplate():
+
+    # print("Called detect licenseplates")
+
+    filestr = request.files["file"]
+
+    # print(filestr.filename)
+
+    file_bytes = np.fromstring(filestr.read(), np.uint8)
+
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+    # image_file = f"./temp_licenseplates/{filestr.filename.split('.')[0]}.jpg"
+
+    # cv2.imwrite(image_file, raw)
+
+    # img = cv2.imread(image_file)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
+    edged = cv2.Canny(bfilter, 30, 200)
+
+    keypoints = cv2.findContours(
+        edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours = imutils.grab_contours(keypoints)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)[:50]
+
+    for contour in contours:
+        approx = cv2.approxPolyDP(contour, 10, True)
+
+        mask = np.zeros(gray.shape, np.uint8)
+        cv2.drawContours(mask, [approx], 0, 255, -1)
+        cv2.bitwise_and(img, img, mask=mask)
+
+        try:
+            (x, y) = np.where(mask == 255)
+            (x1, y1) = (np.min(x), np.min(y))
+            (x2, y2) = (np.max(x), np.max(y))
+            cropped_image = gray[x1:x2+1, y1:y2+1]
+        except ValueError as e:
+            print(e)
+            continue
+
+        # print("moved past")
+        reader = easyocr.Reader(['en'])
+        result = reader.readtext(cropped_image)
+
+        if len(result) != 0:
+            formatted = result[-1][-2].replace(" ", "")
+            if len(formatted) > 5 and any(char.isdigit() for char in formatted):
+                # print(len(approx))
+                break
+
+    plate = result[-1][-2].replace(" ", "")
+    regex = re.compile('[^a-zA-Z0-9]')
+
+    licenseplate = regex.sub('', plate)
+
+    # formatted = format_result((licenseplate,), ["licenseplate"])
+
+    return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
 
 
 def insert(query: str):
@@ -418,7 +494,7 @@ def insert(query: str):
         with db_engine.begin() as conn:
             conn.exec_driver_sql(query)
     except Exception as e:
-        print(e)
+        print(f"This is the exception {e}")
         return ResponseCodes.failed_query
 
     return ResponseCodes.success
@@ -484,7 +560,8 @@ def format_result(data: list[tuple], keys: list[str]):
 
     """
 
-    formatted = [{k: format_val(k, v) for k, v in zip(keys, row)} for row in data]
+    formatted = [{k: format_val(k, v)
+                  for k, v in zip(keys, row)} for row in data]
 
     return formatted
 
@@ -521,7 +598,7 @@ def is_convertable(key: str, val: str, data_type):
             bool: Whether or not the value is convertable
     """
     try:
-        if key in ["phone", "ccCode"]:
+        if key in ["phone"] and data_type != str:
             return False
 
         data_type(str(val))
@@ -572,3 +649,6 @@ class ResponseCodes(Enum):
 
 # def main(a, b):
     # app.run()
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0", port=5000)

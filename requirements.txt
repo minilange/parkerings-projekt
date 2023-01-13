@@ -1,5 +1,9 @@
+numpy
 flask
-flask-cors
 pyodbc
-sqlalchemy
+imutils
+easyocr
 gunicorn
+sqlalchemy
+flask-cors
+opencv-python
