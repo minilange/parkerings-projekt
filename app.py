@@ -13,7 +13,7 @@ from flask_cors import CORS
 from sqlalchemy import create_engine
 from werkzeug.datastructures import MultiDict
 
-app = Flask(__name__, )
+app = Flask(__name__)
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -446,18 +446,18 @@ def detect_licenseplate():
         approx = cv2.approxPolyDP(contour, 10, True)
 
         mask = np.zeros(gray.shape, np.uint8)
-        cv2.drawContours(mask, [approx], 0,255, -1)
+        cv2.drawContours(mask, [approx], 0, 255, -1)
         cv2.bitwise_and(img, img, mask=mask)
 
         try:
-            (x,y) = np.where(mask==255)
+            (x, y) = np.where(mask == 255)
             (x1, y1) = (np.min(x), np.min(y))
             (x2, y2) = (np.max(x), np.max(y))
             cropped_image = gray[x1:x2+1, y1:y2+1]
         except ValueError as e:
             print(e)
             continue
-        
+
         # print("moved past")
         reader = easyocr.Reader(['en'])
         result = reader.readtext(cropped_image)
@@ -475,7 +475,7 @@ def detect_licenseplate():
 
     # formatted = format_result((licenseplate,), ["licenseplate"])
 
-    return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value) 
+    return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
 
 
 def insert(query: str):
