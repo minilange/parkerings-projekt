@@ -530,7 +530,7 @@ def connect():
             sqlalchemy.engine: A connection to the database
     """
 
-    with open(os.path.join("./db_config.json"), "rt") as file:
+    with open(os.path.join("./backend", "db_config.json"), "rt") as file:
         config = json.load(file)
         conn_str = 'mssql+pyodbc:///?odbc_connect={}'.format(
             config["conn"].format(**config))
