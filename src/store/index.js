@@ -56,11 +56,32 @@ export default new Vuex.Store({
         console.log('numberPlateLookup: ' + error)
       }
     },
-    async callAPI(state, input, method) {
-      try {
-        console.log(state, input, method)
-      } catch (error) {
-        console.log('callAPI: ' + error)
+    async callAPI(state, payload) {
+      const method = payload.method;
+      const endpoint = payload.endpoint;
+      const body = payload.body
+
+      if(method == "GET") {
+        await axios.get(this.state.api + "/" + endpoint + "/")
+        .then((response) => {
+          console.log(response);
+        }).catch((error) => {
+          console.warn(error);
+        })
+        
+      } else if(method == "POST") {
+        // this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: SHA256(this.form.password, this.$store.state.secret).toString(), ccCode: this.form.ccCode.code}
+
+        axios.post(this.state.api + "/" + endpoint + "/", body)
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.warn("register", error);
+          });
+      } else if(method == "PATCH") {
+        /**** AXIOS PATCH ****/
+        console.log('PATCH');
       }
     },
     async getCars() {

@@ -15,13 +15,30 @@
         <div class="mx-auto row h-100">
           <div class="row d-flex justify-content-center text-center">
             <h3>Welcome!</h3>
-            <p>EasierPark makes it <b>easy</b> to park. Just register a car, and get started with your first parking 👋</p>
+            <p>
+              EasierPark makes it <b>easy</b> to park. Just register a car, and get
+              started with your first parking 👋
+            </p>
+            <div>
+              <img class="img-container" src="../assets/parking.png" />
+            </div>
+
             <!-- <p>[PARKING INFO?]</p> -->
           </div>
-          
+
           <div class="col-xl-12 d-flex justify-content-around front-actions mt-auto">
-            <button id="parkingBtn" class="btn btn-primary btn-dark" @click="$router.push('/new-parking')">NEW PARKING</button>
-            <button id="carPlusBtn" class="btn btn-primary btn-dark" @click="$router.push('/register-car')">
+            <button
+              id="parkingBtn"
+              class="btn btn-primary btn-dark"
+              @click="$router.push('/new-parking')"
+            >
+              NEW PARKING
+            </button>
+            <button
+              id="carPlusBtn"
+              class="btn btn-primary btn-dark"
+              @click="$router.push('/register-car')"
+            >
               <font-awesome-icon icon="fa-solid fa-car" />
               <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
             </button>
@@ -34,8 +51,8 @@
 
 <script>
 export default {
-  name: 'FrontPage',
-}
+  name: "FrontPage",
+};
 </script>
 
 <style scoped>
@@ -54,6 +71,12 @@ export default {
 .front-actions {
   max-height: 60px;
   margin-bottom: 35px;
+}
+
+.img-container {
+  max-width: 60%;
+  border: 0x solid black;
+  border-radius: 10px;
 }
 
 .action-prompt {

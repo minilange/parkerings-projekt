@@ -1,9 +1,14 @@
 <template>
   <!-- Button trigger modal -->
-  <MDBBtn color="primary" aria-controls="areaModal" @click="areaModal = true">
+  <button
+    class="btn btn-primary"
+    color="primary"
+    aria-controls="areaModal"
+    @click="areaModal = true"
+  >
     <span v-if="edit == 'true'">EDIT <font-awesome-icon icon="fas fa-edit" /></span>
     <span v-if="edit == 'false'">ADD NEW <font-awesome-icon icon="fas fa-plus" /></span>
-  </MDBBtn>
+  </button>
   <MDBModal
     id="areaModal"
     tabindex="-1"
@@ -11,7 +16,7 @@
     v-model="areaModal"
   >
     <MDBModalHeader>
-      <MDBModalTitle id="exampleModalLabel"> Modal title </MDBModalTitle>
+      <MDBModalTitle id="exampleModalLabel"> Area modal </MDBModalTitle>
     </MDBModalHeader>
     <MDBModalBody>
       <div class="container">
@@ -60,8 +65,12 @@
       </div>
     </MDBModalBody>
     <MDBModalFooter>
-      <MDBBtn color="secondary" @click="areaModal = false">Close</MDBBtn>
-      <MDBBtn color="primary">Save changes</MDBBtn>
+      <button class="btn btn-primary" color="secondary" @click="areaModal = false">
+        Close
+      </button>
+      <button class="btn btn-primary" color="primary" @click="saveArea">
+        Save changes
+      </button>
     </MDBModalFooter>
   </MDBModal>
 </template>
@@ -73,7 +82,6 @@ import {
   MDBModalTitle,
   MDBModalBody,
   MDBModalFooter,
-  MDBBtn,
 } from "mdb-vue-ui-kit";
 import { ref } from "vue";
 export default {
@@ -92,7 +100,6 @@ export default {
     MDBModalTitle,
     MDBModalBody,
     MDBModalFooter,
-    MDBBtn,
   },
   mounted() {
     console.log(this.areaId);
@@ -102,6 +109,40 @@ export default {
     return {
       areaModal,
     };
+  },
+  methods: {
+    saveArea() {
+      let method;
+      let payload = {
+        areaId: this.areaId,
+        areaName: this.areaName,
+        address: this.areaAddress,
+        latitude: this.areaLat,
+        longitude: this.areaLon,
+      };
+
+      console.log("payload", payload);
+
+      if (this.edit == "true") {
+        // PATCH call to /areas
+        console.log("PATCH");
+        method = "PATCH";
+      } else {
+        // POST call to /areas
+        console.log("POST");
+        method = "POST";
+      }
+
+      this.$store
+        .dispatch("callAPI", {
+          method: method,
+          endpoint: "areas",
+          body: payload,
+        })
+        .then((response) => {
+          console.log(response);
+        });
+    },
   },
 };
 </script>
