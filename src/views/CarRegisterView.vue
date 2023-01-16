@@ -5,25 +5,23 @@
       <h3 class="text-center">NEW CAR</h3>
       <hr />
       <form>
-        <input id="plateImage" type="file" accept="image/*" />
-        <p>Simply scan your car's license plate, and have it registered automatically!</p>
-        <button class="btn btn-primary btn-dark" @click="getPlate">
-          SCAN NUMBER PLATE
-        </button>
-        <img id="previewImg" src="" width="200" />
+        <div id="imageInput">
+          <p>Simply scan your car's license plate, and have it registered automatically!</p>
+          <input id="plateImage" class="form-control" type="file" accept="image/*" />
+          <input type="button" id="loadFileXml" value="loadXml" onclick="document.getElementById('file').click();" />
+          <input type="file" style="display:none;" id="file" name="file" />
 
-        <p>Or manually input the info here:</p>
-        <label for="numberPlate">Number plate</label>
-        <br />
-        <input
-          name="numberPlate"
-          id="numberPlate"
-          class="form-group"
-          type="text"
-          pattern="[A-Z]{2}[0-9]{5}"
-          title="Please follow Danish number plate structure"
-          v-model="inputNumberplate"
-        />
+          <img id="previewImg" src="" width="200" />
+        </div>
+
+        <div id="manualInput">
+          <p>Or manually input the info here:</p>
+          <label for="numberPlate">Number plate</label>
+          <br />
+          <input name="numberPlate" id="numberPlate" class="form-control" type="text" pattern="[A-Z]{2}[0-9]{5}"
+            title="Please follow Danish number plate structure" v-model="inputNumberplate" />
+        </div>
+
         <!-- <button class="btn btn-primary" @click="getPlateInput">Search for car</button> -->
 
         <p id="searchStatus">{{ response }}</p>
@@ -155,7 +153,7 @@ export default {
   color: black;
 }
 
-.form-floating > .label {
+.form-floating>.label {
   color: black !important;
 }
 </style>

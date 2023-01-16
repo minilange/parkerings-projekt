@@ -23,11 +23,13 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
+    "jquery": "^3.6.3",
     "mdb-vue-ui-kit": "^3.1.1",
     "popper.js": "^1.16.1",
     "vue": "^3.2.45",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.0.3",
+    "vue3-slider": "^1.8.0",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

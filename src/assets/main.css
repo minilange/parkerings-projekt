@@ -1,5 +1,12 @@
 @import './base.css';
 
+/* Adjust width on small screens */
+@media (min-width: 200px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -30,6 +37,7 @@ html {
     color: #a7a7a7;
 }
 
+/* ACTION PROMPT */
 .action-prompt {
     border-radius: 12px;
     height: 80vh;

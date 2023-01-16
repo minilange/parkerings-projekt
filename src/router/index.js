@@ -10,14 +10,16 @@ import RegisterView from '../views/RegisterView.vue'
 import CarRegisterView from '../views/CarRegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import AdminView from '../views/AdminView.vue'
-import store from '../store/index.js'
+// import store from '../store/index.js'
 
 function isLoggedIn() {
-  if(!Object.keys(store.state.user).length == 0){
-    return true
-  }else{
-    return false
-  }
+  // if(!Object.keys(store.state.user).length == 0){
+  //   return true
+  // }else{
+  //   return false
+  // }
+
+  return true;
 }
 function isAdmin() {
   /* Commented out for test purposes!  */

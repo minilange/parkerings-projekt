@@ -6,12 +6,7 @@
 
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
-        <form
-          id="userAccountSetupForm"
-          name="userAccountSetupForm"
-          enctype="multipart/form-data"
-          method="POST"
-        >
+        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal">Choose an area</h2>
@@ -24,7 +19,6 @@
                 </option>
               </select>
               <!-- CARL SKAL BESLUTTE SIG -->
-              <h5 class="text-danger">Carl skal vælge Radio buttons eller dropdown</h5>
               <div v-for="area in areas" :value="area" :key="area">
                 <input type="radio" v-model="form.selectedArea" name="areaInput" />
                 {{ area.areaName }} {{ area.address }}
@@ -32,12 +26,8 @@
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="2"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+                @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -56,20 +46,12 @@
               <label for="carInput">Choose a car...</label>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="1"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="1"
+                @click="navigateToFormStep">
                 Prev
               </button>
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="3"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
+                @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -79,16 +61,18 @@
           <section id="step-3" class="form-step d-none">
             <h2 class="font-normal">Set time</h2>
             <!-- Step 3 input fields -->
+            <!-- <vue3-slider v-model="myNumber" color="#FB278D" track-color="#FEFEFE" orientation="circular" repeat="true" />
+            <p>{{ myNumber }}</p> -->
+            <div id="test"></div>
+            <div id='container'>
+              <div id='slider'>
+              </div>
+            </div>
             <div class="form-floating mt-3">
-              <p>[SHOW DIAL HERE]</p>
             </div>
             <div class="mt-3 d-flex justify-content-between">
-              <button
-                class="button btn btn-navigate-form-step"
-                type="button"
-                step_number="2"
-                @click="navigateToFormStep"
-              >
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+                @click="navigateToFormStep">
                 Prev
               </button>
               <button class="button btn submit-btn" type="submit">Save</button>
@@ -132,28 +116,11 @@
 </template>
 
 <script>
-import axios from "axios";
-
-document
-  .querySelectorAll(".form-stepper-list a .form-stepper-circle")
-  .forEach((circle) => {
-    circle.addEventListener("click", () => {
-      console.log(circle);
-      let classList = circle.parentElement.parentElement.classList;
-      console.log(classList);
-
-      if (
-        classList.contains("form-stepper-active") !== true &&
-        classList.contains("form-stepper-unfinished") !== true
-      ) {
-        const circleNumber = circle.getAttribute("step_number");
-        console.log("CHANGING TO: " + circleNumber);
-        this.navigateToFormStep(circleNumber);
-      }
-    });
-  });
+// import axios from "axios";
 
 export default {
+  components: {
+  },
   data() {
     return {
       form: {
@@ -162,6 +129,7 @@ export default {
       },
       registeredCars: [],
       areas: [],
+      myNumber: "1",
     };
   },
   methods: {
@@ -170,7 +138,9 @@ export default {
       console.log(plateNumber);
     },
     navigateToFormStep(stepNumber) {
-      stepNumber = stepNumber.target.attributes.step_number.value; // Get target step value
+      console.log('stepNumber: ' + stepNumber);
+      if (stepNumber.target) // If event is triggered by button click
+        stepNumber = stepNumber.target.attributes.step_number.value; // Get target step value
 
       document.querySelectorAll(".form-step").forEach((formStepElement) => {
         formStepElement.classList.add("d-none");
@@ -205,33 +175,135 @@ export default {
     },
   },
   mounted() {
-    axios
-      .get(this.$store.state.api + "/userLicenseplates/", {
-        params: {
-          userId: 1,
-        },
-      })
-      .then((response) => {
-        this.registeredCars = response.data;
-      })
-      .catch((error) => {
-        console.warn("userLicenseplates", error);
+    // axios
+    //   .get(this.$store.state.api + "/userLicenseplates/", {
+    //     params: {
+    //       userId: 1,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     this.registeredCars = response.data;
+    //   })
+    //   .catch((error) => {
+    //     console.warn("userLicenseplates", error);
+    //   });
+
+    // axios
+    //   .get(this.$store.state.api + "/areas/")
+    //   .then((response) => {
+    //     this.areas = response.data;
+    //     console.log(this.areas);
+    //   })
+    //   .catch((error) => {
+    //     console.warn("areas", error);
+    //   });
+
+// DIAL SLIDER: https://stackoverflow.com/questions/20505132/javascript-circle-slider-degrees-to-time
+    var current = 0;
+    var lastAngle = 0;
+
+    function mod(x, n) {
+      return ((x % n) + n) % n;
+    }
+    // const $ = document.querySelector();
+
+    (function () {
+      let $slider = document.querySelector('#slider');
+      let sliderW2 = $slider.clientWidth / 2;
+      let sliderH2 = $slider.clientHeight / 2;
+      let radius = 200;
+      let deg = 0;
+      // var elP = document.querySelector('#container').offset();
+      let elPLeft = document.querySelector('#container').offsetLeft;
+      let elPTop = document.querySelector('#container').offsetTop;
+      let elPos = { x: elPLeft, y: elPTop };
+      let X = 0, Y = 0;
+      let mdown = false;
+      document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
+      document.addEventListener('mouseup', () => { mdown = false; })
+      document.querySelector('#container').addEventListener('mousemove', (e) => {
+          if (mdown) {
+            let mPos = { x: e.clientX - elPos.x, y: e.clientY - elPos.y };
+            let atan = Math.atan2(mPos.x - radius, mPos.y - radius);
+            deg = -atan / (Math.PI / 180) + 180; // final (0-360 positive) degrees from mouse position 
+            
+            X = Math.round(radius * Math.sin(deg * Math.PI / 180));
+            Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
+            // $slider.style.({ left: X + radius - sliderW2, top: Y + radius - sliderH2 });
+            $slider.style.left = X + radius - sliderW2 + 'px';
+            console.log(X + radius - sliderW2);
+            $slider.style.top = Y + radius - sliderH2 + 'px';
+            console.log(Y + radius - sliderW2);
+            // AND FINALLY apply exact degrees to ball rotation
+            $slider.style.transform = 'rotate(' + deg + 'deg)';
+            // $slider.style.WebkitTransform = 'rotate(' + deg + 'deg)';
+            // $slider.style.-moz-transform = 'rotate(' + deg + 'deg)';
+            //
+            // PRINT DEGREES         
+            let delta = 0;
+            let dir = 0;
+            let rawDelta = mod(deg - lastAngle, 360.0);
+            if (rawDelta < 180) {
+              dir = 1;
+              delta = rawDelta;
+            } else {
+              dir = -1;
+              delta = rawDelta - 360.0;
+            }
+            console.log(dir);
+            current += delta;
+            lastAngle = deg;
+            document.querySelector('#test').innerHTML = 'angle deg= ' + current;
+          }
+        });
+    })();
+
+    document
+      .querySelectorAll(".form-stepper-list a .form-stepper-circle")
+      .forEach((circle) => {
+        circle.addEventListener("click", () => {
+          console.log(circle);
+          let classList = circle.parentElement.parentElement.classList;
+          console.log(classList);
+
+          if (
+            classList.contains("form-stepper-active") !== true &&
+            classList.contains("form-stepper-unfinished") !== true
+          ) {
+            const circleNumber = circle.getAttribute("step_number");
+            console.log("CHANGING TO: " + circleNumber);
+            this.navigateToFormStep(circleNumber);
+          }
+        });
       });
 
-    axios
-      .get(this.$store.state.api + "/areas/")
-      .then((response) => {
-        this.areas = response.data;
-        console.log(this.areas);
-      })
-      .catch((error) => {
-        console.warn("areas", error);
-      });
+
   },
 };
 </script>
 
 <style scoped>
+#container {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 400px;
+  height: 400px;
+  background: #ddd;
+  border: 1px solid #999;
+  border-radius: 1000px;
+}
+
+#slider {
+  position: relative;
+  height: 40px;
+  width: 40px;
+  left: 180px;
+  top: -20px;
+  background: red no-repeat center 20px;
+  border-radius: 20px;
+}
+
 h1 {
   text-align: center;
 }
@@ -318,14 +390,14 @@ ul.form-stepper .form-stepper-circle span {
   justify-content: space-between;
 }
 
-ul.form-stepper > li:not(:last-of-type) {
+ul.form-stepper>li:not(:last-of-type) {
   margin-bottom: 0.625rem;
   -webkit-transition: margin-bottom 0.4s;
   -o-transition: margin-bottom 0.4s;
   transition: margin-bottom 0.4s;
 }
 
-.form-stepper-horizontal > li:not(:last-of-type) {
+.form-stepper-horizontal>li:not(:last-of-type) {
   margin-bottom: 0 !important;
 }
 
@@ -387,10 +459,10 @@ ul.form-stepper li a .form-stepper-circle {
   color: black !important;
 }
 
-/* .form-stepper .form-stepper-active .form-stepper-circle:hover {
+.form-stepper .form-stepper-active .form-stepper-circle:hover {
   background-color: black !important;
   color: #fff !important;
-} */
+}
 
 .form-stepper .form-stepper-unfinished .form-stepper-circle {
   background-color: #f8f7ff;
@@ -406,10 +478,10 @@ ul.form-stepper li a .form-stepper-circle {
   color: #5e5e5e !important;
 }
 
-/* .form-stepper .form-stepper-completed .form-stepper-circle:hover {
+.form-stepper .form-stepper-completed .form-stepper-circle:hover {
   background-color: black !important;
   color: #fff !important;
-} */
+}
 
 .form-stepper .form-stepper-active span.text-muted {
   color: #fff !important;
