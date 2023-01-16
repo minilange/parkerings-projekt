@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 row">
+  <div class="container mt-5 mx-auto row">
     <div class="col-lg-7"></div>
     <div class="col-lg-5 action-prompt m-auto">
       <h3 class="text-center">NEW CAR</h3>

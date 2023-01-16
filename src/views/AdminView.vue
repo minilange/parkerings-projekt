@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import Modal from "@/components/ModalAdd.vue";
+import Modal from "@/components/ModalArea.vue";
 
 export default {
   data() {
