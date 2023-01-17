@@ -1,12 +1,12 @@
 <template>
-    <div class="container">
+    <div class="container dial-container">
         <div id='container'>
             <div id='slider'>
             </div>
         </div>
 
+        <div id="timeDisplay" class="my-auto user-select-none"></div>
     </div>
-    <div id="test" style="margin-top: 500px !important;"></div>
 
 </template>
 <script>
@@ -24,18 +24,25 @@ export default {
             for (let i = 0; i < parents.length; i++) {
                 offsetSum += parents[i][offsetType];
             }
-            return offsetSum;
+            return offsetSum + 150;
         },
         _getParents(element, list) {
             // Get all parent elements and push them to the list
             if (element.parentElement) {
                 // Exclude body and html
-                if (element.parentElement.tagName == 'BODY' || element.parentElement.tagName == 'HTML') {
-                    return;
-                }
+                // if (element.parentElement.tagName == 'BODY' || element.parentElement.tagName == 'HTML') {
+                //     return;
+                // }
                 list.push(element.parentElement);
                 this._getParents(element.parentElement, list);
             }
+        },
+        getReadableTime(minutes) {
+            // Convert minutes to readable time format - Don't include hours if 0
+            let hours = Math.floor(minutes / 60);
+            let minutesLeft = Math.round(minutes % 60);
+            let readableTime = hours + 'h ' + minutesLeft + 'm';
+            return readableTime;
         },
     },
     mounted() {
@@ -77,24 +84,17 @@ export default {
                     console.log('deg: ', deg);
                 }
 
-                if (deg < 0) {
-                    deg = 0;
-                    return;
-                }
-
-
                 X = Math.round(radius * Math.sin(deg * Math.PI / 180));
                 Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
                 // $slider.style.({ left: X + radius - sliderW2, top: Y + radius - sliderH2 });
                 $slider.style.left = X + radius - sliderW2 + 'px';
-                // console.log(X + radius - sliderW2);
                 $slider.style.top = Y + radius - sliderH2 + 'px';
-                // console.log(Y + radius - sliderW2);
+
                 // AND FINALLY apply exact degrees to ball rotation
                 $slider.style.transform = 'rotate(' + deg + 'deg)';
                 // $slider.style.WebkitTransform = 'rotate(' + deg + 'deg)';
                 // $slider.style.-moz-transform = 'rotate(' + deg + 'deg)';
-                //
+                
                 // PRINT DEGREES         
                 let delta = 0;
                 let dir = 0;
@@ -106,9 +106,12 @@ export default {
                     dir = -1;
                     delta = rawDelta - 360.0;
                 }
+                
                 if (!dir) {
                     // console.log();
                 }
+                
+
                 current += delta;
                 lastAngle = deg;
                 if (current < 0) {
@@ -119,7 +122,7 @@ export default {
                     return;
                 }
 
-                document.querySelector('#test').innerHTML = 'minutes=' + current / 6;
+                document.querySelector('#timeDisplay').innerHTML = this.getReadableTime(current / 6);
                 counter++;
             }
         });
@@ -129,6 +132,15 @@ export default {
 };
 </script>
 <style scoped>
+.dial-container {
+    display: flex!important;
+    align-content: space-around;
+    justify-content: space-around;
+    height: 500px;
+    width: 500px;
+    background: #ddd;
+    border: 1px solid #999;
+}
 #container {
     position: absolute;
     top: 50px;
