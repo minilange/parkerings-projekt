@@ -14,10 +14,10 @@
       </button>
       <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
         <div class="navbar-nav ms-auto gap-lg-5 fw-bold">
-          <div v-if="!this.$store.state.user.hasOwnProperty('userId')">
+          <div class="row" v-if="!this.$store.state.user.hasOwnProperty('userId')">
             <router-link class="nav-item nav-link text-white d-none d-lg-block" to="/login"><span>LOGIN</span></router-link>
+            <router-link class="nav-item nav-link text-white" to="/old-parkings"><span>MY PARKINGS</span></router-link>
           </div>
-          <router-link class="nav-item nav-link text-white" to="/park"><span>PARK</span></router-link>
           <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link>
           <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
           <div v-if="this.$store.state.user.hasOwnProperty('userId')">

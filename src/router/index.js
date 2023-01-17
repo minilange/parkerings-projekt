@@ -5,7 +5,6 @@ import LoginView from '../views/LoginView.vue'
 import ParkView from '../views/ParkView.vue'
 import NewParkingView from '../views/NewParkingView.vue'
 import AreaView from '../views/AreaView.vue'
-import NotFound from '../views/NotFoundView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CarRegisterView from '../views/CarRegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
@@ -49,9 +48,10 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/park',
-    name: 'park',
-    component: ParkView
+    path: '/old-parkings',
+    name: 'oldparkings',
+    component: ParkView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/new-parking',
@@ -87,7 +87,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    component: NotFound,
+    component: HomeView,
   },
 ]
 

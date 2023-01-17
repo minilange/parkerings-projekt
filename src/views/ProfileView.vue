@@ -88,18 +88,25 @@
           <div class="card">
             <div class="card-body">
               <h5 class="mb-0">LATEST PARKING:</h5>
-              <div v-if="latestParking.date != ''">
+              <div v-if="registeredParkings.length < 0">
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Date:</p>
-                  <p class="mb-0">{{ latestParking.date }}</p>
+                  <p class="mb-0">Licenseplate:</p>
+                  <p class="mb-0">{{ registeredParkings[0].licenseplate }}</p>
                 </li>
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Location:</p>
-                  <p class="mb-0">{{ latestParking.location }}</p>
+                  <p class="mb-0">Minutes:</p>
+                  <p class="mb-0">{{ registeredParkings[0].minutes }}</p>
+                </li>
+                <li class="list-group-item py-3">
+                  <p class="mb-0">Date:</p>
+                  <p class="mb-0">{{ registeredParkings[0].timestamp }}</p>
                 </li>
                 <li class="list-group-item py-3">
                   <p class="mb-0">Cost:</p>
-                  <p class="mb-0">{{ latestParking.date }}</p>
+                  <p class="mb-0">{{ registeredParkings[0].price }}</p>
+                </li>
+                <li class="list-group-item py-3">
+                  <router-link to="/park"><span>View more</span></router-link>
                 </li>
               </div>
               <div v-else>
@@ -134,11 +141,7 @@ export default {
   data() {
     return {
       registeredCars: [],
-      latestParking: {
-        date: "",
-        location: "",
-        cost: "",
-      },
+      registeredParkings: [],
       carTypes: {
         Stationcar: "Stationcar.png",
         Hatchback: "Hatchback.png",
@@ -156,6 +159,7 @@ export default {
   watch: {},
 
   mounted() {
+    // Licenseplates
     axios
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
@@ -167,6 +171,21 @@ export default {
       })
       .catch((error) => {
         console.warn("userLicenseplates", error);
+      });
+    
+    // Parkings
+    axios
+      .get(this.$store.state.api + "/parkings/", {
+        params: {
+          userId: this.$store.state.user.userId,
+        },
+      })
+      .then((response) => {
+        this.registeredParkings = response.data;
+        console.log("TEST", response)
+      })
+      .catch((error) => {
+        console.warn("parkings", error);
       });
   },
 };
