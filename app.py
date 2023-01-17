@@ -13,6 +13,7 @@ from flask_cors import CORS
 from sqlalchemy import create_engine
 from werkzeug.datastructures import MultiDict
 
+
 app = Flask(__name__)
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
