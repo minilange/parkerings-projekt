@@ -112,6 +112,12 @@ span {
 .form-floating > label {
   color: black !important;
 }
+
+@media (max-width: 991px) {
+  .action-prompt{
+    width: 80%;
+  }
+}
 </style>
 
 <script>

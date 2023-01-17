@@ -126,9 +126,6 @@ p {
   color: black !important;
 }
 
-@media (max-width: 991px) {
-}
-
 .action-prompt {
   height: auto;
 }

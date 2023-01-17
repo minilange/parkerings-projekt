@@ -1,0 +1,152 @@
+<template>
+    <div class="container">
+        <div id='container'>
+            <div id='slider'>
+            </div>
+        </div>
+
+    </div>
+    <div id="test" style="margin-top: 500px !important;"></div>
+
+</template>
+<script>
+export default {
+    name: "TimeDial",
+    methods: {
+        mod(x, n) {
+            return ((x % n) + n) % n;
+        },
+        getOffset(containerElement, offsetType) {
+            let parents = [];
+            this._getParents(containerElement, parents)
+
+            let offsetSum = 0;
+            for (let i = 0; i < parents.length; i++) {
+                offsetSum += parents[i][offsetType];
+            }
+            return offsetSum;
+        },
+        _getParents(element, list) {
+            // Get all parent elements and push them to the list
+            if (element.parentElement) {
+                // Exclude body and html
+                if (element.parentElement.tagName == 'BODY' || element.parentElement.tagName == 'HTML') {
+                    return;
+                }
+                list.push(element.parentElement);
+                this._getParents(element.parentElement, list);
+            }
+        },
+    },
+    mounted() {
+        // DIAL SLIDER: https://stackoverflow.com/questions/20505132/javascript-circle-slider-degrees-to-time
+        let counter = 0;
+        var current = 0;
+        var lastAngle = 0;
+        // const $ = document.querySelector();
+
+        let container = document.querySelector('#container');
+        let $slider = document.querySelector('#slider');
+        // let sliderW2 = $slider.clientWidth / 2;
+        // let sliderH2 = $slider.clientHeight / 2;
+        let sliderW2 = 20;
+        let sliderH2 = 20;
+        let radius = 200;
+        let deg = 0;
+        let elPLeft = this.getOffset(container, 'offsetLeft');
+        let elPTop = this.getOffset(container, 'offsetTop');
+        let elPos = { x: elPLeft, y: elPTop };
+        // let elPos = { x: 50, y: 50 };
+        console.log('elPos: ', elPos)
+        console.log('sliderW2: ', sliderW2)
+        console.log('sliderH2: ', sliderH2)
+        let X = 0, Y = 0;
+        let mdown = false;
+        document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
+        document.addEventListener('mouseup', () => { mdown = false; })
+        document.querySelector('#container').addEventListener('mousemove', (e) => {
+            if (mdown) {
+                let mPos = { x: e.clientX - elPos.x, y: e.clientY - elPos.y };
+                let atan = Math.atan2(mPos.x - radius, mPos.y - radius);
+                deg = -atan / (Math.PI / 180) + 180; // final (0-360 positive) degrees from mouse position 
+
+                if (counter % 100 == 0) {
+                    console.log('e.clientX: ', e.clientX);
+                    console.log('e.clientY: ', e.clientY);
+                    console.log('mPos: ', mPos);
+                    console.log('deg: ', deg);
+                }
+
+                if (deg < 0) {
+                    deg = 0;
+                    return;
+                }
+
+
+                X = Math.round(radius * Math.sin(deg * Math.PI / 180));
+                Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
+                // $slider.style.({ left: X + radius - sliderW2, top: Y + radius - sliderH2 });
+                $slider.style.left = X + radius - sliderW2 + 'px';
+                // console.log(X + radius - sliderW2);
+                $slider.style.top = Y + radius - sliderH2 + 'px';
+                // console.log(Y + radius - sliderW2);
+                // AND FINALLY apply exact degrees to ball rotation
+                $slider.style.transform = 'rotate(' + deg + 'deg)';
+                // $slider.style.WebkitTransform = 'rotate(' + deg + 'deg)';
+                // $slider.style.-moz-transform = 'rotate(' + deg + 'deg)';
+                //
+                // PRINT DEGREES         
+                let delta = 0;
+                let dir = 0;
+                let rawDelta = this.mod(deg - lastAngle, 360.0);
+                if (rawDelta < 180) {
+                    dir = 1;
+                    delta = rawDelta;
+                } else {
+                    dir = -1;
+                    delta = rawDelta - 360.0;
+                }
+                if (!dir) {
+                    // console.log();
+                }
+                current += delta;
+                lastAngle = deg;
+                if (current < 0) {
+                    current = 0;
+                    $slider.style.top = -20 + 'px';
+                    $slider.style.left = 180 + 'px';
+                    $slider.style.transform = 'rotate(' + 0 + 'deg)';
+                    return;
+                }
+
+                document.querySelector('#test').innerHTML = 'minutes=' + current / 6;
+                counter++;
+            }
+        });
+
+    },
+
+};
+</script>
+<style scoped>
+#container {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 400px;
+    height: 400px;
+    background: #ddd;
+    border: 1px solid #999;
+    border-radius: 1000px;
+}
+
+#slider {
+    position: relative;
+    height: 40px;
+    width: 40px;
+    left: 180px;
+    top: -20px;
+    background: red no-repeat center 20px;
+    border-radius: 20px;
+}
+</style>

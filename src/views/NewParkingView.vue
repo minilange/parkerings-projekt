@@ -1,4 +1,5 @@
 <template>
+  <!-- <TimeDial /> -->
   <div class="container mt-5 mx-auto row">
     <div class="col-lg-7 action-prompt m-auto">
       <h3 class="text-center">NEW PARKING</h3>
@@ -63,14 +64,17 @@
             <!-- Step 3 input fields -->
             <!-- <vue3-slider v-model="myNumber" color="#FB278D" track-color="#FEFEFE" orientation="circular" repeat="true" />
             <p>{{ myNumber }}</p> -->
-            <div id="test"></div>
+
+            <!-- <div id="test" style="margin-top: 500px !important;"></div>
             <div id='container'>
               <div id='slider'>
               </div>
-            </div>
+            </div> -->
+            <TimeDial />
+            
             <div class="form-floating mt-3">
             </div>
-            <div class="mt-3 d-flex justify-content-between">
+            <div class="mt-3 d-flex justify-content-between" style="margin-top: 600px !important;">
               <button class="button btn btn-navigate-form-step" type="button" step_number="2"
                 @click="navigateToFormStep">
                 Prev
@@ -117,9 +121,11 @@
 
 <script>
 // import axios from "axios";
+import TimeDial from "@/components/TimeDial.vue";
 
 export default {
   components: {
+    TimeDial
   },
   data() {
     return {
@@ -198,84 +204,84 @@ export default {
     //     console.warn("areas", error);
     //   });
 
-// DIAL SLIDER: https://stackoverflow.com/questions/20505132/javascript-circle-slider-degrees-to-time
-    var current = 0;
-    var lastAngle = 0;
+// // DIAL SLIDER: https://stackoverflow.com/questions/20505132/javascript-circle-slider-degrees-to-time
+//     var current = 0;
+//     var lastAngle = 0;
 
-    function mod(x, n) {
-      return ((x % n) + n) % n;
-    }
-    // const $ = document.querySelector();
+//     function mod(x, n) {
+//       return ((x % n) + n) % n;
+//     }
+//     // const $ = document.querySelector();
 
-    (function () {
-      let $slider = document.querySelector('#slider');
-      let sliderW2 = $slider.clientWidth / 2;
-      let sliderH2 = $slider.clientHeight / 2;
-      let radius = 200;
-      let deg = 0;
-      // var elP = document.querySelector('#container').offset();
-      let elPLeft = document.querySelector('#container').offsetLeft;
-      let elPTop = document.querySelector('#container').offsetTop;
-      let elPos = { x: elPLeft, y: elPTop };
-      let X = 0, Y = 0;
-      let mdown = false;
-      document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
-      document.addEventListener('mouseup', () => { mdown = false; })
-      document.querySelector('#container').addEventListener('mousemove', (e) => {
-          if (mdown) {
-            let mPos = { x: e.clientX - elPos.x, y: e.clientY - elPos.y };
-            let atan = Math.atan2(mPos.x - radius, mPos.y - radius);
-            deg = -atan / (Math.PI / 180) + 180; // final (0-360 positive) degrees from mouse position 
+//     (function () {
+//       let $slider = document.querySelector('#slider');
+//       let sliderW2 = $slider.clientWidth / 2;
+//       let sliderH2 = $slider.clientHeight / 2;
+//       let radius = 200;
+//       let deg = 0;
+//       // var elP = document.querySelector('#container').offset();
+//       let elPLeft = document.querySelector('#container').offsetLeft;
+//       let elPTop = document.querySelector('#container').offsetTop;
+//       let elPos = { x: elPLeft, y: elPTop };
+//       let X = 0, Y = 0;
+//       let mdown = false;
+//       document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
+//       document.addEventListener('mouseup', () => { mdown = false; })
+//       document.querySelector('#container').addEventListener('mousemove', (e) => {
+//           if (mdown) {
+//             let mPos = { x: e.clientX - elPos.x, y: e.clientY - elPos.y };
+//             let atan = Math.atan2(mPos.x - radius, mPos.y - radius);
+//             deg = -atan / (Math.PI / 180) + 180; // final (0-360 positive) degrees from mouse position 
             
-            X = Math.round(radius * Math.sin(deg * Math.PI / 180));
-            Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
-            // $slider.style.({ left: X + radius - sliderW2, top: Y + radius - sliderH2 });
-            $slider.style.left = X + radius - sliderW2 + 'px';
-            console.log(X + radius - sliderW2);
-            $slider.style.top = Y + radius - sliderH2 + 'px';
-            console.log(Y + radius - sliderW2);
-            // AND FINALLY apply exact degrees to ball rotation
-            $slider.style.transform = 'rotate(' + deg + 'deg)';
-            // $slider.style.WebkitTransform = 'rotate(' + deg + 'deg)';
-            // $slider.style.-moz-transform = 'rotate(' + deg + 'deg)';
-            //
-            // PRINT DEGREES         
-            let delta = 0;
-            let dir = 0;
-            let rawDelta = mod(deg - lastAngle, 360.0);
-            if (rawDelta < 180) {
-              dir = 1;
-              delta = rawDelta;
-            } else {
-              dir = -1;
-              delta = rawDelta - 360.0;
-            }
-            console.log(dir);
-            current += delta;
-            lastAngle = deg;
-            document.querySelector('#test').innerHTML = 'angle deg= ' + current;
-          }
-        });
-    })();
+//             X = Math.round(radius * Math.sin(deg * Math.PI / 180));
+//             Y = Math.round(radius * -Math.cos(deg * Math.PI / 180));
+//             // $slider.style.({ left: X + radius - sliderW2, top: Y + radius - sliderH2 });
+//             $slider.style.left = X + radius - sliderW2 + 'px';
+//             console.log(X + radius - sliderW2);
+//             $slider.style.top = Y + radius - sliderH2 + 'px';
+//             console.log(Y + radius - sliderW2);
+//             // AND FINALLY apply exact degrees to ball rotation
+//             $slider.style.transform = 'rotate(' + deg + 'deg)';
+//             // $slider.style.WebkitTransform = 'rotate(' + deg + 'deg)';
+//             // $slider.style.-moz-transform = 'rotate(' + deg + 'deg)';
+//             //
+//             // PRINT DEGREES         
+//             let delta = 0;
+//             let dir = 0;
+//             let rawDelta = mod(deg - lastAngle, 360.0);
+//             if (rawDelta < 180) {
+//               dir = 1;
+//               delta = rawDelta;
+//             } else {
+//               dir = -1;
+//               delta = rawDelta - 360.0;
+//             }
+//             console.log(dir);
+//             current += delta;
+//             lastAngle = deg;
+//             document.querySelector('#test').innerHTML = 'angle deg= ' + current;
+//           }
+//         });
+//     })();
 
-    document
-      .querySelectorAll(".form-stepper-list a .form-stepper-circle")
-      .forEach((circle) => {
-        circle.addEventListener("click", () => {
-          console.log(circle);
-          let classList = circle.parentElement.parentElement.classList;
-          console.log(classList);
+//     document
+//       .querySelectorAll(".form-stepper-list a .form-stepper-circle")
+//       .forEach((circle) => {
+//         circle.addEventListener("click", () => {
+//           console.log(circle);
+//           let classList = circle.parentElement.parentElement.classList;
+//           console.log(classList);
 
-          if (
-            classList.contains("form-stepper-active") !== true &&
-            classList.contains("form-stepper-unfinished") !== true
-          ) {
-            const circleNumber = circle.getAttribute("step_number");
-            console.log("CHANGING TO: " + circleNumber);
-            this.navigateToFormStep(circleNumber);
-          }
-        });
-      });
+//           if (
+//             classList.contains("form-stepper-active") !== true &&
+//             classList.contains("form-stepper-unfinished") !== true
+//           ) {
+//             const circleNumber = circle.getAttribute("step_number");
+//             console.log("CHANGING TO: " + circleNumber);
+//             this.navigateToFormStep(circleNumber);
+//           }
+//         });
+//       });
 
 
   },
