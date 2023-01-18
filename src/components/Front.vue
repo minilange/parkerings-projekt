@@ -10,7 +10,7 @@
     <div class="row mt-5">
       <div class="col-lg-7 pt-5">
         <h1 class="display-1 fw-bold">Better solution <br>for parking.</h1>
-        <h2 class="fw-light mt-4">Parking doesn't need to be <span class="text-decoration-line-through">hard</span>, <br>our foucus is making parking <span class="text-decoration-underline">easier</span>.</h2>
+        <h2 class="fw-light mt-4">Parking doesn't need to be <span class="text-decoration-line-through">hard</span>, <br>our focus is making parking <span class="text-decoration-underline">easier</span>.</h2>
         <router-link class="btn mt-4 btn-light" to="/about"><span >Get to know us</span></router-link>
       </div>
       <div class="col-lg-5 mt-5 mt-lg-0 action-prompt">

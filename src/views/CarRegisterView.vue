@@ -8,8 +8,6 @@
         <div id="imageInput">
           <p>Simply scan your car's license plate, and have it registered automatically!</p>
           <input id="plateImage" class="form-control" type="file" accept="image/*" />
-          <input type="button" id="loadFileXml" value="loadXml" onclick="document.getElementById('file').click();" />
-          <input type="file" style="display:none;" id="file" name="file" />
 
           <img id="previewImg" src="" width="200" />
         </div>
@@ -33,7 +31,7 @@
           <p>Model: {{ carModel }}</p>
         </div>
 
-        <input type="submit" value="Submit" />
+        <input class="btn btn-primary" type="submit" value="Submit" />
       </form>
     </div>
   </div>

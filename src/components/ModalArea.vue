@@ -102,7 +102,6 @@ export default {
     MDBModalFooter,
   },
   mounted() {
-    console.log(this.areaId);
   },
   setup() {
     const areaModal = ref(false);
@@ -141,6 +140,8 @@ export default {
         })
         .then((response) => {
           console.log(response);
+          this.areas = this.$store.dispatch("getAreas");
+          this.areaModal = false;
         });
     },
   },
