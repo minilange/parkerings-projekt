@@ -57,7 +57,7 @@ def register():
     state = insert("INSERT INTO users ([firstname], [lastname], [email], [password], [phone], [ccCode]) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{ccCode}')".format(
         fname=args.get("firstname"),
         lname=args.get("lastname"),
-        email=args.get("email"),
+        email=args.get("email").lower(),
         encrypted=hash_password(args.get("password")),
         phone=args.get("phone"),
         ccCode=args.get("ccCode")
@@ -98,7 +98,7 @@ def login():
         return Response("", ResponseCodes.inv_syntax.value)
 
     user = select("SELECT [password] from users WHERE email='{email}'".format(
-        email=args.get("email")
+        email=args.get("email").lower()
     ))
 
     if isinstance(user, ResponseCodes):
@@ -113,7 +113,7 @@ def login():
         return Response("Invalid password", ResponseCodes.inv_pwd.value)
 
     user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
-        email=args.get("email"),
+        email=args.get("email").lower(),
         password=hash_password(args.get("password"))
     ))
 
@@ -125,8 +125,6 @@ def login():
 
     formatted = format_result(
         user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])
-
-    print(formatted)
 
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
