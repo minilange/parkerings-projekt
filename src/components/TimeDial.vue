@@ -1,11 +1,16 @@
 <template>
     <div class="container dial-container">
+        <!-- <div id="circleColour"></div> -->
         <div id='container'>
-            <div id='slider'>
+            <div id="innerCircle">
+                <div id='slider'>
+                </div>
             </div>
         </div>
 
-        <div id="timeDisplay" class="my-auto user-select-none"></div>
+        <div id="timeDisplay" class="my-auto user-select-none">
+        </div>
+
     </div>
 
 </template>
@@ -58,7 +63,7 @@ export default {
         // let sliderH2 = $slider.clientHeight / 2;
         let sliderW2 = 20;
         let sliderH2 = 20;
-        let radius = 200;
+        let radius = 150;
         let deg = 0;
         let elPLeft = this.getOffset(container, 'offsetLeft');
         let elPTop = this.getOffset(container, 'offsetTop');
@@ -69,6 +74,7 @@ export default {
         console.log('sliderH2: ', sliderH2)
         let X = 0, Y = 0;
         let mdown = false;
+        document.querySelector('#timeDisplay').innerHTML = this.getReadableTime(current / 6);
         document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
         document.addEventListener('mouseup', () => { mdown = false; })
         document.querySelector('#container').addEventListener('mousemove', (e) => {
@@ -117,7 +123,7 @@ export default {
                 if (current < 0) {
                     current = 0;
                     $slider.style.top = -20 + 'px';
-                    $slider.style.left = 180 + 'px';
+                    $slider.style.left = 130 + 'px';
                     $slider.style.transform = 'rotate(' + 0 + 'deg)';
                     return;
                 }
@@ -138,27 +144,43 @@ export default {
     justify-content: space-around;
     height: 500px;
     width: 500px;
-    background: #ddd;
-    border: 1px solid #999;
+    top: -50px;
+    /* border: 1px solid #999; */
 }
+#innerCircle {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+}
+
 #container {
     position: absolute;
     top: 50px;
     left: 50px;
-    width: 400px;
-    height: 400px;
-    background: #ddd;
+    width: 300px;
+    height: 300px;
+    background: #5e5e5e;
     border: 1px solid #999;
     border-radius: 1000px;
+}
+#circleColour {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border: 5px solid #d8956a;
+    top: 50px;
+    left: 50px;
+    border-radius: 50%;
+    z-index: 999;
 }
 
 #slider {
     position: relative;
     height: 40px;
     width: 40px;
-    left: 180px;
+    left: 130px;
     top: -20px;
-    background: red no-repeat center 20px;
+    background: #d8956a no-repeat center 20px;
     border-radius: 20px;
 }
 </style>
