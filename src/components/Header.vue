@@ -19,6 +19,7 @@
           <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
           <router-link v-if="this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
           <router-link v-if="this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white" to="/old-parkings"><span>MY PARKINGS</span></router-link>
+          <a v-if="this.$store.state.user.hasOwnProperty('userId')" @click="this.logOut" class="nav-item nav-link text-white"><span>LOG OUT</span></a>
         </div>
       </div>
     </div>
@@ -28,7 +29,14 @@
 <script>
 export default {
   name: 'HeaderFront',
+  methods: {
+    logOut(){
+      this.$store.dispatch("logOut")
+    }
+  },
 }
+
+
 </script>
 
 <style scoped>

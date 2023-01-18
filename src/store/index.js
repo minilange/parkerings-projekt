@@ -119,6 +119,12 @@ export default new Vuex.Store({
       //     console.log(error)
       //   })
     },
-
+    async logOut() {
+      if (Object.keys(this.state.user).length > 0){
+        this.state.user = {}
+      } else {
+        console.warn("You can't logout, without being logged in")
+      }
+    }
   },
 })
