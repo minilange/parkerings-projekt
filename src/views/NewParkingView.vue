@@ -222,6 +222,10 @@ export default {
 </script>
 
 <style scoped>
+
+.action-prompt{
+  height: 80vh;
+}
 #container {
   position: absolute;
   top: 50px;
