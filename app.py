@@ -4,6 +4,7 @@ import cv2
 import json
 import easyocr
 import imutils
+import requests
 import numpy as np
 from enum import Enum
 from datetime import datetime
@@ -476,6 +477,42 @@ def detect_licenseplate():
     # formatted = format_result((licenseplate,), ["licenseplate"])
 
     return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
+
+
+@app.route("/api/licenseplateLookup/", methods=["GET"])
+def licenseplate_lookup():
+    """
+        An api endpoint for calling the nummerpladeAPI.dk api and returning the car data
+
+        GET:
+            Required args:
+                licenseplate: str
+
+            Returns:
+                ResponseCode: HTTP code to describe finish state
+                    Successful: car_data
+    """
+
+    args = request.args
+
+    required = ["licenseplate"]
+
+    if not all(arg in required for arg in args):
+        return Response("", ResponseCodes.inv_syntax.value)
+
+
+    # Construct API request
+    token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5" ## HIDE! ##
+    API_URL = "https://api.nrpla.de/"
+    headers = {"Authorization": "Bearer {}".format(token)}
+
+    response = requests.get(API_URL + args.get("licenseplate"), headers=headers)
+
+    # Handle response
+    if response.status_code == 200:
+        return Response(json.dumps(response.json()), ResponseCodes.success.value)
+    else:
+        return Response("", ResponseCodes.failed.value)
 
 
 def insert(query: str):
