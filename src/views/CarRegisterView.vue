@@ -123,20 +123,23 @@ export default {
     };
   },
   watch: {
-    inputNumberplate(newNumber) {
+    async inputNumberplate(newNumber) {
       // When manual input of numberplate changes
       this.inputNumberplate = this.inputNumberplate.toUpperCase();
 
       if (this.numberPlatePattern.test(newNumber) === true) {
-        this.response = this.$store.dispatch('numberPlateLookup', newNumber);
-        this.carModel = this.response['model']
-        this.carBrand = this.response['brand']
+        this.response = await this.$store.dispatch('licensePlateLookup', newNumber);
+        console.log('******');
+        console.log(this.response);
+        this.carModel = this.response.data.data.model;
+        this.carBrand = this.response.data.data.brand;
       } else {
         console.log("NOT RIGHT PATTERN");
       }
     },
   },
   methods: {
+
     imageUploaded(e) {
       console.log(e)
       // let blob = e.target.files[0];

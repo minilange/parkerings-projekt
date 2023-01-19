@@ -38,13 +38,13 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async numberPlateLookup(state, numberPlate) {
+    async licensePlateLookup(state, licensePlate) {
       try {
         // Call Python backend
-        console.log(numberPlate);
-        await axios.get(state.api + "/numberPlateLookup")
+        console.log(licensePlate);
+        await axios.get(this.state.api + "/licenseplateLookup/?licenseplate=" + licensePlate)
           .then((response) => {
-            console.log(response)
+            // console.log(response)
             return response;
           })
           .catch((error) => {
@@ -53,7 +53,7 @@ export default new Vuex.Store({
 
 
       } catch (error) {
-        console.log('numberPlateLookup: ' + error)
+        console.log('licensePlateLookup: ' + error)
       }
     },
     async callAPI(state, payload) {
