@@ -64,9 +64,9 @@ export default {
         let elPTop = this.getOffset(container, 'offsetTop');
         let elPos = { x: elPLeft, y: elPTop };
         // let elPos = { x: 50, y: 50 };
-        console.log('elPos: ', elPos)
-        console.log('sliderW2: ', sliderW2)
-        console.log('sliderH2: ', sliderH2)
+        // console.log('elPos: ', elPos)
+        // console.log('sliderW2: ', sliderW2)
+        // console.log('sliderH2: ', sliderH2)
         let X = 0, Y = 0;
         let mdown = false;
         document.querySelector('#container').addEventListener('mousedown', () => { mdown = true; })
@@ -78,10 +78,10 @@ export default {
                 deg = -atan / (Math.PI / 180) + 180; // final (0-360 positive) degrees from mouse position 
 
                 if (counter % 100 == 0) {
-                    console.log('e.clientX: ', e.clientX);
-                    console.log('e.clientY: ', e.clientY);
-                    console.log('mPos: ', mPos);
-                    console.log('deg: ', deg);
+                    // console.log('e.clientX: ', e.clientX);
+                    // console.log('e.clientY: ', e.clientY);
+                    // console.log('mPos: ', mPos);
+                    // console.log('deg: ', deg);
                 }
 
                 X = Math.round(radius * Math.sin(deg * Math.PI / 180));

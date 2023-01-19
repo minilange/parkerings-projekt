@@ -33,6 +33,7 @@
               id="parkingBtn"
               class="btn btn-primary btn-dark"
               @click="$router.push('/new-parking')"
+              data-toggle="tooltip" data-placement="top" title="Register a new parking"
             >
               NEW PARKING
             </button>
@@ -40,6 +41,7 @@
               id="carPlusBtn"
               class="btn btn-primary btn-dark"
               @click="$router.push('/register-car')"
+              data-toggle="tooltip" data-placement="top" title="Add a new car"
             >
               <font-awesome-icon icon="fa-solid fa-car" />
               <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
