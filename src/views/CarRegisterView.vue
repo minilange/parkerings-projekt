@@ -4,13 +4,16 @@
     <div class="col-lg-5 action-prompt m-auto">
       <h3 class="text-center">NEW CAR</h3>
       <hr />
-      <form>
+      <!-- <form action="imageUploaded" enctype="multipart/form-data"> -->
         <div id="imageInput">
           <p>Simply scan your car's license plate, and have it registered automatically!</p>
-          <input id="plateImage" class="form-control" type="file" accept="image/*" />
-
+          <input id="plateImage" class="form-control" type="file" accept="image/*" @change="imageUploaded" />
+  
           <img id="previewImg" src="" width="200" />
         </div>
+
+      <!-- </form> -->
+      <form>
 
         <div id="manualInput">
           <p>Or manually input the info here:</p>
@@ -38,7 +41,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+// import { mapActions } from "vuex";
 
 // const fileTypes = [
 //   "image/apng",
@@ -125,7 +128,7 @@ export default {
       this.inputNumberplate = this.inputNumberplate.toUpperCase();
 
       if (this.numberPlatePattern.test(newNumber) === true) {
-        this.response = this.numberPlateLookup(newNumber);
+        this.response = this.$store.dispatch('numberPlateLookup', newNumber);
         this.carModel = this.response['model']
         this.carBrand = this.response['brand']
       } else {
@@ -133,9 +136,27 @@ export default {
       }
     },
   },
-  methods: mapActions({
-    numberPlateLookup: "numberPlateLookup",
-  }),
+  methods: {
+    imageUploaded(e) {
+      console.log(e)
+      // let blob = e.target.files[0];
+      let blob = document.querySelector('#plateImage').files[0];
+      console.log(blob)
+      let formData = new FormData();
+      formData.append("fileToUpload", blob);
+
+      // Call API
+      console.log(formData);
+
+
+
+      // let reader = new FileReader();
+      // reader.readAsDataURL(blob);
+      // reader.onloadend = () => {
+      //   console.log(reader.result);
+      // };
+    },
+  }
 };
 </script>
 

@@ -62,7 +62,7 @@
           <section id="step-3" class="form-step d-none">
             <h2 class="font-normal">Set time</h2>
             <!-- Step 3 input fields -->
-            <TimeDial />
+            <TimeDial :area="form.selectedArea" :car="form.selectedCar"/>
             
             <div class="form-floating mt-3">
             </div>
@@ -122,8 +122,8 @@ export default {
   data() {
     return {
       form: {
-        selectedCar: "",
-        selectedArea: "",
+        selectedCar: {},
+        selectedArea: {},
       },
       registeredCars: [],
       areas: [],
