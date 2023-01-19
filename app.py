@@ -500,7 +500,6 @@ def licenseplate_lookup():
     if not all(arg in required for arg in args):
         return Response("", ResponseCodes.inv_syntax.value)
 
-
     # Construct API request
     token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5" ## HIDE! ##
     API_URL = "https://api.nrpla.de/"
