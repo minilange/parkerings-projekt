@@ -213,7 +213,8 @@ def areas():
 
         sql_columns = ",".join(['[{k}]'.format(k=k) for k in args])
 
-        sql_values = ",".join(["{{'{v}'}}".format(v=v) if type(v) == str else "{{{v}}}".format(v=v) for v in args.values()])
+        sql_values = ",".join(["{{'{v}'}}".format(v=v) if type(
+            v) == str else "{{{v}}}".format(v=v) for v in args.values()])
 
         state = "UPDATE Areas ({sql_columns}) VALUES ({sql_values}) WHERE areaId={areaId}".format(
             sql_columns=sql_columns,
@@ -300,14 +301,22 @@ def reg_licenseplates():
         return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
-@app.route("/api/userLicenseplates/", methods=["POST", "GET"])
+@app.route("/api/userLicenseplates/", methods=["POST", "DELETE", "GET"])
 def user_licenseplate():
     """
         An api endpint that lets you set a saved licenseplate for a specific user as well as reading it
 
         POST:
             Required args:
-                userId: str
+                userId: int
+                licenseplate: str
+
+            Returns:
+                ResponseCode: HTTP code to describe finish state
+
+        DELETE:
+            Required args:
+                userId: int,
                 licenseplate: str
 
             Returns:
@@ -315,7 +324,7 @@ def user_licenseplate():
 
         GET:
             Required args:
-                userId: str
+                userId: int
 
             licenseplate_data:
             [
@@ -344,6 +353,22 @@ def user_licenseplate():
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
+            userId=args.get("userId"),
+            licenseplate=args.get("licenseplate")
+        ))
+
+        return Response("", state.value)
+
+    elif request.method == "DELETE":
+
+        args = MultiDict(request.get_json())
+
+        required = ["userId", "licenseplate"]
+
+        if not all(arg in required for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        state = delete("DELETE FROM userLicenseplates WHERE userId={userId} and licenseplate='{licenseplate}'".format(
             userId=args.get("userId"),
             licenseplate=args.get("licenseplate")
         ))
@@ -458,21 +483,12 @@ def parkings():
 @app.route("/api/detectLicenseplate/", methods=["GET"])
 def detect_licenseplate():
 
-    # print("Called detect licenseplates")
-
     filestr = request.files["file"]
-
-    # print(filestr.filename)
 
     file_bytes = np.fromstring(filestr.read(), np.uint8)
 
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    # image_file = f"./temp_licenseplates/{filestr.filename.split('.')[0]}.jpg"
-
-    # cv2.imwrite(image_file, raw)
-
-    # img = cv2.imread(image_file)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
@@ -550,6 +566,22 @@ def update(query: str):
     """
 
     if all(keyword in query.lower() for keyword in ["update", "where"]) or any(keyword in query.lower() for keyword in ["delete", "insert", "select", "drop", "alter"]):
+        return ResponseCodes.inv_syntax
+
+    db_engine = connect()
+    try:
+        with db_engine.begin() as conn:
+            conn.exec_driver_sql(query)
+    except Exception as e:
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
+
+    return ResponseCodes.success
+
+
+def delete(query: str):
+
+    if all(keyword in query.lower() for keyword in ["delete", "where"]) or any(keyword in query.lower() for keyword in ["update", "insert", "select", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
