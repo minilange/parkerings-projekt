@@ -15,6 +15,7 @@ axios.interceptors.request.use(function (config) {
 
 export default new Vuex.Store({
   state: {
+    searching: false,
     carInfo: {},
     admin: {},
     api: "https://parking-project-api.azurewebsites.net/api",
@@ -35,22 +36,27 @@ export default new Vuex.Store({
     },
     SET_USER_INFO(state, userInfo) {
       state.user = userInfo
+    },
+    SET_SEARCHING(state, searching) {
+      state.searching = searching
     }
   },
   actions: {
     async licensePlateLookup(state, licensePlate) {
+      // Call Python backend to get car info from NummerpladeAPI.dk
+
       try {
-        // Call Python backend
-        console.log(licensePlate);
+        this.commit('SET_SEARCHING', true) // Set searching to true
         await axios.get(this.state.api + "/licenseplateLookup/?licenseplate=" + licensePlate)
           .then((response) => {
-            // console.log(response)
-            return response;
+            console.log(response.data)
+            this.commit('SET_CAR', response.data) // Set car in state
           })
           .catch((error) => {
             console.error(error)
           })
-
+          
+        this.commit('SET_SEARCHING', false) // Set searching to false
 
       } catch (error) {
         console.log('licensePlateLookup: ' + error)

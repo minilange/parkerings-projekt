@@ -13,7 +13,7 @@
         </div>
 
       <!-- </form> -->
-      <form>
+      <form ref="newCarForm">
 
         <div id="manualInput">
           <p>Or manually input the info here:</p>
@@ -25,16 +25,17 @@
 
         <!-- <button class="btn btn-primary" @click="getPlateInput">Search for car</button> -->
 
-        <p id="searchStatus">{{ response }}</p>
+        <div v-if="$store.state.searching == true" id="searchStatus" class="mt-3">Searching...</div>
 
         <br />
 
-        <div id="carInfo">
-          <p>Brand: {{ carBrand }}</p>
-          <p>Model: {{ carModel }}</p>
+        <div v-if="$store.state.carInfo.data && $store.state.searching == false" id="carInfo">
+          <p>Brand: {{ $store.state.carInfo.data.brand }}</p>
+          <p>Model: {{ $store.state.carInfo.data.model }}</p>
+          <p v-if="$store.state.carInfo.data.body_type">Type: {{ $store.state.carInfo.data.body_type.name }}</p>
         </div>
 
-        <input class="btn btn-primary" type="submit" value="Submit" />
+        <button class="btn btn-primary" @click="submitNewCar">Submit</button>
       </form>
     </div>
   </div>
@@ -123,18 +124,17 @@ export default {
     };
   },
   watch: {
-    async inputNumberplate(newNumber) {
+    inputNumberplate(newNumber) {
       // When manual input of numberplate changes
       this.inputNumberplate = this.inputNumberplate.toUpperCase();
 
       if (this.numberPlatePattern.test(newNumber) === true) {
-        this.response = await this.$store.dispatch('licensePlateLookup', newNumber);
-        console.log('******');
-        console.log(this.response);
-        this.carModel = this.response.data.data.model;
-        this.carBrand = this.response.data.data.brand;
+        this.$store.dispatch('licensePlateLookup', newNumber);
+
+
       } else {
         console.log("NOT RIGHT PATTERN");
+        this.$store.state.carInfo = {};
       }
     },
   },
@@ -159,6 +159,34 @@ export default {
       //   console.log(reader.result);
       // };
     },
+    submitNewCar() {
+      let newCarPayload = {
+        "method": "POST",
+        "endpoint": "regLicenseplates",
+        "body": {
+          "requester": "USERID HERE",
+          "licensePlate": this.inputNumberplate,
+          "brand": this.$store.state.carInfo.data.brand,
+          "model": this.$store.state.carInfo.data.model,
+        }
+      }
+
+      // Not all cars have a body type
+      try {
+        newCarPayload.body.type = this.$store.state.carInfo.data.body_type.name;
+      } catch (error) {
+        console.log("No body type");
+        newCarPayload.body.type = "No type";
+      }
+
+      this.$store.dispatch('callAPI', newCarPayload) // Post new car to API
+        .then(() => {
+          this.$router.push({ name: "Home" });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 };
 </script>
