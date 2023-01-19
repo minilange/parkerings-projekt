@@ -119,7 +119,6 @@ export default {
         latitude: this.areaLat,
         longitude: this.areaLon,
       };
-
       console.log("payload", payload);
 
       if (this.edit == "true") {

@@ -66,9 +66,8 @@ export default new Vuex.Store({
         .then((response) => {
           console.log(response);
         }).catch((error) => {
-          console.warn(error);
+          console.warn("GET", error);
         })
-        
       } else if(method == "POST") {
         // this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: SHA256(this.form.password, this.$store.state.secret).toString(), ccCode: this.form.ccCode.code}
 
@@ -77,11 +76,16 @@ export default new Vuex.Store({
             console.log(response);
           })
           .catch((error) => {
-            console.warn("register", error);
+            console.warn("POST", error);
           });
       } else if(method == "PATCH") {
-        /**** AXIOS PATCH ****/
-        console.log('PATCH');
+        axios.patch(this.state.api + "/" + endpoint + "/" + body)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.warn("PATCH", error);
+        });
       }
     },
     async getCars() {
