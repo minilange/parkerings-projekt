@@ -131,7 +131,7 @@ def login():
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
 
-@app.route("/api/areas/", methods=["POST", "GET"])
+@app.route("/api/areas/", methods=["POST", "GET", "PATCH"])
 def areas():
     """
         An api endpoint to insert and extract parking areas
@@ -141,6 +141,20 @@ def areas():
                 areaName: str
                 address: str
                 latitude: float
+                longitude: float
+
+            Returns:
+                ResponseCode: HTTP code to describe finish state
+
+        PATCH:
+            Required args:
+                areaId: int,
+
+            -- At least one is required --
+            Optional args: 
+                areaName: str,
+                address: str,
+                latitude: float,
                 longitude: float
 
             Returns:
@@ -164,7 +178,6 @@ def areas():
             Returns:
                 ResponseCode: HTTP code to describe finish state
                     Successful: area_data
-
     """
 
     if request.method == "POST":
@@ -181,6 +194,32 @@ def areas():
             latitude=args.get("latitude"),
             longitude=args.get("longitude")
         ))
+
+        return Response("", state.value)
+
+    elif request.method == "PATCH":
+
+        args = MultiDict(request.get_json())
+
+        # Checks required args
+        required = ["areaId"]
+        if not all(arg in required for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        # Checks if at least one optional arg is present
+        optional = ["areaName", "address", "latitude", "longitude"]
+        if not any(arg in optional for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        sql_columns = ",".join(['[{k}]'.format(k=k) for k in args])
+
+        sql_values = ",".join(["{{'{v}'}}".format(v=v) if type(v) == str else "{{{v}}}".format(v=v) for v in args.values()])
+
+        state = "UPDATE Areas ({sql_columns}) VALUES ({sql_values}) WHERE areaId={areaId}".format(
+            sql_columns=sql_columns,
+            sql_values=sql_values,
+            areaId=args.get("areaId")
+        )
 
         return Response("", state.value)
 
@@ -488,7 +527,29 @@ def insert(query: str):
             int: Based on if insert was successful
     """
 
-    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
+    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "update", "drop", "alter"]):
+        return ResponseCodes.inv_syntax
+
+    db_engine = connect()
+    try:
+        with db_engine.begin() as conn:
+            conn.exec_driver_sql(query)
+    except Exception as e:
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
+
+    return ResponseCodes.success
+
+
+def update(query: str):
+    """
+        A function to make sure that the update query is restriced and is not doing anything else
+
+        Returns:
+            int: Based on if update was successful
+    """
+
+    if all(keyword in query.lower() for keyword in ["update", "where"]) or any(keyword in query.lower() for keyword in ["delete", "insert", "select", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
@@ -509,7 +570,7 @@ def select(query: str):
         Returns:
             List: Fetched result from db
     """
-    if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
+    if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "update", "delete", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
