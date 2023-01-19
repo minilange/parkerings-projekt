@@ -25,6 +25,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.3",
     "mdb-vue-ui-kit": "^3.1.1",
+    "moment": "^2.29.4",
     "popper.js": "^1.16.1",
     "vue": "^3.2.45",
     "vue-axios": "^3.5.2",

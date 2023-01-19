@@ -11,7 +11,7 @@
         </div>
         <div class="col-lg-6">
             <h6>Your parking untill:</h6>
-            <p>11/1 10:30</p>
+            <p>{{ parkingUntil }}</p>
             <hr>
             <h6>Price:</h6>
             <p>{{ price }} DKK</p>
@@ -26,6 +26,9 @@
 
 </template>
 <script>
+import moment from "moment";
+
+
 export default {
     name: "TimeDial",
     data() {
@@ -36,7 +39,7 @@ export default {
                 minutes: 0
             },
             price: 0,
-            parkingUntil: "No Time Selecte"
+            parkingUntil: "No Time Selected",
         };
     },
     props: {
@@ -45,7 +48,7 @@ export default {
         },
         car: {
             type: Object,
-        }
+        },
     },
 
     methods: {
@@ -77,11 +80,10 @@ export default {
     watch: {
         'current': function(value){
             let minutes = value / 6
-            const date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
             this.time.hours = Math.floor(minutes / 60);
             this.time.minutes = Math.round(minutes % 60);
-            this.price = minutes * 0.15
-            this.parkingUntil = date
+            this.price = Math.floor((minutes * 0.15) * 100) / 100
+            this.parkingUntil = moment().add(minutes, 'minutes').format('DD/MM/YYYY, h:mm');
         }
     },
     mounted() {

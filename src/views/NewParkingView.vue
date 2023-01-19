@@ -27,7 +27,7 @@
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2" :disabled="Object.keys(form.selectedArea) <= 0"
                 @click="navigateToFormStep">
                 Next
               </button>
@@ -51,7 +51,7 @@
                 @click="navigateToFormStep">
                 Prev
               </button>
-              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
+              <button class="button btn btn-navigate-form-step" type="button" step_number="3" :disabled="Object.keys(form.selectedCar) <= 0"
                 @click="navigateToFormStep">
                 Next
               </button>
@@ -71,7 +71,7 @@
                 @click="navigateToFormStep">
                 Prev
               </button>
-              <button class="button btn submit-btn" type="submit">Save</button>
+              <button class="button btn submit-btn" type="submit" :disabled="price = 0">Save</button>
             </div>
           </section>
         </form>
@@ -173,6 +173,8 @@ export default {
     },
   },
   mounted() {
+    // WIP - Need to access time property on TimeDial.data
+    console.log(TimeDial.data)
     axios
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
