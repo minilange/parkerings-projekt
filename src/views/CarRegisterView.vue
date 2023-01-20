@@ -5,12 +5,12 @@
       <h3 class="text-center">NEW CAR</h3>
       <hr />
       <!-- <form action="imageUploaded" enctype="multipart/form-data"> -->
-        <div id="imageInput">
-          <p>Simply scan your car's license plate, and have it registered automatically!</p>
-          <input id="plateImage" class="form-control" type="file" accept="image/*" @change="imageUploaded" />
-  
-          <img id="previewImg" src="" width="200" />
-        </div>
+      <div id="imageInput">
+        <p>Simply scan your car's license plate, and have it registered automatically!</p>
+        <input id="plateImage" class="form-control" type="file" accept="image/*" @change="imageUploaded" />
+
+        <img id="previewImg" src="" width="200" />
+      </div>
 
       <!-- </form> -->
       <form ref="newCarForm">
@@ -26,10 +26,11 @@
         <!-- <button class="btn btn-primary" @click="getPlateInput">Search for car</button> -->
 
         <div v-if="$store.state.searching == true" id="searchStatus" class="mt-4 d-flex">
-          <span>Searching...</span> <div class="loader"></div>
-          
+          <span>Searching...</span>
+          <div class="loader"></div>
+
         </div>
-        
+
         <br />
 
         <div v-if="$store.state.carInfo.data && $store.state.searching == false" id="carInfo">
@@ -163,32 +164,45 @@ export default {
       // };
     },
     submitNewCar() {
-      let newCarPayload = {
-        "method": "POST",
-        "endpoint": "regLicenseplates",
-        "params": {
-          "requester": "USERID HERE",
-          "licensePlate": this.inputNumberplate,
-          "brand": this.$store.state.carInfo.data.brand,
-          "model": this.$store.state.carInfo.data.model,
+      let payloads = [
+        {
+          method: "POST",
+          endpoint: "regLicenseplates",
+          body: {
+            licenseplate: this.inputNumberplate,
+            brand: this.$store.state.carInfo.data.brand,
+            model: this.$store.state.carInfo.data.model,
+            type: ""
+          }
+        },
+        {
+          method: "POST",
+          endpoint: "userLicenseplates",
+          body: {
+            userId: this.$store.state.user.userId,
+            licenseplate: this.inputNumberplate,
+          }
         }
-      }
+      ]
 
       // Not all cars have a body type
       try {
-        newCarPayload.body.type = this.$store.state.carInfo.data.body_type.name;
+        payloads[0].body.type = this.$store.state.carInfo.data.body_type.name;
       } catch (error) {
         console.log("No body type");
-        newCarPayload.body.type = "No type";
+        payloads[0].body.type = "Undefined";
       }
 
-      this.$store.dispatch('callAPI', newCarPayload) // Post new car to API
+      payloads.forEach(payload => {
+        this.$store.dispatch('callAPI', payload) // Post new car to API
         .then(() => {
-          this.$router.push({ name: "Home" });
+          // this.$router.push({ name: "Home" });
+          console.log("Car added", payload);
         })
         .catch((error) => {
           console.log(error);
         });
+      });      
     }
   }
 };

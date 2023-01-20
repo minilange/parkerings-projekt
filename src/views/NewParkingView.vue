@@ -4,15 +4,22 @@
     <div class="col-lg-7 action-prompt m-auto">
       <h3 class="text-center">NEW PARKING</h3>
       <hr />
+      
+      
+      <button class="btn btn-secondary" @click="setArea">TEST AREA MARKER</button>
 
+      
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
         <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
-            <h2 class="font-normal">Choose an area</h2>
+            <h2 class="font-normal text-center">Choose an area</h2>
             <!-- Step 1 input fields -->
-            <p>[SHOW MAP HERE]</p>
+            <div id="mapContainer" class="h-100 w-100 mt-5">
+              <AreaMap />
+
+            </div>
             <div class="form-floating mt-3">
               <select v-model="form.selectedArea" class="form-control" id="areaInput">
                 <option v-for="area in areas" :value="area" :key="area">
@@ -24,15 +31,16 @@
                 <input type="radio" v-model="form.selectedArea" name="areaInput" />
                 {{ area.areaName }} {{ area.address }}
               </div> -->
+              
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
               <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-                :disabled="Object.keys(form.selectedArea) <= 0" @click="navigateToFormStep">
-                Next
-              </button>
-            </div>
-          </section>
+              :disabled="Object.keys(form.selectedArea) <= 0" @click="navigateToFormStep">
+              Next
+            </button>
+          </div>
+        </section>
 
           <!-- Step 2 Content, default hidden on page load. -->
           <section id="step-2" class="form-step d-none">
@@ -120,10 +128,12 @@
 <script>
 import axios from "axios";
 import TimeDial from "@/components/TimeDial.vue";
+import AreaMap from "@/components/AreaMap.vue";
 
 export default {
   components: {
-    TimeDial
+    TimeDial,
+    AreaMap
   },
   data() {
     return {
@@ -136,7 +146,20 @@ export default {
       myNumber: "1",
     };
   },
+  watch: {
+    'form.selectedArea': function(value) {
+      console.log(value);
+      // Set marker on map
+
+    },
+    'form.selectedCar': function(value) {
+      console.log(value);
+    }
+  },
   methods: {
+    setArea() {
+      console.log(this.form.selectedArea);
+    },
     getNumberPlate(plateNumber) {
       // Python image recognition call
       console.log(plateNumber);

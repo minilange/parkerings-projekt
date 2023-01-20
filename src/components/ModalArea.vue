@@ -137,7 +137,7 @@ export default {
           endpoint: "areas",
           body: payload,
         })
-        .then((response) => {
+        .then((response) => {+
           console.log(response);
           this.areas = this.$store.dispatch("getAreas");
           this.areaModal = false;
