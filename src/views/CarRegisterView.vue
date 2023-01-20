@@ -25,8 +25,11 @@
 
         <!-- <button class="btn btn-primary" @click="getPlateInput">Search for car</button> -->
 
-        <div v-if="$store.state.searching == true" id="searchStatus" class="mt-3">Searching...</div>
-
+        <div v-if="$store.state.searching == true" id="searchStatus" class="mt-4 d-flex">
+          <span>Searching...</span> <div class="loader"></div>
+          
+        </div>
+        
         <br />
 
         <div v-if="$store.state.carInfo.data && $store.state.searching == false" id="carInfo">
@@ -163,7 +166,7 @@ export default {
       let newCarPayload = {
         "method": "POST",
         "endpoint": "regLicenseplates",
-        "body": {
+        "params": {
           "requester": "USERID HERE",
           "licensePlate": this.inputNumberplate,
           "brand": this.$store.state.carInfo.data.brand,

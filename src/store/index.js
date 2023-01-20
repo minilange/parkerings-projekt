@@ -1,14 +1,14 @@
 import Vuex from "vuex"
 import axios from "axios"
 
-axios.interceptors.request.use(function (config) {
-  // Do something before request is sent
-  console.log(config)
-  return config;
-}, function (error) {
-  // Do something with request error
-  return Promise.reject(error);
-});
+// axios.interceptors.request.use(function (config) {
+//   // Do something before request is sent
+//   console.log(config)
+//   return config;
+// }, function (error) {
+//   // Do something with request error
+//   return Promise.reject(error);
+// });
 
 // axios.interceptors.response.use(function())
 
@@ -20,12 +20,17 @@ export default new Vuex.Store({
     admin: {},
     api: "https://parking-project-api.azurewebsites.net/api",
     user: {},
+    time: {
+      hours: 0,
+      minutes: 0
+    },
     secret: "Th1s1s4S3cr3t"
   },
   getters: {
     getCarInfo: (state) => state.carInfo,
     getAdminInfo: (state) => state.admin,
     getUserInfo: (state) => state.user,
+    getParkingTime: (state) => state.time
   },
   mutations: {
     SET_CAR(state, carInfo) {
@@ -39,6 +44,9 @@ export default new Vuex.Store({
     },
     SET_SEARCHING(state, searching) {
       state.searching = searching
+    },
+    SET_PARKING_TIME(state, time) {
+      state.time = time
     }
   },
   actions: {
@@ -49,7 +57,6 @@ export default new Vuex.Store({
         this.commit('SET_SEARCHING', true) // Set searching to true
         await axios.get(this.state.api + "/licenseplateLookup/?licenseplate=" + licensePlate)
           .then((response) => {
-            console.log(response.data)
             this.commit('SET_CAR', response.data) // Set car in state
           })
           .catch((error) => {
@@ -65,7 +72,20 @@ export default new Vuex.Store({
     async callAPI(state, payload) {
       const method = payload.method;
       const endpoint = payload.endpoint;
-      const body = payload.body
+      let body;
+      let params;
+      try {
+        body = payload.body
+      } catch (error) {
+        body = '';
+        console.log('callAPI: ' + error)
+      }
+      try {
+        params = payload.params
+      } catch (error) {
+        params = '/';
+        console.log('callAPI: ' + error)
+      }
 
       if(method == "GET") {
         await axios.get(this.state.api + "/" + endpoint + "/")
@@ -76,7 +96,7 @@ export default new Vuex.Store({
         })
       } else if(method == "POST") {
         // this.form.apiSend = {firstname: this.form.firstname, lastname: this.form.lastname, email: this.form.email, phone: this.form.phone, password: SHA256(this.form.password, this.$store.state.secret).toString(), ccCode: this.form.ccCode.code}
-
+        console.log("TESTAPI:", endpoint, params)
         axios.post(this.state.api + "/" + endpoint + "/", body)
           .then((response) => {
             console.log(response);
@@ -85,7 +105,7 @@ export default new Vuex.Store({
             console.warn("POST", error);
           });
       } else if(method == "PATCH") {
-        axios.patch(this.state.api + "/" + endpoint + "/" + body)
+        axios.patch(this.state.api + "/" + endpoint + "/", body)
         .then((response) => {
           console.log(response);
         })
@@ -95,10 +115,8 @@ export default new Vuex.Store({
       }
     },
     async getCars() {
-      console.log('** ' + this.state.api);
       await axios.get(this.state.api + "/regLicenseplates/")
         .then((response) => {
-          console.log(response)
           this.commit('SET_ADMIN_INFO', { "data": response.data, "key": 'cars' })
           return response.data
         }).catch((error) => {
@@ -107,10 +125,8 @@ export default new Vuex.Store({
 
     },
     async getAreas() {
-      console.log('** ' + this.state.api);
       await axios.get(this.state.api + "/areas/")
         .then((response) => {
-          console.log(response)
           this.commit('SET_ADMIN_INFO', { "data": response.data, "key": 'areas' })
           return response.data
         }).catch((error) => {
@@ -119,7 +135,7 @@ export default new Vuex.Store({
     },
     async getParkings() {
       // INCLUDE USERID?
-      console.log('getParkings');
+      // console.log('getParkings');
       //   await axios.get(this.state.api + "/parkings/")
       //   .then((response) => {
       //     console.log(response)

@@ -10,8 +10,9 @@
     <div class="row mt-5">
       <div class="col-lg-7 pt-5">
         <h1 class="display-1 fw-bold">Better solution <br>for parking.</h1>
-        <h2 class="fw-light mt-4">Parking doesn't need to be <span class="text-decoration-line-through">hard</span>, <br>our focus is making parking <span class="text-decoration-underline">easier</span>.</h2>
-        <router-link class="btn mt-4 btn-light" to="/about"><span >Get to know us</span></router-link>
+        <h2 class="fw-light mt-4">Parking doesn't need to be <span class="text-decoration-line-through">hard</span>,
+          <br>our focus is making parking <span class="text-decoration-underline">easier</span>.</h2>
+        <router-link class="btn mt-4 btn-light" to="/about"><span>Get to know us</span></router-link>
       </div>
       <div class="col-lg-5 mt-5 mt-lg-0 action-prompt">
         <div class="mx-auto row h-100">
@@ -29,20 +30,12 @@
           </div>
 
           <div class="col-xl-12 d-flex justify-content-around front-actions mt-auto">
-            <button
-              id="parkingBtn"
-              class="btn btn-primary btn-dark"
-              @click="$router.push('/new-parking')"
-              data-toggle="tooltip" data-placement="top" title="Register a new parking"
-            >
+            <button id="parkingBtn" class="btn btn-primary btn-dark" @click="$router.push('/new-parking')"
+              data-toggle="tooltip" data-placement="top" title="Register a new parking">
               NEW PARKING
             </button>
-            <button
-              id="carPlusBtn"
-              class="btn btn-primary btn-dark"
-              @click="$router.push('/register-car')"
-              data-toggle="tooltip" data-placement="top" title="Add a new car"
-            >
+            <button id="carPlusBtn" class="btn btn-primary btn-dark" @click="$router.push('/register-car')"
+              data-toggle="tooltip" data-placement="top" title="Add a new car">
               <font-awesome-icon icon="fa-solid fa-car" />
               <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
             </button>
@@ -65,14 +58,17 @@ export default {
   width: 80%;
   border-radius: 12px;
 }
+
 #carPlusBtn {
   width: 56px;
   height: 56px;
   border-radius: 50%;
 }
+
 #carPlus {
   bottom: 8px;
 }
+
 .front-actions {
   max-height: 60px;
   margin-bottom: 35px;
@@ -107,6 +103,7 @@ export default {
   color: white;
   transition: 0.4s;
 }
+
 .circle2 {
   border: 5px solid white;
   background-color: black;
@@ -120,6 +117,7 @@ export default {
   text-align: center;
   transition: 0.4s;
 }
+
 .btn-transparent {
   background: transparent;
   color: white;
@@ -127,9 +125,11 @@ export default {
   height: 100%;
   border-radius: 50%;
 }
+
 .circle1:hover {
   background-color: gray;
 }
+
 .circle2:hover {
   background-color: gray;
 }

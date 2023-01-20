@@ -84,11 +84,10 @@ export default {
             this.time.minutes = Math.round(minutes % 60);
             this.price = Math.floor((minutes * 0.15) * 100) / 100
             this.parkingUntil = moment().add(minutes, 'minutes').format('DD/MM/YYYY, h:mm');
+            this.$store.state.time = this.time
         }
     },
     mounted() {
-        console.log(this.car)
-        console.log(this.area)
         // DIAL SLIDER: https://stackoverflow.com/questions/20505132/javascript-circle-slider-degrees-to-time
         // let counter = 0;
         var lastAngle = 0;

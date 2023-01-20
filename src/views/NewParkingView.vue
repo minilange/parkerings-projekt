@@ -27,8 +27,8 @@
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
-              <button class="button btn btn-navigate-form-step" type="button" step_number="2" :disabled="Object.keys(form.selectedArea) <= 0"
-                @click="navigateToFormStep">
+              <button class="button btn btn-navigate-form-step" type="button" step_number="2"
+                :disabled="Object.keys(form.selectedArea) <= 0" @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -38,21 +38,26 @@
           <section id="step-2" class="form-step d-none">
             <h2 class="font-normal">Choose car</h2>
             <!-- Step 2 input fields -->
-            <div class="form-floating mt-3">
+            <div class="form-floating mt-3 gap-2" id="carRow">
               <select v-model="form.selectedCar" class="form-control" id="carInput">
                 <option v-for="car in registeredCars" :value="car" :key="car">
                   {{ car.brand }} {{ car.model }} - {{ car.licenseplate }}
                 </option>
               </select>
               <label for="carInput">Choose a car...</label>
+              <button id="carPlusBtn" class="btn btn-primary btn-dark" @click="$router.push('/register-car')"
+                data-toggle="tooltip" data-placement="top" title="Add a new car">
+                <font-awesome-icon icon="fa-solid fa-car" />
+                <font-awesome-icon id="carPlus" icon="fa-solid fa-plus" />
+              </button>
             </div>
             <div class="mt-3 d-flex justify-content-between">
               <button class="button btn btn-navigate-form-step" type="button" step_number="1"
                 @click="navigateToFormStep">
                 Prev
               </button>
-              <button class="button btn btn-navigate-form-step" type="button" step_number="3" :disabled="Object.keys(form.selectedCar) <= 0"
-                @click="navigateToFormStep">
+              <button class="button btn btn-navigate-form-step" type="button" step_number="3"
+                :disabled="Object.keys(form.selectedCar) <= 0" @click="navigateToFormStep">
                 Next
               </button>
             </div>
@@ -62,8 +67,8 @@
           <section id="step-3" class="form-step d-none">
             <h2 class="font-normal">Set time</h2>
             <!-- Step 3 input fields -->
-            <TimeDial :area="form.selectedArea" :car="form.selectedCar"/>
-            
+            <TimeDial :area="form.selectedArea" :car="form.selectedCar" />
+
             <div class="form-floating mt-3">
             </div>
             <div class="mt-3 d-flex justify-content-between">
@@ -71,13 +76,14 @@
                 @click="navigateToFormStep">
                 Prev
               </button>
-              <button class="button btn submit-btn" type="submit" :disabled="price = 0">Save</button>
+              <button class="button btn submit-btn" type="submit"
+                :disabled="$store.state.time.hours == 0 && $store.state.time.minutes == 0">Save</button>
             </div>
           </section>
         </form>
 
         <!-- Form Steps / Progress Bar -->
-        <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0 mt-4">
+        <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
           <!-- Step 1 -->
           <li class="form-stepper-active text-center form-stepper-list" step="1">
             <a class="mx-2" step_number="1">
@@ -173,8 +179,6 @@ export default {
     },
   },
   mounted() {
-    // WIP - Need to access time property on TimeDial.data
-    console.log(TimeDial.data)
     axios
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
@@ -183,6 +187,7 @@ export default {
       })
       .then((response) => {
         this.registeredCars = response.data;
+        console.log("registeredCars:", this.registeredCars)
       })
       .catch((error) => {
         console.warn("userLicenseplates", error);
@@ -224,10 +229,29 @@ export default {
 </script>
 
 <style scoped>
+#carRow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
 
-.action-prompt{
+#carPlusBtn {
+  display: flex;
+  align-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+#carPlus {
+  bottom: 8px;
+}
+
+
+.action-prompt {
   height: 80vh;
 }
+
 #container {
   position: absolute;
   top: 50px;
@@ -249,6 +273,13 @@ export default {
   border-radius: 20px;
 }
 
+#userAccountSetupForm {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 h1 {
   text-align: center;
 }
@@ -258,7 +289,7 @@ h2 {
 }
 
 #multi-step-form-container {
-  height: 85%;
+  height: 75%;
   border: 0;
   margin-top: 0;
 }
@@ -312,6 +343,7 @@ h2 {
 ul.form-stepper {
   counter-reset: section;
   margin-bottom: 3rem;
+
 }
 
 ul.form-stepper .form-stepper-circle {
