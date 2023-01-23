@@ -4,20 +4,16 @@
     <div class="col-lg-7 action-prompt m-auto">
       <h3 class="text-center">NEW PARKING</h3>
       <hr />
-      
-      
-      <button class="btn btn-secondary" @click="setArea">TEST AREA MARKER</button>
 
-      
       <div id="multi-step-form-container">
         <!-- Step Wise Form Content -->
-        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" ref="form">
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal text-center">Choose an area</h2>
             <!-- Step 1 input fields -->
             <div id="mapContainer" class="h-100 w-100 mt-5">
-              <AreaMap />
+              <AreaMap ref="area" />
 
             </div>
             <div class="form-floating mt-3">
@@ -31,16 +27,16 @@
                 <input type="radio" v-model="form.selectedArea" name="areaInput" />
                 {{ area.areaName }} {{ area.address }}
               </div> -->
-              
+
               <label for="areaInput">Area</label>
             </div>
             <div class="mt-3 d-flex justify-content-end">
               <button class="button btn btn-navigate-form-step" type="button" step_number="2"
-              :disabled="Object.keys(form.selectedArea) <= 0" @click="navigateToFormStep">
-              Next
-            </button>
-          </div>
-        </section>
+                :disabled="Object.keys(form.selectedArea) <= 0" @click="navigateToFormStep">
+                Next
+              </button>
+            </div>
+          </section>
 
           <!-- Step 2 Content, default hidden on page load. -->
           <section id="step-2" class="form-step d-none">
@@ -75,7 +71,7 @@
           <section id="step-3" class="form-step d-none">
             <h2 class="font-normal">Set time</h2>
             <!-- Step 3 input fields -->
-            <TimeDial :area="form.selectedArea" :car="form.selectedCar" />
+            <TimeDial :area="form.selectedArea" :car="form.selectedCar" ref="timeDial" />
 
             <div class="form-floating mt-3">
             </div>
@@ -84,7 +80,7 @@
                 @click="navigateToFormStep">
                 Prev
               </button>
-              <button class="button btn submit-btn" type="submit"
+              <button class="button btn submit-btn" @click="submit"
                 :disabled="$store.state.time.hours == 0 && $store.state.time.minutes == 0">Save</button>
             </div>
           </section>
@@ -129,6 +125,7 @@
 import axios from "axios";
 import TimeDial from "@/components/TimeDial.vue";
 import AreaMap from "@/components/AreaMap.vue";
+// import { TypedChainedSet } from "webpack-chain";
 
 export default {
   components: {
@@ -147,12 +144,17 @@ export default {
     };
   },
   watch: {
-    'form.selectedArea': function(value) {
+    'form.selectedArea': function (value) {
       console.log(value);
       // Set marker on map
+      let coords = {
+        "coordinates": [value.longitude, value.latitude],
+      }
+      let areaMap = this.$refs.area;
+      areaMap.plotResult(coords);
 
     },
-    'form.selectedCar': function(value) {
+    'form.selectedCar': function (value) {
       console.log(value);
     }
   },
@@ -200,6 +202,34 @@ export default {
         }
       }
     },
+    submit() {
+      console.log('SUBMITTING');
+      console.log(this.$refs.form);
+
+      // POST parking to API
+      this.$store.dispatch("callAPI", {
+        method: "POST",
+        endpoint: "parkings",
+        body: {
+          licenseplate: this.form.selectedCar.id,
+          userId: this.$store.getters.getUserInfo.userId,
+          areaId: this.form.selectedArea.id,
+          minutes: this.$store.getters.getParkingTimeMinutes,
+          price: this.$refs.timeDial.price,
+          state: "active",
+          timestamp: this.$refs.timeDial.parkingUntil,
+        },
+      }).then((response) => {
+        console.log(response);
+        this.$router.push({ name: "Home" });
+      }).catch((error) => {
+        console.warn("parkings", error);
+      }
+      );
+
+      
+
+    }
   },
   mounted() {
     axios

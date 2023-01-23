@@ -30,7 +30,8 @@ export default new Vuex.Store({
     getCarInfo: (state) => state.carInfo,
     getAdminInfo: (state) => state.admin,
     getUserInfo: (state) => state.user,
-    getParkingTime: (state) => state.time
+    getParkingTime: (state) => state.time,
+    getParkingTimeMinutes: (state) => state.time.hours * 60 + state.time.minutes
   },
   mutations: {
     SET_CAR(state, carInfo) {

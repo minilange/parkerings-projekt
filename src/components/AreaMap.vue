@@ -30,10 +30,6 @@ export default {
     name: "AreaMap",
     components: {  },
     methods: {
-        setArea(coordinates) {
-            coordinates = (this.$store.state.form.selectedArea.latitude, this.$store.state.form.selectedArea.longitude);
-            this.plotResult(coordinates);
-        }
     },
     setup() {
         let map;
@@ -61,7 +57,15 @@ export default {
                 closeSearchResults();
             });
             // get users location
-            getGeolocation();
+            // getGeolocation();
+
+            let coordinates = {
+                "coordinates": [
+                    10.126,
+                    56.114
+                ],
+            }
+            plotResult(coordinates);
         });
         const coords = ref(null);
         const fetchCoords = ref(null);
@@ -121,6 +125,7 @@ export default {
         };
         const resultMarker = ref(null);
         const plotResult = (coords) => {
+            console.log('plot result', coords)
             // If there is already a marker, remove it. Only allow 1
             if (resultMarker.value) {
                 map.removeLayer(resultMarker.value);
@@ -129,6 +134,9 @@ export default {
                 iconUrl: require("../assets/map-marker-blue.svg"),
                 iconSize: [35, 35], // size of the icon
             });
+
+            console.log('marker', [coords.coordinates[1], coords.coordinates[0]]);
+
             resultMarker.value = leaflet
                 .marker([coords.coordinates[1], coords.coordinates[0]], { icon: customMarker })
                 .addTo(map);
