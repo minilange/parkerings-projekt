@@ -1,4 +1,10 @@
 
+IF (OBJECT_ID('dbo.Admins', 'U') IS NOT NULL)
+BEGIN
+	DROP TABLE dbo.Admins;
+	PRINT('DROPPED Admins')
+END
+
 IF (OBJECT_ID('dbo.UserLicenseplates', 'U') IS NOT NULL)
 BEGIN
 	DROP TABLE dbo.UserLicenseplates;
@@ -85,3 +91,9 @@ CREATE TABLE UserLicenseplates (
 )
 PRINT('Initiated UserLicenseplates')
 
+CREATE TABLE Admins (
+	userId INT,
+	[level] INT
+	FOREIGN KEY (userId) REFERENCES dbo.Users(userId)
+)
+PRINT('Initiated Admins')

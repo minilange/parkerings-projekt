@@ -19,6 +19,7 @@ app = Flask(__name__)
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+user_tokens = {}
 
 hash_key = "parking_project"
 
@@ -450,6 +451,7 @@ def parkings():
         state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
             licenseplate=args.get("licenseplate"),
             userId=args.get("userId"),
+            areaId=args.get("areaId"),
             minutes=args.get("minutes"),
             price=args.get("price"),
             state=args.get("state"),
@@ -556,11 +558,12 @@ def licenseplate_lookup():
         return Response("", ResponseCodes.inv_syntax.value)
 
     # Construct API request
-    token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5" ## HIDE! ##
+    token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5"  # HIDE! ##
     API_URL = "https://api.nrpla.de/"
     headers = {"Authorization": "Bearer {}".format(token)}
 
-    response = requests.get(API_URL + args.get("licenseplate"), headers=headers)
+    response = requests.get(
+        API_URL + args.get("licenseplate"), headers=headers)
 
     # Handle response
     if response.status_code == 200:
