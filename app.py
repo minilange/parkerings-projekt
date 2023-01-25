@@ -459,10 +459,13 @@ def detect_licenseplate():
     for contour in contours:
         approx = cv2.approxPolyDP(contour, 10, True)
 
+        # if len(approx) != 4:
+        #     continue
+
         mask = np.zeros(gray.shape, np.uint8)
         cv2.drawContours(mask, [approx], 0, 255, -1)
         cv2.bitwise_and(img, img, mask=mask)
-
+        
         try:
             (x, y) = np.where(mask == 255)
             (x1, y1) = (np.min(x), np.min(y))
@@ -482,16 +485,18 @@ def detect_licenseplate():
                 # print(len(approx))
                 break
     
-    print(result)
+    if len(result) > 0:
 
-    plate = result[-1][-2].replace(" ", "")
-    regex = re.compile('[^a-zA-Z0-9]')
+        plate = result[-1][-2].replace(" ", "")
+        regex = re.compile('[^a-zA-Z0-9]')
 
-    licenseplate = regex.sub('', plate)
+        licenseplate = regex.sub('', plate)
 
     # formatted = format_result((licenseplate,), ["licenseplate"])
 
-    return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
+        return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
+    else:
+        return Response(json.dumps({"licenseplate": "not found"}), ResponseCodes.failed_query)
 
 
 def insert(query: str):
