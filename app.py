@@ -4,7 +4,6 @@ import cv2
 import json
 import easyocr
 import imutils
-import requests
 import numpy as np
 from enum import Enum
 from datetime import datetime
@@ -19,7 +18,6 @@ app = Flask(__name__)
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-user_tokens = {}
 
 hash_key = "parking_project"
 
@@ -131,7 +129,7 @@ def login():
     return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
 
 
-@app.route("/api/areas/", methods=["POST", "GET", "PATCH"])
+@app.route("/api/areas/", methods=["POST", "GET"])
 def areas():
     """
         An api endpoint to insert and extract parking areas
@@ -141,20 +139,6 @@ def areas():
                 areaName: str
                 address: str
                 latitude: float
-                longitude: float
-
-            Returns:
-                ResponseCode: HTTP code to describe finish state
-
-        PATCH:
-            Required args:
-                areaId: int,
-
-            -- At least one is required --
-            Optional args: 
-                areaName: str,
-                address: str,
-                latitude: float,
                 longitude: float
 
             Returns:
@@ -178,6 +162,7 @@ def areas():
             Returns:
                 ResponseCode: HTTP code to describe finish state
                     Successful: area_data
+
     """
 
     if request.method == "POST":
@@ -194,33 +179,6 @@ def areas():
             latitude=args.get("latitude"),
             longitude=args.get("longitude")
         ))
-
-        return Response("", state.value)
-
-    elif request.method == "PATCH":
-
-        args = MultiDict(request.get_json())
-
-        # Checks required args
-        required = ["areaId"]
-        if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax.value)
-
-        # Checks if at least one optional arg is present
-        optional = ["areaName", "address", "latitude", "longitude"]
-        if not any(arg in optional for arg in args):
-            return Response("", ResponseCodes.inv_syntax.value)
-
-        sql_columns = ",".join(['[{k}]'.format(k=k) for k in args])
-
-        sql_values = ",".join(["{{'{v}'}}".format(v=v) if type(
-            v) == str else "{{{v}}}".format(v=v) for v in args.values()])
-
-        state = "UPDATE Areas ({sql_columns}) VALUES ({sql_values}) WHERE areaId={areaId}".format(
-            sql_columns=sql_columns,
-            sql_values=sql_values,
-            areaId=args.get("areaId")
-        )
 
         return Response("", state.value)
 
@@ -301,22 +259,14 @@ def reg_licenseplates():
         return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
-@app.route("/api/userLicenseplates/", methods=["POST", "DELETE", "GET"])
+@app.route("/api/userLicenseplates/", methods=["POST", "GET"])
 def user_licenseplate():
     """
         An api endpint that lets you set a saved licenseplate for a specific user as well as reading it
 
         POST:
             Required args:
-                userId: int
-                licenseplate: str
-
-            Returns:
-                ResponseCode: HTTP code to describe finish state
-
-        DELETE:
-            Required args:
-                userId: int,
+                userId: str
                 licenseplate: str
 
             Returns:
@@ -324,7 +274,7 @@ def user_licenseplate():
 
         GET:
             Required args:
-                userId: int
+                userId: str
 
             licenseplate_data:
             [
@@ -340,7 +290,6 @@ def user_licenseplate():
             Returns:
                 ResponseCode: HTTP code to describe finish state
                     Successful: licenseplate_data
-
     """
 
     if request.method == "POST":
@@ -353,22 +302,6 @@ def user_licenseplate():
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
-            userId=args.get("userId"),
-            licenseplate=args.get("licenseplate")
-        ))
-
-        return Response("", state.value)
-
-    elif request.method == "DELETE":
-
-        args = MultiDict(request.get_json())
-
-        required = ["userId", "licenseplate"]
-
-        if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax.value)
-
-        state = delete("DELETE FROM userLicenseplates WHERE userId={userId} and licenseplate='{licenseplate}'".format(
             userId=args.get("userId"),
             licenseplate=args.get("licenseplate")
         ))
@@ -451,7 +384,6 @@ def parkings():
         state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
             licenseplate=args.get("licenseplate"),
             userId=args.get("userId"),
-            areaId=args.get("areaId"),
             minutes=args.get("minutes"),
             price=args.get("price"),
             state=args.get("state"),
@@ -463,14 +395,16 @@ def parkings():
     else:
         args = request.args
 
-        required = ["userId"]
+        optional = ["userId"]
 
-        if not all(arg in required for arg in args):
-            return Response("", ResponseCodes.inv_syntax.value)
+        if not all(arg in optional for arg in args):
+            query = "SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
+                userId=args.get("userId")
+            )
+        else:
+            query = "SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings"
 
-        areas = select("SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
-            userId=args.get("userId")
-        ))
+        areas = select(query)
 
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
@@ -536,42 +470,6 @@ def detect_licenseplate():
     return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
 
 
-@app.route("/api/licenseplateLookup/", methods=["GET"])
-def licenseplate_lookup():
-    """
-        An api endpoint for calling the nummerpladeAPI.dk api and returning the car data
-
-        GET:
-            Required args:
-                licenseplate: str
-
-            Returns:
-                ResponseCode: HTTP code to describe finish state
-                    Successful: car_data
-    """
-
-    args = request.args
-
-    required = ["licenseplate"]
-
-    if not all(arg in required for arg in args):
-        return Response("", ResponseCodes.inv_syntax.value)
-
-    # Construct API request
-    token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5"  # HIDE! ##
-    API_URL = "https://api.nrpla.de/"
-    headers = {"Authorization": "Bearer {}".format(token)}
-
-    response = requests.get(
-        API_URL + args.get("licenseplate"), headers=headers)
-
-    # Handle response
-    if response.status_code == 200:
-        return Response(json.dumps(response.json()), ResponseCodes.success.value)
-    else:
-        return Response("", ResponseCodes.failed.value)
-
-
 def insert(query: str):
     """
         A function to make sure that the inersted query in fact is an insert query
@@ -580,45 +478,7 @@ def insert(query: str):
             int: Based on if insert was successful
     """
 
-    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "update", "drop", "alter"]):
-        return ResponseCodes.inv_syntax
-
-    db_engine = connect()
-    try:
-        with db_engine.begin() as conn:
-            conn.exec_driver_sql(query)
-    except Exception as e:
-        print(f"This is the exception {e}")
-        return ResponseCodes.failed_query
-
-    return ResponseCodes.success
-
-
-def update(query: str):
-    """
-        A function to make sure that the update query is restriced and is not doing anything else
-
-        Returns:
-            int: Based on if update was successful
-    """
-
-    if all(keyword in query.lower() for keyword in ["update", "where"]) or any(keyword in query.lower() for keyword in ["delete", "insert", "select", "drop", "alter"]):
-        return ResponseCodes.inv_syntax
-
-    db_engine = connect()
-    try:
-        with db_engine.begin() as conn:
-            conn.exec_driver_sql(query)
-    except Exception as e:
-        print(f"This is the exception {e}")
-        return ResponseCodes.failed_query
-
-    return ResponseCodes.success
-
-
-def delete(query: str):
-
-    if all(keyword in query.lower() for keyword in ["delete", "where"]) or any(keyword in query.lower() for keyword in ["update", "insert", "select", "drop", "alter"]):
+    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
@@ -639,7 +499,7 @@ def select(query: str):
         Returns:
             List: Fetched result from db
     """
-    if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "update", "delete", "drop", "alter"]):
+    if "select" not in query.lower() or any(keyword in query.lower() for keyword in ["insert", "delete", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
