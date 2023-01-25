@@ -424,6 +424,28 @@ def detect_licenseplate():
 
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
+    # print(img.shape)
+
+    # y, x, _ = img.shape
+
+    # if x > y:
+    #     img = img[0:y, int(x*(1/4)):int(x*(3/4))]
+    # else:
+    #     img = img[int(y*(1/4)):int(y*(3/4)), 0:x]
+
+    scale_percent = 10
+
+    width = int(img.shape[1] * scale_percent / 100)
+    height = int(img.shape[0] * scale_percent / 100)
+
+    dim = (width, height)
+
+    img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+
+    print(img.shape)
+
+    cv2.imwrite("./backend/misc/pictures/image_12.jpg", img)
+
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
@@ -459,6 +481,8 @@ def detect_licenseplate():
             if len(formatted) > 5 and any(char.isdigit() for char in formatted):
                 # print(len(approx))
                 break
+    
+    print(result)
 
     plate = result[-1][-2].replace(" ", "")
     regex = re.compile('[^a-zA-Z0-9]')
