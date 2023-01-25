@@ -14,8 +14,9 @@
       </button>
       <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
         <div class="navbar-nav ms-auto gap-lg-5 fw-bold">
+          <router-link v-if="this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white d-none d-lg-block" to="/new-parking"><span>NEW PARKING</span></router-link>
           <router-link v-if="!this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white d-none d-lg-block" to="/login"><span>LOGIN</span></router-link>
-          <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link>
+          <!-- <router-link class="nav-item nav-link text-white" to="/areas"><span>AREAS</span></router-link> -->
           <router-link class="nav-item nav-link text-white" to="/about"><span>ABOUT US</span></router-link>
           <router-link v-if="this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white" to="/profile"><span>PROFILE</span></router-link>
           <router-link v-if="this.$store.state.user.hasOwnProperty('userId')" class="nav-item nav-link text-white" to="/old-parkings"><span>MY PARKINGS</span></router-link>

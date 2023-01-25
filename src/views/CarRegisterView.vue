@@ -117,6 +117,9 @@
 //     },
 //   },
 
+
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -154,14 +157,13 @@ export default {
 
       // Call API
       console.log(formData);
-
-
-
-      // let reader = new FileReader();
-      // reader.readAsDataURL(blob);
-      // reader.onloadend = () => {
-      //   console.log(reader.result);
-      // };
+      formData.append("file", blob);
+      axios.post("/api/uploadFile", formData)
+        .then(function (result) {
+          console.log(result);
+        }, function (error) {
+          console.log(error);
+        });
     },
     submitNewCar() {
       let payloads = [
