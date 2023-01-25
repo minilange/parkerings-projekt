@@ -51,20 +51,8 @@
 
 <style scoped>
 .action-prompt {
+  /* Override */
   border: 1px solid white;
-  border-radius: 12px;
   height: auto;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.btn-transparent {
-  background: transparent;
-  color: white;
-  border-color: white;
-}
-
-.btn-transparent:hover {
-  background: white;
-  color: black;
 }
 </style>

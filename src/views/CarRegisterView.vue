@@ -209,20 +209,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.btn-transparent {
-  background: transparent;
-  color: white;
-  border-color: white;
-}
-
-.btn-transparent:hover {
-  background: white;
-  color: black;
-}
-
-.form-floating>.label {
-  color: black !important;
-}
-</style>

@@ -90,37 +90,8 @@ export default {
   box-shadow: 0px 0px 50px 12px black;
 }
 
-.circle1 {
-  display: none;
-  background-color: black;
-  border-radius: 50%;
-  height: 200px;
-  width: 200px;
-  position: relative;
-  border: 5px solid white;
-  line-height: 175px;
-  text-align: center;
-  color: white;
-  transition: 0.4s;
-}
-
-.circle2 {
-  border: 5px solid white;
-  background-color: black;
-  border-radius: 50%;
-  height: 125px;
-  width: 125px;
-  position: absolute;
-  bottom: -30%;
-  right: -10%;
-  line-height: 115px;
-  text-align: center;
-  transition: 0.4s;
-}
-
 .btn-transparent {
-  background: transparent;
-  color: white;
+  /* Override main.css */
   width: 100%;
   height: 100%;
   border-radius: 50%;
