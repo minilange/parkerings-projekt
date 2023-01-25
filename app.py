@@ -433,7 +433,7 @@ def detect_licenseplate():
     # else:
     #     img = img[int(y*(1/4)):int(y*(3/4)), 0:x]
 
-    scale_percent = 10
+    scale_percent = 25
 
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
@@ -442,7 +442,7 @@ def detect_licenseplate():
 
     img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
-    print(img.shape)
+    # print(img.shape)
 
     cv2.imwrite("./backend/misc/pictures/image_12.jpg", img)
 
