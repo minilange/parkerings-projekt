@@ -1,4 +1,10 @@
 
+IF (OBJECT_ID('dbo.UserSessions', 'U') IS NOT NULL)
+BEGIN
+	DROP TABLE dbo.UserSessions;
+	PRINT('DROPPED UserSessions')
+END
+
 IF (OBJECT_ID('dbo.Admins', 'U') IS NOT NULL)
 BEGIN
 	DROP TABLE dbo.Admins;
@@ -97,3 +103,11 @@ CREATE TABLE Admins (
 	FOREIGN KEY (userId) REFERENCES dbo.Users(userId)
 )
 PRINT('Initiated Admins')
+
+CREATE TABLE UserSessions (
+	[token] NVARCHAR(128),
+	[userId] INT,
+	[timestamp] DATETIME2
+	FOREIGN KEY (userId) REFERENCES dbo.Users(userId)
+)
+PRINT('Initiated UserSessions')

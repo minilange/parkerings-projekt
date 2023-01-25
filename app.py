@@ -76,6 +76,9 @@ def login():
                 email: str
                 password: str
 
+            Optional:
+                token: str
+
             user_data: 
             {
                 firstname: str,
@@ -92,41 +95,60 @@ def login():
 
     args = request.args
 
-    required = ["email", "password"]
+    user = None
 
-    if not all(arg in required for arg in args):
-        return Response("", ResponseCodes.inv_syntax.value)
+    if "token" in args:
+        token_user = validate_session_token(args.get("token"))
 
-    user = select("SELECT [password] from users WHERE email='{email}'".format(
-        email=args.get("email").lower()
-    ))
+        if token_user:
+
+            user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [userId]='{user_id}'".format(
+                user_id=token_user["userId"]
+            ))
+
+    if user is None:
+        required = ["email", "password"]
+
+        if not all(arg in required for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        user = select("SELECT [password] from users WHERE email='{email}'".format(
+            email=args.get("email").lower()
+        ))
+
+        if isinstance(user, ResponseCodes):
+            return Response("", user.value)
+
+        if len(user) != 1:
+            return Response("No user linked to email", ResponseCodes.no_email.value)
+
+        password = user[0][0]
+
+        if hash_password(args.get("password")) != password:
+            return Response("Invalid password", ResponseCodes.unauth.value)
+
+        user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
+            email=args.get("email").lower(),
+            password=hash_password(args.get("password"))
+        ))
 
     if isinstance(user, ResponseCodes):
         return Response("", user.value)
 
     if len(user) != 1:
-        return Response("No user linked to email", ResponseCodes.no_email.value)
-
-    password = user[0][0]
-
-    if hash_password(args.get("password")) != password:
-        return Response("Invalid password", ResponseCodes.inv_pwd.value)
-
-    user = select("SELECT [userId], [firstname], [lastname], [email], [phone], [ccCode] FROM users WHERE [email]='{email}' and [password]='{password}'".format(
-        email=args.get("email").lower(),
-        password=hash_password(args.get("password"))
-    ))
-
-    if isinstance(user, ResponseCodes):
-        return Response("", user.value)
-
-    if len(user) != 1:
-        return Response("", ResponseCodes.inv_pwd.value)
+        return Response("", ResponseCodes.unauth.value)
 
     formatted = format_result(
-        user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])
+        user, ["userId", "firstname", "lastname", "email", "phone", "ccCode"])[0]
 
-    return Response(json.dumps(formatted[0]), ResponseCodes.success.value)
+    if "token" not in args:
+        token = generate_session_token(formatted["userId"])
+        formatted["token"] = token
+
+    else:
+        formatted["token"] = args.get("token")
+
+    return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
 @app.route("/api/areas/", methods=["POST", "GET"])
@@ -136,6 +158,7 @@ def areas():
 
         POST:
             Required args:
+                token: str
                 areaName: str
                 address: str
                 latitude: float
@@ -146,7 +169,7 @@ def areas():
 
         GET:
             Required args:
-                None
+                token: str
 
             area_data:
             [
@@ -168,6 +191,12 @@ def areas():
     if request.method == "POST":
 
         args = MultiDict(request.get_json())
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
+
         required = ["areaName", "address", "latitude", "longitude"]
 
         if not all(arg in required for arg in args):
@@ -183,6 +212,12 @@ def areas():
         return Response("", state.value)
 
     else:
+        args = request.args
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
 
         areas = select(
             "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas")
@@ -202,6 +237,7 @@ def reg_licenseplates():
 
         POST:
             Required args:
+                token: str
                 licenseplate: str
                 brand: str
                 model: str
@@ -212,7 +248,7 @@ def reg_licenseplates():
 
         GET: 
             Required args:
-                None
+                token: str
 
             car_data:
             [
@@ -232,6 +268,12 @@ def reg_licenseplates():
     if request.method == "POST":
 
         args = MultiDict(request.get_json())
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
+
         required = ["licenseplate", "brand", "model", "type"]
 
         if not all(arg in required for arg in args):
@@ -246,6 +288,12 @@ def reg_licenseplates():
 
         return Response("", state.value)
     else:
+        args = request.args
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
 
         licenseplates = select(
             "SELECT [licenseplate], [brand], [model], [type] FROM registeredLicenseplates")
@@ -266,6 +314,7 @@ def user_licenseplate():
 
         POST:
             Required args:
+                token: str
                 userId: str
                 licenseplate: str
 
@@ -274,6 +323,7 @@ def user_licenseplate():
 
         GET:
             Required args:
+                token: str
                 userId: str
 
             licenseplate_data:
@@ -296,6 +346,11 @@ def user_licenseplate():
 
         args = MultiDict(request.get_json())
 
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
+
         required = ["userId", "licenseplate"]
 
         if not all(arg in required for arg in args):
@@ -310,6 +365,11 @@ def user_licenseplate():
 
     else:
         args = request.args
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
 
         required = ["userId"]
 
@@ -337,6 +397,7 @@ def parkings():
 
         POST:
             Required args:
+                token: str
                 licenseplate: str
                 userId: int
                 areaId: int
@@ -350,6 +411,7 @@ def parkings():
 
         GET:
             Required args:
+                token: str
                 userId: int
 
             parking_data:
@@ -375,6 +437,11 @@ def parkings():
 
         args = MultiDict(request.get_json())
 
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
+
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
 
@@ -394,6 +461,11 @@ def parkings():
 
     else:
         args = request.args
+
+        user_id = authorize_api_connection(args)
+
+        if isinstance(user_id, ResponseCodes):
+            return Response("", user_id.value)
 
         optional = ["userId"]
 
@@ -415,88 +487,82 @@ def parkings():
         return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
-@app.route("/api/detectLicenseplate/", methods=["GET"])
+@app.route("/api/detectLicenseplate/", methods=["POST"])
 def detect_licenseplate():
 
-    filestr = request.files["file"]
+    try:
+        filestr = request.files["file"]
 
-    file_bytes = np.fromstring(filestr.read(), np.uint8)
+        file_bytes = np.fromstring(filestr.read(), np.uint8)
 
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    # print(img.shape)
+        scale_percent = 25
 
-    # y, x, _ = img.shape
+        width = int(img.shape[1] * scale_percent / 100)
+        height = int(img.shape[0] * scale_percent / 100)
 
-    # if x > y:
-    #     img = img[0:y, int(x*(1/4)):int(x*(3/4))]
-    # else:
-    #     img = img[int(y*(1/4)):int(y*(3/4)), 0:x]
+        dim = (width, height)
 
-    scale_percent = 25
+        img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
+        cv2.imwrite("./backend/misc/pictures/image_12.jpg", img)
 
-    dim = (width, height)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+        bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
+        edged = cv2.Canny(bfilter, 30, 200)
 
-    # print(img.shape)
+        keypoints = cv2.findContours(
+            edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours = imutils.grab_contours(keypoints)
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)[:50]
 
-    cv2.imwrite("./backend/misc/pictures/image_12.jpg", img)
+        for contour in contours:
+            approx = cv2.approxPolyDP(contour, 10, True)
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            # if len(approx) != 4:
+            #     continue
 
-    bfilter = cv2.bilateralFilter(gray, 11, 17, 17)
-    edged = cv2.Canny(bfilter, 30, 200)
+            mask = np.zeros(gray.shape, np.uint8)
+            cv2.drawContours(mask, [approx], 0, 255, -1)
+            cv2.bitwise_and(img, img, mask=mask)
 
-    keypoints = cv2.findContours(
-        edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours = imutils.grab_contours(keypoints)
-    contours = sorted(contours, key=cv2.contourArea, reverse=True)[:50]
+            try:
+                (x, y) = np.where(mask == 255)
+                (x1, y1) = (np.min(x), np.min(y))
+                (x2, y2) = (np.max(x), np.max(y))
+                cropped_image = gray[x1:x2+1, y1:y2+1]
+            except ValueError as e:
+                print(e)
+                continue
 
-    for contour in contours:
-        approx = cv2.approxPolyDP(contour, 10, True)
+            # print("moved past")
+            reader = easyocr.Reader(['en'])
+            result = reader.readtext(cropped_image)
 
-        # if len(approx) != 4:
-        #     continue
+            if len(result) != 0:
+                formatted = result[-1][-2].replace(" ", "")
+                if len(formatted) > 5 and any(char.isdigit() for char in formatted):
+                    # print(len(approx))
+                    break
 
-        mask = np.zeros(gray.shape, np.uint8)
-        cv2.drawContours(mask, [approx], 0, 255, -1)
-        cv2.bitwise_and(img, img, mask=mask)
-        
-        try:
-            (x, y) = np.where(mask == 255)
-            (x1, y1) = (np.min(x), np.min(y))
-            (x2, y2) = (np.max(x), np.max(y))
-            cropped_image = gray[x1:x2+1, y1:y2+1]
-        except ValueError as e:
-            print(e)
-            continue
+        if len(result) > 0:
 
-        # print("moved past")
-        reader = easyocr.Reader(['en'])
-        result = reader.readtext(cropped_image)
+            plate = result[-1][-2].replace(" ", "")
+            regex = re.compile('[^a-zA-Z0-9]')
 
-        if len(result) != 0:
-            formatted = result[-1][-2].replace(" ", "")
-            if len(formatted) > 5 and any(char.isdigit() for char in formatted):
-                # print(len(approx))
-                break
-    
-    if len(result) > 0:
+            licenseplate = regex.sub('', plate)
 
-        plate = result[-1][-2].replace(" ", "")
-        regex = re.compile('[^a-zA-Z0-9]')
+        # formatted = format_result((licenseplate,), ["licenseplate"])
 
-        licenseplate = regex.sub('', plate)
+            return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
+        else:
+            return Response(json.dumps({"licenseplate": "not found"}), ResponseCodes.failed_query.value)
 
-    # formatted = format_result((licenseplate,), ["licenseplate"])
-
-        return Response(json.dumps({"licenseplate": licenseplate}), ResponseCodes.success.value)
-    else:
-        return Response(json.dumps({"licenseplate": "not found"}), ResponseCodes.failed_query)
+    except Exception as e:
+        print(e)
+        return Response("", ResponseCodes.failed_query.value)
 
 
 def insert(query: str):
@@ -511,12 +577,12 @@ def insert(query: str):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
-    try:
-        with db_engine.begin() as conn:
-            conn.exec_driver_sql(query)
-    except Exception as e:
-        print(f"This is the exception {e}")
-        return ResponseCodes.failed_query
+    # try:
+    with db_engine.begin() as conn:
+        conn.exec_driver_sql(query)
+    # except Exception as e:
+    #     print(f"This is the exception {e}")
+    #     return ResponseCodes.failed_query
 
     return ResponseCodes.success
 
@@ -533,12 +599,12 @@ def select(query: str):
 
     db_engine = connect()
 
-    try:
-        with db_engine.begin() as conn:
-            result = conn.exec_driver_sql(query).all()
-    except Exception as e:
-        print(e)
-        return ResponseCodes.failed_query
+    # try:
+    with db_engine.begin() as conn:
+        result = conn.exec_driver_sql(query).all()
+    # except Exception as e:
+    #     print(e)
+    #     return ResponseCodes.failed_query
 
     return result
 
@@ -557,6 +623,76 @@ def connect():
             config["conn"].format(**config))
 
     return create_engine(conn_str)
+
+
+def authorize_api_connection(args: MultiDict):
+    """
+        Handles authentication of user token
+
+        Args:
+            args (MultiDict): A dict of all api parsed arguments
+
+        Returns:
+            str: An id that corresponds for to a user
+                if unauthorized - response code 400
+    """
+
+    if "token" not in args:
+        return Response("", ResponseCodes.unauth)
+
+    token_user = validate_session_token(args.get("token"))
+
+    if isinstance(token_user, bool):
+        return Response("", ResponseCodes.unauth)
+
+    return token_user["userId"]
+
+
+def generate_session_token(user_id: int):
+    """
+        Generates a user session code based on the user id
+
+        Args:
+            user_id (int): An id that corresponds to a user
+
+        Returns:
+            str: An sha512 encrypted token
+    """
+
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    pre_token = f"{user_id}!{timestamp}?{hash_key}"
+
+    token = sha512(pre_token.encode("utf-8")).hexdigest()
+
+    insert("INSERT INTO UserSessions ([token], [userId], [timestamp]) VALUES ('{token}', {userId}, '{timestamp}')".format(
+        token=token,
+        userId=user_id,
+        timestamp=timestamp
+    ))
+
+    return token
+
+
+def validate_session_token(token: str):
+    """
+        Validates a session token for a user
+
+        Args:
+            token (str): A generated SHA512 token
+
+        Returns:
+            bool: True if token is valid
+                if True user_id
+    """
+
+    validated = select("SELECT userId FROM UserSessions WHERE token='{token}' AND timestamp BETWEEN dateadd(dd, -2, getdate()) AND dateadd(dd, 1, getdate())".format(
+        token=token
+    ))
+
+    if not isinstance(validated, ResponseCodes):
+        return format_result(validated, ["userId"])[0]
+    else:
+        return False
 
 
 def format_result(data: list[tuple], keys: list[str]):
@@ -658,18 +794,19 @@ class ResponseCodes(Enum):
     """
         200 - success:       A successful call to DB
         400 - failed_query:  Query was not allowed to execute
-        401 - inv_pwd:       Password did not corresepond with a user
+        401 - unauth:       Password did not corresepond with a user
         403 - inv_syntax:    Query contained some invalid syntax
         406 - no_email:      Email did not belong to a user
     """
     success = 200
     failed_query = 400
-    inv_pwd = 401
+    unauth = 401
     inv_syntax = 403
     no_email = 406
 
 # def main(a, b):
     # app.run()
 
-# if __name__ == "__main__":
-#     app.run(debug=True, host="0.0.0.0", port=5000)
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=8080)
