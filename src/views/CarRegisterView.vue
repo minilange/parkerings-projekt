@@ -46,80 +46,6 @@
 </template>
 
 <script>
-// import { mapActions } from "vuex";
-
-// const fileTypes = [
-//   "image/apng",
-//   "image/bmp",
-//   "image/gif",
-//   "image/jpeg",
-//   "image/pjpeg",
-//   "image/png",
-//   "image/svg+xml",
-//   "image/tiff",
-//   "image/webp",
-//   "image/x-icon",
-// ];
-
-// function validFileType(file) {
-//   return fileTypes.includes(file.type);
-// }
-// async getPlateInput() {
-//       CALL API WITH event.target.value as parameter
-//       this.response = "Searching";
-//       this.carBrand = "";
-//       this.carModel = "";
-
-//       console.log(event.target.value);
-//       try {
-//         const res = await fetch("");
-//         this.response = (await res.json()).answer;
-//         this.response = "SEARCH COMPLETED";
-//         this.carBrand = "TEST BRAND";
-//         this.carModel = "TEST MODEL";
-//         console.log(this.response);
-//       } catch (error) {
-//         console.log(error);
-//         this.response = "Error: " + error;
-//       }
-//     },
-//     getPlate(event) {
-//       try {
-//         const picture = document.getElementById("plateImage");
-//         console.log(picture);
-
-//         if (picture.value != "") {
-//           const curFiles = picture.files;
-//           console.log(curFiles);
-//           if (curFiles.length === 0) {
-//             console.log("No files currently selected for upload");
-//           } else {
-//             for (const file of curFiles) {
-//               if (validFileType(file)) {
-//                 CALL API!
-
-//                 let img = document.getElementById("previewImg");
-//                 img.src = URL.createObjectURL(file);
-//                 console.log(file);
-//               } else {
-//                 console.log("NOT A VALID FILE");
-//               }
-//             }
-//           }
-//         } else {
-//           alert("Please select a picture of your number plate");
-//         }
-//       } catch (error) {
-//         console.log("Input picture: " + error);
-//       }
-
-//       console.log(event.target.name);
-//     },
-//   },
-
-
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -147,23 +73,10 @@ export default {
   },
   methods: {
 
-    imageUploaded(e) {
-      console.log(e)
+    imageUploaded() {
       // let blob = e.target.files[0];
-      let blob = document.querySelector('#plateImage').files[0];
-      console.log(blob)
-      let formData = new FormData();
-      formData.append("fileToUpload", blob);
-
-      // Call API
-      console.log(formData);
-      formData.append("file", blob);
-      axios.post("/api/uploadFile", formData)
-        .then(function (result) {
-          console.log(result);
-        }, function (error) {
-          console.log(error);
-        });
+      let image = document.querySelector('#plateImage').files[0];
+      this.$store.dispatch('detectLicensePlate', image);
     },
     submitNewCar() {
       let payloads = [

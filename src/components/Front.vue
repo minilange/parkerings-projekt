@@ -1,11 +1,6 @@
 <template>
   <div class="container">
-    <div class="mx-auto circle1">
-      <button id="parkingBtn" class="btn btn-transparent"><b>REGISTER PARKING</b></button>
-      <div class="circle2">
-        <button id="carBtn" class="btn btn-transparent"><b>REGISTER CAR</b></button>
-      </div>
-    </div>
+   
 
     <div class="row mt-5">
       <div class="col-lg-7 pt-5">

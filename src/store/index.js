@@ -70,6 +70,29 @@ export default new Vuex.Store({
         console.log('licensePlateLookup: ' + error)
       }
     },
+    async detectLicensePlate(state, image) {
+      let formData = new FormData();
+      formData.append('image', image);
+
+      try {
+        this.commit('SET_SEARCHING', true) // Set searching to true
+        await axios.post(this.state.api + "/detectLicenseplate/", formData, { headers: { 'Content-Type': 'multipart/form-data' }})
+          .then((response) => {
+            console.log(response.data);
+            // Lookup license plate
+            console.log(response);
+            this.dispatch('licensePlateLookup', response.data.licenseplate)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+          
+        this.commit('SET_SEARCHING', false) // Set searching to false
+
+      } catch (error) {
+        console.log('licensePlateLookup: ' + error)
+      }
+    },
     async callAPI(state, payload) {
       const method = payload.method;
       const endpoint = payload.endpoint;
@@ -87,6 +110,8 @@ export default new Vuex.Store({
         params = '/';
         console.log('callAPI: ' + error)
       }
+
+      this.commit('SET_SEARCHING', true) // Set searching to true
 
       if(method == "GET") {
         await axios.get(this.state.api + "/" + endpoint + "/")
@@ -114,6 +139,8 @@ export default new Vuex.Store({
           console.warn("PATCH", error);
         });
       }
+
+      this.commit('SET_SEARCHING', false)
     },
     async getCars() {
       await axios.get(this.state.api + "/regLicenseplates/")
