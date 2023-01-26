@@ -218,9 +218,9 @@ def areas():
 
         if isinstance(user_id, ResponseCodes):
             return Response("", user_id.value)
-
+        
         areas = select(
-            "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas")
+            "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas INNER JOIN SessionTokens ")
 
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
@@ -463,8 +463,6 @@ def parkings():
 
     else:
         args = format_http_args(request.args)
-
-        args = format_val()
 
         user_id = authorize_api_connection(args)
 
