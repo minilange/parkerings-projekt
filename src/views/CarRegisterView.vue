@@ -9,7 +9,7 @@
         <p>Simply scan your car's license plate, and have it registered automatically!</p>
         <input id="plateImage" class="form-control" type="file" accept="image/*" @change="imageUploaded" />
 
-        <img id="previewImg" src="" width="200" />
+        <img id="previewImg" src="" width="200" alt="Plate picture" />
       </div>
 
       <!-- </form> -->
@@ -44,6 +44,12 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+#previewImg {
+  display: none;
+}
+</style>
 
 <script>
 export default {
@@ -95,6 +101,7 @@ export default {
           endpoint: "userLicenseplates",
           body: {
             userId: this.$store.state.user.userId,
+            token: this.$store.state.user.token,
             licenseplate: this.inputNumberplate,
           }
         }

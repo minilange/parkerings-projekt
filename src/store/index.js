@@ -1,14 +1,15 @@
 import Vuex from "vuex"
 import axios from "axios"
+import router from "../router"
 
-// axios.interceptors.request.use(function (config) {
-//   // Do something before request is sent
-//   console.log(config)
-//   return config;
-// }, function (error) {
-//   // Do something with request error
-//   return Promise.reject(error);
-// });
+axios.interceptors.request.use(function (config) {
+  // Do something before request is sent
+  console.log(config)
+  return config;
+}, function (error) {
+  // Do something with request error
+  return Promise.reject(error);
+});
 
 // axios.interceptors.response.use(function())
 
@@ -73,7 +74,7 @@ export default new Vuex.Store({
     },
     async detectLicensePlate(state, image) {
       let formData = new FormData();
-      formData.append('image', image);
+      formData.append('file', image);
 
       try {
         this.commit('SET_SEARCHING', true) // Set searching to true
@@ -94,23 +95,43 @@ export default new Vuex.Store({
         console.log('licensePlateLookup: ' + error)
       }
     },
+    async loginUser(state, payload) {
+      this.commit('SET_SEARCHING', true)
+      await axios
+        .get(this.state.api + "/login/", payload)
+        .then((response) => {
+          this.commit("SET_USER_INFO", response.data);
+          router.push('/')
+        })
+        .catch((error) => {
+          console.warn("login", error);
+          alert('Wrong email or password')
+        });
+
+      this.commit('SET_SEARCHING', false)
+    },
+
     async callAPI(state, payload) {
       const method = payload.method;
       const endpoint = payload.endpoint;
-      const userId = this.state.user.userId;
+      
+      if(!this.state.user.token || !this.state.user.userId) {
+        return console.log("No token or userId");
+      } 
+      
       const token = this.state.user.token;
+      const userId = this.state.user.userId;
+
       let body;
       let params;
       try {
         body = payload.body
-        body.token = this.state.user.token;
       } catch (error) {
         body = '';
         console.log('callAPI: ' + error)
       }
       try {
         params = payload.params;
-        params.token = this.state.user.token;
       } catch (error) {
         params = '/';
         console.log('callAPI: ' + error)

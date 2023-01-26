@@ -29,7 +29,7 @@
                       style="float: right"
                       height="22"
                       width="50"
-                      alt=""
+                      alt="Car type"
                     />
                   </p>
                 </li>

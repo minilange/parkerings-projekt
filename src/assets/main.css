@@ -1,11 +1,11 @@
 @import './base.css';
 
 /* Adjust width on small screens */
-@media (min-width: 200px) {
+/* @media (min-width: 200px) {
     .container {
         max-width: 540px;
     }
-}
+} */
 
 html {
     scroll-behavior: smooth;
@@ -213,7 +213,7 @@ html {
     flex: unset;
   }
   
-  ul.form-stepper li a .form-stepper-circle {
+  ul.form-stepper li btn .form-stepper-circle {
     display: inline-block;
     width: 40px;
     height: 40px;
@@ -271,7 +271,7 @@ html {
     margin-top: 0.5rem;
   }
   
-  .form-stepper a {
+  .form-stepper btn {
     text-decoration: none;
     cursor: default;
   }

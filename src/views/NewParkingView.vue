@@ -90,30 +90,30 @@
         <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
           <!-- Step 1 -->
           <li class="form-stepper-active text-center form-stepper-list" step="1">
-            <a class="mx-2" step_number="1">
+            <btn class="mx-2" step_number="1" id="formStep1Btn">
               <span class="form-stepper-circle" step_number="1">
                 <span>1</span>
               </span>
               <div class="label">Choose an area</div>
-            </a>
+            </btn>
           </li>
           <!-- Step 2 -->
           <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
-            <a class="mx-2">
+            <btn class="mx-2" id="formStep2Btn">
               <span class="form-stepper-circle text-muted" step_number="2">
                 <span>2</span>
               </span>
               <div class="label text-muted">Choose a car</div>
-            </a>
+            </btn>
           </li>
           <!-- Step 3 -->
           <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
-            <a class="mx-2">
+            <btn class="mx-2" id="formStep3Btn">
               <span class="form-stepper-circle text-muted" step_number="3">
                 <span>3</span>
               </span>
               <div class="label text-muted">Set time</div>
-            </a>
+            </btn>
           </li>
         </ul>
       </div>
@@ -122,7 +122,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import TimeDial from "@/components/TimeDial.vue";
 import AreaMap from "@/components/AreaMap.vue";
 // import { TypedChainedSet } from "webpack-chain";
@@ -259,16 +258,6 @@ export default {
     }).catch((error) => {
       console.warn("areas", error);
     });
-
-    axios
-      .get(this.$store.state.api + "/areas/")
-      .then((response) => {
-        this.areas = response.data;
-        console.log(this.areas);
-      })
-      .catch((error) => {
-        console.warn("areas", error);
-      });
 
 
     document

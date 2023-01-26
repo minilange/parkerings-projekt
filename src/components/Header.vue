@@ -7,9 +7,9 @@
       </div>
       <router-link class="navbar-brand fw-bold text-white" to="/">
         <!-- EASIER<span class="text-secondary fw-bold">PARK</span> -->
-        <img src="../assets/easierpark-logo.png" height="25" />
+        <img src="../assets/easierpark-logo.webp" height="25" width="186" alt="EASIERPARK LOGO" />
       </router-link>
-      <button type="button" class="navbar-toggler on-top" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <button type="button" id="navbarBtn" aria-label="Navbar button" class="navbar-toggler on-top" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse navbar-right navbar-side" id="navbarCollapse">
