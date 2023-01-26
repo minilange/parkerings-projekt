@@ -19,14 +19,18 @@ function isLoggedIn() {
   }
 }
 function isAdmin() {
-  /* Commented out for test purposes!  */
-  // if(!Object.keys(store.state.user).length == 0){
-  //   return true
-  // }else{
-  //   return false
-  // }
+  if(!Object.keys(store.state.user).length == 0){
+    try {
+      if(store.state.user.admin == true){
+        return true
+      }
+    } catch(e) {
+      console.log('isAdmin ', e)
+    }
+  }
 
-  return true;
+
+  return '/' // Default
 }
 
 const routes = [
@@ -54,12 +58,14 @@ const routes = [
   {
     path: '/new-parking',
     name: 'newparking',
-    component: NewParkingView
+    component: NewParkingView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/areas',
     name: 'areas',
-    component: AreaView
+    component: AreaView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/register',
@@ -69,7 +75,8 @@ const routes = [
   {
     path: '/register-car',
     name: 'carregister',
-    component: CarRegisterView
+    component: CarRegisterView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/profile',
