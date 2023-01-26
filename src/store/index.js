@@ -41,6 +41,7 @@ export default new Vuex.Store({
       state.admin[payload.key] = payload.data
     },
     SET_USER_INFO(state, userInfo) {
+      console.log(userInfo)
       state.user = userInfo
     },
     SET_SEARCHING(state, searching) {
@@ -96,16 +97,20 @@ export default new Vuex.Store({
     async callAPI(state, payload) {
       const method = payload.method;
       const endpoint = payload.endpoint;
+      const userId = this.state.user.userId;
+      const token = this.state.user.token;
       let body;
       let params;
       try {
         body = payload.body
+        body.token = this.state.user.token;
       } catch (error) {
         body = '';
         console.log('callAPI: ' + error)
       }
       try {
-        params = payload.params
+        params = payload.params;
+        params.token = this.state.user.token;
       } catch (error) {
         params = '/';
         console.log('callAPI: ' + error)
@@ -114,7 +119,7 @@ export default new Vuex.Store({
       this.commit('SET_SEARCHING', true) // Set searching to true
 
       if(method == "GET") {
-        await axios.get(this.state.api + "/" + endpoint + "/")
+        await axios.get(this.state.api + "/" + endpoint + "/", { params: {token: token, userId: userId}})
         .then((response) => {
           console.log(response);
         }).catch((error) => {

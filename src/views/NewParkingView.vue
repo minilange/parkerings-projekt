@@ -213,6 +213,7 @@ export default {
         body: {
           licenseplate: this.form.selectedCar.id,
           userId: this.$store.getters.getUserInfo.userId,
+          token: this.$store.getters.getUserInfo.token,
           areaId: this.form.selectedArea.id,
           minutes: this.$store.getters.getParkingTimeMinutes,
           price: this.$refs.timeDial.price,
@@ -232,19 +233,32 @@ export default {
     }
   },
   mounted() {
-    axios
-      .get(this.$store.state.api + "/userLicenseplates/", {
-        params: {
-          userId: 1,
-        },
-      })
-      .then((response) => {
-        this.registeredCars = response.data;
-        console.log("registeredCars:", this.registeredCars)
-      })
-      .catch((error) => {
-        console.warn("userLicenseplates", error);
-      });
+    // Get registered cars
+    this.$store.dispatch("callAPI", {
+      method: "GET",
+      endpoint: "userLicenseplates",
+      params: {
+        userId: this.$store.getters.getUserInfo.userId,
+        token: this.$store.getters.getUserInfo.token,
+      },
+    }).then((response) => {
+      this.registeredCars = response.data;
+      console.log("registeredCars:", this.registeredCars)
+    }).catch((error) => {
+      console.warn("userLicenseplates", error);
+    });
+
+
+    // Get areas
+    this.$store.dispatch("callAPI", {
+      method: "GET",
+      endpoint: "areas",
+    }).then((response) => {
+      this.areas = response.data;
+      console.log(this.areas);
+    }).catch((error) => {
+      console.warn("areas", error);
+    });
 
     axios
       .get(this.$store.state.api + "/areas/")

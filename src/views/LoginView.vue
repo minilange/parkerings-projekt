@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     loginUser: function () {
+      console.log('loginUser')
       axios
         .get(this.$store.state.api + "/login/", {
           params: {
@@ -79,6 +80,7 @@ export default {
         })
         .catch((error) => {
           console.warn("login", error);
+          alert('Wrong email or password')
         });
     },
   },
