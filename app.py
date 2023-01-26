@@ -473,7 +473,7 @@ def parkings():
 
         optional = ["userId"]
 
-        if not all(r_key in args for r_key in required):
+        if not all(r_key in args for r_key in optional):
             query = "SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
                 userId=args.get("userId")
             )
