@@ -2,10 +2,9 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AboutView from '../views/AboutView.vue'
 import LoginView from '../views/LoginView.vue'
-import ParkView from '../views/ParkView.vue'
+import OldParkingsView from '../views/OldParkingsView.vue'
 import NewParkingView from '../views/NewParkingView.vue'
 import AreaView from '../views/AreaView.vue'
-import NotFound from '../views/NotFoundView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CarRegisterView from '../views/CarRegisterView.vue'
 import ProfileView from '../views/ProfileView.vue'
@@ -16,18 +15,22 @@ function isLoggedIn() {
   if(!Object.keys(store.state.user).length == 0){
     return true
   }else{
-    return false
+    return '/'
   }
 }
 function isAdmin() {
-  /* Commented out for test purposes!  */
-  // if(!Object.keys(store.state.user).length == 0){
-  //   return true
-  // }else{
-  //   return false
-  // }
+  if(!Object.keys(store.state.user).length == 0){
+    try {
+      if(store.state.user.admin == true){
+        return true
+      }
+    } catch(e) {
+      console.log('isAdmin ', e)
+    }
+  }
 
-  return true;
+
+  return '/' // Default
 }
 
 const routes = [
@@ -47,19 +50,22 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/park',
-    name: 'park',
-    component: ParkView
+    path: '/old-parkings',
+    name: 'oldparkings',
+    component: OldParkingsView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/new-parking',
     name: 'newparking',
-    component: NewParkingView
+    component: NewParkingView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/areas',
     name: 'areas',
-    component: AreaView
+    component: AreaView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/register',
@@ -69,7 +75,8 @@ const routes = [
   {
     path: '/register-car',
     name: 'carregister',
-    component: CarRegisterView
+    component: CarRegisterView,
+    beforeEnter: [isLoggedIn]
   },
   {
     path: '/profile',
@@ -85,7 +92,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)",
-    component: NotFound,
+    component: HomeView,
   },
 ]
 

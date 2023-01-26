@@ -5,30 +5,24 @@
       <hr />
       <form>
         <div class="form-floating mb-3">
-          <input
-            v-model="form.email"
-            type="email"
-            class="form-control"
-            id="floatingEmail"
-            placeholder="name@gmail.com"
-          />
+          <input v-model="form.email" type="email" class="form-control" id="floatingEmail"
+            placeholder="name@gmail.com" />
           <label for="floatingEmail">Email address</label>
         </div>
         <div class="form-floating mb-3">
-          <input
-            v-model="form.password"
-            type="password"
-            class="form-control"
-            id="floatingPassword"
-            placeholder="Password"
-          />
+          <input v-model="form.password" type="password" class="form-control" id="floatingPassword"
+            placeholder="Password" />
           <label for="floatingPassword">Password</label>
         </div>
       </form>
-      <button v-on:click="loginUser()" class="btn-transparent btn btn-dark">Login</button>
-      <router-link class="text-center nav-link text-white" to="/register"
-        ><span>Need an account?</span></router-link
-      >
+      <button v-on:click="loginUser()" class="btn-transparent btn btn-dark" :disabled="$store.state.searching == true">Login</button>
+      <div v-if="$store.state.searching == true" id="searchStatus" class="mt-4 d-flex">
+        <span>Searching...</span>
+        <div class="loader"></div>
+
+      </div>
+
+      <router-link class="text-center nav-link text-white" to="/register"><span>Need an account?</span></router-link>
     </div>
   </div>
 </template>
@@ -43,14 +37,15 @@ span {
   color: black;
 }
 
-.form-floating > label {
-  color: black !important;
+@media (max-width: 991px) {
+  .action-prompt {
+    width: 80%;
+  }
 }
 </style>
 
 <script>
-import axios from "axios";
-import SHA256 from "crypto-js/sha256";
+import { SHA256 } from "crypto-js";
 
 export default {
   data() {
@@ -63,19 +58,15 @@ export default {
   },
   methods: {
     loginUser: function () {
-      axios
-        .get(this.$store.state.api + "/login/", {
-          params: {
-            email: this.form.email,
-            password: SHA256(this.form.password, this.$store.state.secret).toString(),
-          },
-        })
-        .then((response) => {
-          this.$store.commit("SET_USER_INFO", response.data);
-        })
-        .catch((error) => {
-          console.warn("login", error);
-        });
+      console.log('loginUser')
+      this.$store.dispatch("loginUser", {
+        params: {
+          email: this.form.email,
+          password: SHA256(this.form.password, this.$store.state.secret).toString(),
+          userId: this.$store.state.user.userId,
+          token: this.$store.state.user.token,
+        },
+      })
     },
   },
 };

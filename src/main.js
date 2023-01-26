@@ -5,6 +5,9 @@ import store from './store/index.js'
 import './assets/main.css'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+/* ServiceWorker for PWA */
+import './registerServiceWorker';
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -13,6 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 /* import specific icons */
 import { faCar, faPlus, faEdit, faParking } from '@fortawesome/free-solid-svg-icons'
+
+import './registerServiceWorker'
 
 /* add icons to the library */
 library.add(faCar, faPlus, faEdit, faParking)

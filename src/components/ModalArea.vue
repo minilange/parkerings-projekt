@@ -102,7 +102,6 @@ export default {
     MDBModalFooter,
   },
   mounted() {
-    console.log(this.areaId);
   },
   setup() {
     const areaModal = ref(false);
@@ -120,7 +119,6 @@ export default {
         latitude: this.areaLat,
         longitude: this.areaLon,
       };
-
       console.log("payload", payload);
 
       if (this.edit == "true") {
@@ -139,8 +137,10 @@ export default {
           endpoint: "areas",
           body: payload,
         })
-        .then((response) => {
+        .then((response) => {+
           console.log(response);
+          this.areas = this.$store.dispatch("getAreas");
+          this.areaModal = false;
         });
     },
   },

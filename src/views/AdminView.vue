@@ -3,9 +3,9 @@
     <div class="row action-prompt" style="height: 100%">
       <div class="col-lg-12">
         <div class="card mb-4 profile">
-          <div class="card-body text-center">
-            <h5 class="mb-0">Parkings</h5>
-            <table class="table table-responsive">
+          <div class="card-body ">
+            <h5 class="mb-0 ">Parkings</h5>
+            <table class="table table-responsive table-striped">
               <thead>
                 <tr>
                   <th scope="col">Parking ID</th>
@@ -31,7 +31,7 @@
         <div class="card mb-4">
           <div class="card-body">
             <h5 class="mb-0">Registered cars</h5>
-            <table class="table table-responsive">
+            <table class="table table-responsive table-striped">
               <thead>
                 <tr>
                   <th scope="col">Number plate</th>
@@ -85,7 +85,7 @@
               </table> -->
               <h5 class="mb-0">Areas</h5>
 
-              <table class="table table-responsive">
+              <table class="table table-responsive table-striped">
                 <thead>
                   <tr>
                     <th scope="col">ID</th>
@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import Modal from "@/components/ModalAdd.vue";
+import Modal from "@/components/ModalArea.vue";
 
 export default {
   data() {

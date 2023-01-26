@@ -1,7 +1,26 @@
 @import './base.css';
 
+/* Adjust width on small screens */
+/* @media (min-width: 200px) {
+    .container {
+        max-width: 540px;
+    }
+} */
+
 html {
     scroll-behavior: smooth;
+}
+
+/* Transparent button */
+.btn-transparent {
+    background: transparent;
+    color: white;
+    border-color: white;
+}
+
+.btn-transparent:hover {
+    background: white;
+    color: black;
 }
 
 /* NAVBAR */
@@ -30,6 +49,7 @@ html {
     color: #a7a7a7;
 }
 
+/* ACTION PROMPT */
 .action-prompt {
     border-radius: 12px;
     height: 80vh;
@@ -40,12 +60,238 @@ html {
 }
 
 .action-prompt .btn {
-    background-color:#000 !important;
+    background-color: #000 !important;
     /* color: #5e5e5e !important; */
     border: 0;
     color: #fff !important;
 }
+
 .action-prompt .btn:hover {
     background-color: #d8956a !important;
     /* color: #000 !important; */
+}
+
+
+.form-floating>.label {
+    color: black !important;
+}
+
+.form-floating>label {
+    color: black !important;
+}
+
+
+/* NewParkingView */
+
+
+
+/* Step-form */
+#multi-step-form-container {
+    height: 75%;
+    border: 0;
+    margin-top: 0;
+  }
+  
+  /* .text-center {
+    text-align: center;
+  }
+  
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  } */
+  
+  .pl-0 {
+    padding-left: 0;
+  }
+  
+  .button {
+    padding: 0.7rem 1.5rem;
+    border: 1px solid #5e5e5e;
+    background-color: #4361ee;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-btn {
+    border: 1px solid #0e9594;
+    background-color: #0e9594;
+  }
+  
+  .mt-3 {
+    margin-top: 2rem;
+  }
+  
+  .d-none {
+    display: none;
+  }
+  
+  .form-step {
+    /* border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px; */
+    border: 0;
+    padding: 3rem;
+  }
+  
+  .font-normal {
+    font-weight: normal;
+  }
+  
+  ul.form-stepper {
+    counter-reset: section;
+    margin-bottom: 3rem;
+  
+  }
+  
+  ul.form-stepper .form-stepper-circle {
+    position: relative;
+  }
+  
+  ul.form-stepper .form-stepper-circle span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+  }
+  
+  .form-stepper-horizontal {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+  }
+  
+  ul.form-stepper>li:not(:last-of-type) {
+    margin-bottom: 0.625rem;
+    -webkit-transition: margin-bottom 0.4s;
+    -o-transition: margin-bottom 0.4s;
+    transition: margin-bottom 0.4s;
+  }
+  
+  .form-stepper-horizontal>li:not(:last-of-type) {
+    margin-bottom: 0 !important;
+  }
+  
+  .form-stepper-horizontal li {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: start;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+  }
+  
+  .form-stepper-horizontal li:not(:last-child):after {
+    position: relative;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    height: 1px;
+    content: "";
+    top: 32%;
+  }
+  
+  .form-stepper-horizontal li:after {
+    background-color: #dee2e6;
+  }
+  
+  .form-stepper-horizontal li.form-stepper-completed:after {
+    background-color: #5e5e5e;
+  }
+  
+  .form-stepper-horizontal li:last-child {
+    flex: unset;
+  }
+  
+  ul.form-stepper li btn .form-stepper-circle {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin-right: 0;
+    line-height: 1.7rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.38);
+    border-radius: 50%;
+  }
+  
+  .form-stepper .form-stepper-active .form-stepper-circle {
+    background-color: #d8956a !important;
+    color: #fff;
+    transition: 0.5s;
+  }
+  
+  .form-stepper .form-stepper-active .label {
+    color: black !important;
+  }
+  
+  .form-stepper .form-stepper-active .form-stepper-circle:hover {
+    background-color: black !important;
+    color: #fff !important;
+  }
+  
+  .form-stepper .form-stepper-unfinished .form-stepper-circle {
+    background-color: #f8f7ff;
+  }
+  
+  .form-stepper .form-stepper-completed .form-stepper-circle {
+    background-color: #5e5e5e !important;
+    color: #fff;
+    transition: 0.5s;
+  }
+  
+  .form-stepper .form-stepper-completed .label {
+    color: #5e5e5e !important;
+  }
+  
+  .form-stepper .form-stepper-completed .form-stepper-circle:hover {
+    background-color: black !important;
+    color: #fff !important;
+  }
+  
+  .form-stepper .form-stepper-active span.text-muted {
+    color: #fff !important;
+  }
+  
+  .form-stepper .form-stepper-completed span.text-muted {
+    color: #fff !important;
+  }
+  
+  .form-stepper .label {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .form-stepper btn {
+    text-decoration: none;
+    cursor: default;
+  }
+
+/* Loading spinner */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
