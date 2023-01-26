@@ -39,7 +39,7 @@
           <p v-if="$store.state.carInfo.data.body_type">Type: {{ $store.state.carInfo.data.body_type.name }}</p>
         </div>
 
-        <button class="btn btn-primary" @click="submitNewCar">Submit</button>
+        <button class="btn btn-primary" @click="submitNewCar" :disabled="$store.state.searching == true">Submit</button>
       </form>
     </div>
   </div>

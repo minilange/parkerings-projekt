@@ -143,6 +143,7 @@ export default new Vuex.Store({
         await axios.get(this.state.api + "/" + endpoint + "/", { params: {token: token, userId: userId}})
         .then((response) => {
           console.log(response);
+          this.commit('SET_SEARCHING', false)
         }).catch((error) => {
           console.warn("GET", error);
         })

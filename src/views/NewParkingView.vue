@@ -124,6 +124,7 @@
 <script>
 import TimeDial from "@/components/TimeDial.vue";
 import AreaMap from "@/components/AreaMap.vue";
+import axios from "axios";
 // import { TypedChainedSet } from "webpack-chain";
 
 export default {
@@ -233,14 +234,22 @@ export default {
   },
   mounted() {
     // Get registered cars
-    this.$store.dispatch("callAPI", {
-      method: "GET",
-      endpoint: "userLicenseplates",
-      params: {
-        userId: this.$store.getters.getUserInfo.userId,
-        token: this.$store.getters.getUserInfo.token,
-      },
-    }).then((response) => {
+    // this.$store.dispatch("callAPI", {
+    //   method: "GET",
+    //   endpoint: "userLicenseplates",
+    //   params: {
+    //     userId: this.$store.getters.getUserInfo.userId,
+    //     token: this.$store.getters.getUserInfo.token,
+    //   },
+    // }).then((response) => {
+    //   this.registeredCars = response.data;
+    //   console.log("registeredCars:", this.registeredCars)
+    // }).catch((error) => {
+    //   console.warn("userLicenseplates", error);
+    // });
+
+
+    axios.get(this.$store.state.api + "/userLicenseplates/", { params: { userId: this.$store.getters.getUserInfo.userId, token: this.$store.getters.getUserInfo.token } }).then((response) => {
       this.registeredCars = response.data;
       console.log("registeredCars:", this.registeredCars)
     }).catch((error) => {
@@ -249,16 +258,23 @@ export default {
 
 
     // Get areas
-    this.$store.dispatch("callAPI", {
-      method: "GET",
-      endpoint: "areas",
-    }).then((response) => {
+    // this.$store.dispatch("callAPI", {
+    //   method: "GET",
+    //   endpoint: "areas",
+    // }).then((response) => {
+    //   this.areas = response;
+    //   console.log(this.areas);
+    // }).catch((error) => {
+    //   console.warn("areas", error);
+    // });
+
+
+    axios.get(this.$store.state.api + "/areas/", { params: { token: this.$store.getters.getUserInfo.token } }).then((response) => {
       this.areas = response.data;
       console.log(this.areas);
     }).catch((error) => {
       console.warn("areas", error);
     });
-
 
     document
       .querySelectorAll(".form-stepper-list a .form-stepper-circle")

@@ -161,6 +161,7 @@ export default {
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
           userId: this.$store.state.user.userId,
+          token: this.$store.state.user.token,
         },
       })
       .then((response) => {
@@ -175,6 +176,7 @@ export default {
       .get(this.$store.state.api + "/parkings/", {
         params: {
           userId: this.$store.state.user.userId,
+          token: this.$store.state.user.token,
         },
       })
       .then((response) => {
