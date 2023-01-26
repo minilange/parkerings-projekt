@@ -51,7 +51,7 @@ def register():
                 "email", "password", "phone", "ccCode"]
 
     # Check if all required arg keys are present
-    if not all(arg in required for arg in args):
+    if not all(r_key in args for r_key in required):
         return Response("", ResponseCodes.inv_syntax.value)
 
     state = insert("INSERT INTO users ([firstname], [lastname], [email], [password], [phone], [ccCode]) VALUES ('{fname}', '{lname}', '{email}', '{encrypted}', '{phone}', '{ccCode}')".format(
@@ -93,7 +93,7 @@ def login():
                     Successful: user_data
     """
 
-    args = request.args
+    args = format_http_args(request.args)
 
     user = None
 
@@ -109,7 +109,7 @@ def login():
     if user is None:
         required = ["email", "password"]
 
-        if not all(arg in required for arg in args):
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
         user = select("SELECT [password] from users WHERE email='{email}'".format(
@@ -199,7 +199,7 @@ def areas():
 
         required = ["areaName", "address", "latitude", "longitude"]
 
-        if not all(arg in required for arg in args):
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO Areas ([areaName], [address], [latitude], [longitude]) VALUES ('{areaName}', '{address}', {latitude}, {longitude})".format(
@@ -212,7 +212,7 @@ def areas():
         return Response("", state.value)
 
     else:
-        args = request.args
+        args = format_http_args(request.args)
 
         user_id = authorize_api_connection(args)
 
@@ -276,7 +276,7 @@ def reg_licenseplates():
 
         required = ["licenseplate", "brand", "model", "type"]
 
-        if not all(arg in required for arg in args):
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO RegisteredLicenseplates([licenseplate], [brand], [model], [type]) VALUES ('{licenseplate}', '{brand}', '{model}', '{type}')".format(
@@ -288,7 +288,7 @@ def reg_licenseplates():
 
         return Response("", state.value)
     else:
-        args = request.args
+        args = format_http_args(request.args)
 
         user_id = authorize_api_connection(args)
 
@@ -352,8 +352,8 @@ def user_licenseplate():
             return Response("", user_id.value)
 
         required = ["userId", "licenseplate"]
-
-        if not all(arg in required for arg in args):
+        
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO userLicenseplates (userId, licenseplate) VALUES ({userId}, '{licenseplate}')".format(
@@ -364,17 +364,19 @@ def user_licenseplate():
         return Response("", state.value)
 
     else:
-        args = request.args
+        args = format_http_args(request.args)
 
         user_id = authorize_api_connection(args)
-
+        
         if isinstance(user_id, ResponseCodes):
             return Response("", user_id.value)
 
         required = ["userId"]
 
-        if not all(arg in required for arg in args):
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
+
+        print("asds")
 
         licenseplates = select(
             "SELECT [rl].[licenseplate], [rl].[brand], [rl].[model], [rl].[type] FROM userLicenseplates as ul INNER JOIN RegisteredLicenseplates as rl ON rl.licenseplate = ul.licenseplate WHERE userId={userId}".format(
@@ -445,7 +447,7 @@ def parkings():
         required = ["licensePlate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
 
-        if not all(arg in required for arg in args):
+        if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
         state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
@@ -460,7 +462,9 @@ def parkings():
         return Response("", state.value)
 
     else:
-        args = request.args
+        args = format_http_args(request.args)
+
+        args = format_val()
 
         user_id = authorize_api_connection(args)
 
@@ -469,7 +473,7 @@ def parkings():
 
         optional = ["userId"]
 
-        if not all(arg in optional for arg in args):
+        if not all(r_key in args for r_key in required):
             query = "SELECT [licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp] FROM parkings WHERE userId={userId}".format(
                 userId=args.get("userId")
             )
@@ -693,6 +697,17 @@ def validate_session_token(token: str):
         return format_result(validated, ["userId"])[0]
     else:
         return False
+
+
+def format_http_args(args: MultiDict):
+
+    formatted = {}
+
+    for k, v in args.items():
+        formatted[k] = v
+
+    return formatted
+
 
 
 def format_result(data: list[tuple], keys: list[str]):
