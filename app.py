@@ -645,12 +645,12 @@ def authorize_api_connection(args: MultiDict):
     """
 
     if "token" not in args:
-        return Response("", ResponseCodes.unauth)
+        return ResponseCodes.unauth
 
     token_user = validate_session_token(args.get("token"))
 
     if isinstance(token_user, bool):
-        return Response("", ResponseCodes.unauth)
+        return ResponseCodes.unauth
 
     return token_user["userId"]
 
