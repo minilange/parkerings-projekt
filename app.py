@@ -18,6 +18,8 @@ app = Flask(__name__)
 # app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+admins = []
+
 
 hash_key = "parking_project"
 
@@ -147,6 +149,9 @@ def login():
 
     else:
         formatted["token"] = args.get("token")
+    
+    if formatted["userId"] in admins:
+        formatted["admin"]=True
 
     return Response(json.dumps(formatted), ResponseCodes.success.value)
 
@@ -220,7 +225,7 @@ def areas():
             return Response("", user_id.value)
         
         areas = select(
-            "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas INNER JOIN SessionTokens ")
+            "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas")
 
         if isinstance(areas, ResponseCodes):
             return Response("", areas.value)
@@ -820,6 +825,7 @@ class ResponseCodes(Enum):
 # def main(a, b):
     # app.run()
 
-
 if __name__ == "__main__":
+    admins = [x[0] for x in select("SELECT userId FROM Admins")]
+    print(admins)
     app.run(debug=True, host="0.0.0.0", port=8080)
