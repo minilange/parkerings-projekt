@@ -20,7 +20,6 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 admins = []
 
-
 hash_key = "parking_project"
 
 
@@ -149,6 +148,8 @@ def login():
 
     else:
         formatted["token"] = args.get("token")
+
+    print(formatted, formatted["userId"], admins)
 
     if formatted["userId"] in admins:
         formatted["admin"] = True
@@ -964,7 +965,8 @@ class ResponseCodes(Enum):
 # def main(a, b):
     # app.run()
 
+admins = [x[0] for x in select("SELECT userId FROM Admins")]
+
 
 if __name__ == "__main__":
-    admins = [x[0] for x in select("SELECT userId FROM Admins")]
     app.run(debug=True, host="0.0.0.0", port=8080)
