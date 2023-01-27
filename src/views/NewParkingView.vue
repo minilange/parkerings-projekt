@@ -79,7 +79,7 @@
               </div>
               <div class="col-lg-6">
                 <h6>Your parking untill:</h6>
-                <p>{{ form.parkingUntil }}</p>
+                <p>{{ form.displayTime }}</p>
                 <hr>
                 <h6>Price:</h6>
                 <p>{{ form.price }} DKK</p>
@@ -162,6 +162,7 @@ export default {
         selectedCar: {},
         selectedArea: {},
       },
+      displayTime: "No Time Selected",
       registeredCars: [],
       areas: [],
       myNumber: "1",
@@ -180,7 +181,8 @@ export default {
       console.log(value);
         let minutes = Math.floor((value * 60))
         this.form.price = Math.floor((minutes * 0.15) * 100) / 100
-        this.form.parkingUntil = moment().add(minutes, 'minutes').format('DD/MM/YYYY, h:mm');
+        this.form.parkingUntil = moment().add(minutes, 'minutes');
+        this.form.displayTime = this.form.parkingUntil.format('HH:mm DD-MM-YYYY')
         this.form.time = Math.floor((minutes / 60) * 100 ) / 100
     }
   
@@ -248,15 +250,14 @@ export default {
           // NEW TIME DIAL:
           minutes: this.form.time * 60,
           price: this.form.price,
-          timestamp: this.form.parkingUntil
-          // OLD TIME DIAL:
+          timestamp: this.form.parkingUntil.format('YYYY-MM-DDTHH:mm:ss')
           // minutes: this.$store.getters.getParkingTimeMinutes,
           // price: this.$refs.timeDial.price,
           // timestamp: this.$refs.timeDial.parkingUntil, 
         },
       }).then((response) => {
         console.log(response);
-        this.$router.push({ name: "Home" });
+        this.$router.push('/old-parkings');
       }).catch((error) => {
         console.warn("parkings", error);
       }

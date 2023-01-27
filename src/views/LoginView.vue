@@ -60,6 +60,7 @@ export default {
     // Check if user is already logged in local storage
     if (localStorage.getItem("user")) {
       this.$store.commit("setUser", JSON.parse(localStorage.getItem("user")));
+      alert("You are already logged in!")
       this.$router.push("/");
     }
   },

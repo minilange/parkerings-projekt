@@ -85,11 +85,20 @@
           />
           <label for="floatingRepeatPassword">Repeat Password</label>
         </div>
+        <b>Password Requirements:</b>
+        <ul>
+          <li>Minimum eight characters</li>
+          <li>At least one letter</li>
+          <li>One number and one special character</li>
+        </ul>
         <h5 class="text-danger" v-if="form.password != form.repeatPassword">
           Passwords doesn't match!
         </h5>
+        <h5 class="text-danger" v-if="form.password == form.repeatPassword && passwordCheck != true">
+          Passwords doesn't meet the requirements
+        </h5>
       </form>
-      <button v-on:click="registerUser()" :disabled="form.password != form.repeatPassword" class="btn-transparent btn btn-dark">
+      <button v-on:click="registerUser()" :disabled="form.password != form.repeatPassword || passwordCheck == false || form.password.length == 0" class="btn-transparent btn btn-dark">
         Register
       </button>
       <router-link class="text-center nav-link text-white" to="/login"
@@ -133,10 +142,22 @@ export default {
         ccCode: {},
         repeatPassword: "",
       },
+      passwordCheck: true,
       cc_codes: json.sort(this.compareDialCode),
     };
   },
-  watch: {},
+  watch: {
+    'form.password': function (value) {
+      const check = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+      if (check.test(value)) {
+        this.passwordCheck = true
+      }
+      else{
+        this.passwordCheck = false
+
+      }
+    }
+  },
   methods: {
     compareDialCode: function (a, b) {
       return (
