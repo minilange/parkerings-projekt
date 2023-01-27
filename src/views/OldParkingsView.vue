@@ -41,6 +41,23 @@ export default {
       registeredParkings: [],
     };
   },
+  methods: {
+    orderParkings(parkings) {
+      console.log("TEST", parkings)
+      parkings.sort((a, b) => {
+        let aDate = new Date(a.timestamp);
+        let bDate = new Date(b.timestamp);
+
+        if (aDate > bDate) {
+          return -1;
+        } else if (aDate < bDate) {
+          return 1;
+        }
+      });
+
+      return parkings;
+    },
+  },
   mounted() {
     // Parkings
     axios
@@ -51,7 +68,7 @@ export default {
         },
       })
       .then((response) => {
-        this.registeredParkings = response.data
+        this.registeredParkings = this.orderParkings(response.data);
         console.log("TEST", response.data)
       })
       .catch((error) => {

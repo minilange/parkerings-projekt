@@ -89,26 +89,22 @@
           <div class="card">
             <div class="card-body">
               <h5 class="mb-0">LATEST PARKING:</h5>
-              <div v-if="registeredParkings.length < 0">
+              <div v-if="registeredParkings.length > 0">
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Licenseplate:</p>
-                  <p class="mb-0">{{ registeredParkings[0].licenseplate }}</p>
+                  <p class="mb-0">Licenseplate: {{ registeredParkings[0].licenseplate }}</p>
                 </li>
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Minutes:</p>
-                  <p class="mb-0">{{ registeredParkings[0].minutes }}</p>
+                  <p class="mb-0">Minutes: {{ registeredParkings[0].minutes }}</p>
                 </li>
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Date:</p>
-                  <p class="mb-0">{{ registeredParkings[0].timestamp }}</p>
+                  <p class="mb-0">Date: {{ registeredParkings[0].timestamp }}</p>
                 </li>
                 <li class="list-group-item py-3">
-                  <p class="mb-0">Cost:</p>
-                  <p class="mb-0">{{ registeredParkings[0].price }}</p>
+                  <p class="mb-0">Cost: {{ registeredParkings[0].price }}</p>
                 </li>
-                <li class="list-group-item py-3">
+                <!-- <li class="list-group-item py-3">
                   <router-link to="/park"><span>View more</span></router-link>
-                </li>
+                </li> -->
               </div>
               <div v-else>
                 <p class="my-3">You don't have any parkings yet...</p>
