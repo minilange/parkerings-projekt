@@ -526,7 +526,7 @@ def parkings():
             print(args, required)
             return Response("", ResponseCodes.inv_syntax.value)
 
-        print("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
+        print("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES ('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
             licenseplate=args.get("licenseplate"),
             userId=args.get("userId"),
             areaId=args.get("areaId"),
@@ -535,7 +535,7 @@ def parkings():
             state=args.get("state"),
             timestamp=args.get("timestamp")
         ))
-        state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
+        state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES ('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
             licenseplate=args.get("licenseplate"),
             userId=args.get("userId"),
             areaId=args.get("areaId"),
