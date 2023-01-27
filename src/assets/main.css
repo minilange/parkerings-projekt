@@ -128,10 +128,18 @@ html {
   }
   
   .form-step {
-    /* border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 20px; */
     border: 0;
-    padding: 3rem;
+  }
+  
+  @media (min-width: 991px) {
+    .form-step {
+      padding: 3rem;
+    }
+  }
+  @media (max-width: 990px) {
+    .form-step {
+      padding: 1rem;
+    }
   }
   
   .font-normal {

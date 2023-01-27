@@ -12,7 +12,7 @@
           <section id="step-1" class="form-step">
             <h2 class="font-normal text-center">Choose an area</h2>
             <!-- Step 1 input fields -->
-            <div id="mapContainer" class="h-100 w-100 mt-5">
+            <div id="mapContainer" class="mt-5">
               <AreaMap ref="area" />
 
             </div>
@@ -203,18 +203,20 @@ export default {
       }
     },
     submit() {
-      console.log('SUBMITTING');
-      console.log(this.$refs.form);
+      // console.log('SUBMITTING');
+      // console.log(this.$refs.form);
+
+      console.log("FORM", this.form.selectedArea)
 
       // POST parking to API
       this.$store.dispatch("callAPI", {
         method: "POST",
         endpoint: "parkings",
         body: {
-          licenseplate: this.form.selectedCar.id,
+          licenseplate: this.form.selectedCar.licenseplate,
           userId: this.$store.getters.getUserInfo.userId,
           token: this.$store.getters.getUserInfo.token,
-          areaId: this.form.selectedArea.id,
+          areaId: this.form.selectedArea.areaId,
           minutes: this.$store.getters.getParkingTimeMinutes,
           price: this.$refs.timeDial.price,
           state: "active",
@@ -301,6 +303,11 @@ export default {
 </script>
 
 <style scoped>
+
+.action-prompt{
+  height: auto
+}
+
 #carRow {
   display: flex;
   flex-wrap: nowrap;

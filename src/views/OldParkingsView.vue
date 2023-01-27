@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="mt-5 action-prompt h-auto">
+    <div class="mt-5 action-prompt h-auto" style="overflow-x: auto;">
       <p class="display-6">My parkings</p>
       <hr>
       <table class="table table-striped">

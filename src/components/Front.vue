@@ -3,7 +3,7 @@
 
 
     <div class="row mt-5">
-      <div class="col-lg-7 pt-5">
+      <div class="col-lg-7 lg-pt-5">
         <h1 class="display-1 fw-bold">Better solution <br>for parking.</h1>
         <h2 class="fw-light mt-4">Parking doesn't need to be <span class="text-decoration-line-through">hard</span>,
           <br>our focus is making parking <span class="text-decoration-underline">easier</span>.
@@ -40,8 +40,7 @@
             </div>
 
             <div v-if="!$store.state.user.userId" class="col-xl-12 d-flex flex-wrap justify-content-around front-actions mt-auto">
-              <h4 class="col-xl-12 text-center" v-if="!$store.state.user.userId">Log in or register to get started!</h4>
-              <br />
+              <h4 class="col-xl-12 text-center mb-2" v-if="!$store.state.user.userId">Log in or register to get started!</h4>
               <button class="col-xl-5 btn btn-primary" @click="$router.push('/login')">
                 LOGIN
               </button>
@@ -51,9 +50,6 @@
             </div>
 
         </div>
-
-
-
       </div>
     </div>
   </div>
