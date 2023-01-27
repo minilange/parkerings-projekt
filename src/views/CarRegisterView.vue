@@ -17,7 +17,7 @@
 
         <div id="manualInput">
           <p>Or manually input the info here:</p>
-          <label for="numberPlate">Number plate</label>
+          <label for="numberPlate">Numberplate</label>
           <br />
           <input name="numberPlate" id="numberPlate" class="form-control" type="text" pattern="[A-Z]{2}[0-9]{5}"
             title="Please follow Danish number plate structure" v-model="inputNumberplate" />
@@ -39,7 +39,7 @@
           <p v-if="$store.state.carInfo.data.body_type">Type: {{ $store.state.carInfo.data.body_type.name }}</p>
         </div>
 
-        <button class="btn btn-primary" @click="submitNewCar">Submit</button>
+        <button class="btn btn-primary" @click="submitNewCar" :disabled="$store.state.searching == true">Submit</button>
       </form>
     </div>
   </div>
@@ -65,15 +65,19 @@ export default {
   watch: {
     inputNumberplate(newNumber) {
       // When manual input of numberplate changes
-      this.inputNumberplate = this.inputNumberplate.toUpperCase();
-
-      if (this.numberPlatePattern.test(newNumber) === true) {
-        this.$store.dispatch('licensePlateLookup', newNumber);
-
-
-      } else {
-        console.log("NOT RIGHT PATTERN");
-        this.$store.state.carInfo = {};
+      try {
+        this.inputNumberplate = this.inputNumberplate.toUpperCase();
+  
+        if (this.numberPlatePattern.test(newNumber) === true) {
+          this.$store.dispatch('licensePlateLookup', newNumber);
+  
+  
+        } else {
+          console.log("NOT RIGHT PATTERN");
+          this.$store.state.carInfo = {};
+        }
+      } catch (error) {
+        console.log("No input");
       }
     },
   },
@@ -82,15 +86,24 @@ export default {
     imageUploaded() {
       // let blob = e.target.files[0];
       let image = document.querySelector('#plateImage').files[0];
-      this.$store.dispatch('detectLicensePlate', image);
+      this.$store.dispatch('detectLicensePlate', image).then((detectedLicenseplate) => {
+        console.log("Detected licenseplate: ", detectedLicenseplate);
+        this.inputNumberplate = detectedLicenseplate;
+        this.$store.dispatch('licensePlateLookup', detectedLicenseplate);
+      });
+
     },
-    submitNewCar() {
+    submitNewCar(e) {
+      e.preventDefault();
+
       let payloads = [
         {
           method: "POST",
           endpoint: "regLicenseplates",
           body: {
             licenseplate: this.inputNumberplate,
+            userId: this.$store.state.user.userId,
+            token: this.$store.state.user.token,
             brand: this.$store.state.carInfo.data.brand,
             model: this.$store.state.carInfo.data.model,
             type: ""

@@ -15,11 +15,16 @@
 
 <style scoped>
 #mapid {
-    height: 95%;
-    width: 100%;
+    min-height: 200px;
+    min-width: 100px;
     z-index: 0;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 }
+/* @media (min-width: 991px) {
+    #mapid {
+        min-height: 200px;
+    }
+} */
 </style>
 
 <script>

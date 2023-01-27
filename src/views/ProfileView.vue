@@ -7,7 +7,7 @@
             <img
               src="../assets/user-icon.png"
               alt="avatar"
-              class="rounded-circle img-fluid"
+              class="rounded-circle img-fluids"
               style="width: 154px"
             />
             <h5 class="my-2">{{ this.$store.state.user.firstname }} {{ this.$store.state.user.lastname }}</h5>
@@ -29,6 +29,7 @@
                       style="float: right"
                       height="22"
                       width="50"
+                      class="d-none d-sm-block"
                       alt="Car type"
                     />
                   </p>
@@ -161,6 +162,7 @@ export default {
       .get(this.$store.state.api + "/userLicenseplates/", {
         params: {
           userId: this.$store.state.user.userId,
+          token: this.$store.state.user.token,
         },
       })
       .then((response) => {
@@ -175,6 +177,7 @@ export default {
       .get(this.$store.state.api + "/parkings/", {
         params: {
           userId: this.$store.state.user.userId,
+          token: this.$store.state.user.token,
         },
       })
       .then((response) => {

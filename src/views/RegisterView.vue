@@ -150,6 +150,8 @@ export default {
         .post(this.$store.state.api + "/register/", this.form.apiSend)
         .then((response) => {
           console.log(response);
+          alert("User registered successfully! Please login to continue.")
+          this.$router.push("/login");
         })
         .catch((error) => {
           console.warn("register", error);
