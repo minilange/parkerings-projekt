@@ -150,14 +150,14 @@ def login():
 
     else:
         formatted["token"] = args.get("token")
-    
+
     if formatted["userId"] in admins:
-        formatted["admin"]=True
+        formatted["admin"] = True
 
     return Response(json.dumps(formatted), ResponseCodes.success.value)
 
 
-@app.route("/api/areas/", methods=["POST", "GET"])
+@app.route("/api/areas/", methods=["POST", "GET", "PATCH"])
 def areas():
     """
         An api endpoint to insert and extract parking areas
@@ -168,6 +168,20 @@ def areas():
                 areaName: str
                 address: str
                 latitude: float
+                longitude: float
+
+            Returns:
+                ResponseCode: HTTP code to describe finish state
+
+        PATCH:
+            Required args:
+                areaId: int,
+
+            -- At least one is required --
+            Optional args: 
+                areaName: str,
+                address: str,
+                latitude: float,
                 longitude: float
 
             Returns:
@@ -217,6 +231,33 @@ def areas():
 
         return Response("", state.value)
 
+    elif request.method == "PATCH":
+
+        args = MultiDict(request.get_json())
+
+        # Checks required args
+        required = ["areaId"]
+        if not all(arg in required for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        # Checks if at least one optional arg is present
+        optional = ["areaName", "address", "latitude", "longitude"]
+        if not any(arg in optional for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        sql_columns = ",".join(['[{k}]'.format(k=k) for k in args])
+
+        sql_values = ",".join(["{{'{v}'}}".format(v=v) if type(
+            v) == str else "{{{v}}}".format(v=v) for v in args.values()])
+
+        state = "UPDATE Areas ({sql_columns}) VALUES ({sql_values}) WHERE areaId={areaId}".format(
+            sql_columns=sql_columns,
+            sql_values=sql_values,
+            areaId=args.get("areaId")
+        )
+
+        return Response("", state.value)
+
     else:
         args = format_http_args(request.args)
 
@@ -224,7 +265,7 @@ def areas():
 
         if isinstance(user_id, ResponseCodes):
             return Response("", user_id.value)
-        
+
         areas = select(
             "SELECT [areaId], [areaName], [address], [latitude], [longitude] FROM areas")
 
@@ -321,16 +362,23 @@ def user_licenseplate():
         POST:
             Required args:
                 token: str
-                userId: str
+                userId: int
                 licenseplate: str
 
+            Returns:
+                ResponseCode: HTTP code to describe finish state
+
+        DELETE:
+            Required args:
+                userId: int,
+                licenseplate: str
             Returns:
                 ResponseCode: HTTP code to describe finish state
 
         GET:
             Required args:
                 token: str
-                userId: str
+                userId: int
 
             licenseplate_data:
             [
@@ -358,7 +406,7 @@ def user_licenseplate():
             return Response("", user_id.value)
 
         required = ["userId", "licenseplate"]
-        
+
         if not all(r_key in args for r_key in required):
             return Response("", ResponseCodes.inv_syntax.value)
 
@@ -369,11 +417,27 @@ def user_licenseplate():
 
         return Response("", state.value)
 
+    elif request.method == "DELETE":
+
+        args = MultiDict(request.get_json())
+
+        required = ["userId", "licenseplate"]
+
+        if not all(arg in required for arg in args):
+            return Response("", ResponseCodes.inv_syntax.value)
+
+        state = delete("DELETE FROM userLicenseplates WHERE userId={userId} and licenseplate='{licenseplate}'".format(
+            userId=args.get("userId"),
+            licenseplate=args.get("licenseplate")
+        ))
+
+        return Response("", state.value)
+
     else:
         args = format_http_args(request.args)
 
         user_id = authorize_api_connection(args)
-        
+
         if isinstance(user_id, ResponseCodes):
             return Response("", user_id.value)
 
@@ -578,14 +642,15 @@ def licenseplate_lookup():
     """
         An api endpoint for calling the nummerpladeAPI.dk api and returning the car data
         GET:
+
             Required args:
                 licenseplate: str
+
             Returns:
                 ResponseCode: HTTP code to describe finish state
                     Successful: car_data
     """
 
-    # args = request.args
     args = format_http_args(request.args)
 
     user_id = authorize_api_connection(args)
@@ -595,16 +660,16 @@ def licenseplate_lookup():
 
     required = ["licenseplate"]
 
-    if not all(arg in required for arg in args):
+    if not all(r_key in args for r_key in required):
         return Response("", ResponseCodes.inv_syntax.value)
 
- 
     # Construct API request
     token = "C3NDoae5jAKgJNIkZC4KCuLfuaSKBP5mCeBVooSVS6ICvyVDOv0wdBpn0qkXyCd5"
     API_URL = "https://api.nrpla.de/"
     headers = {"Authorization": "Bearer {}".format(token)}
 
-    response = requests.get(API_URL + args.get("licenseplate"), headers=headers)
+    response = requests.get(
+        API_URL + args.get("licenseplate"), headers=headers)
 
     # Handle response
     if response.status_code == 200:
@@ -620,18 +685,37 @@ def insert(query: str):
         Returns:
             int: Based on if insert was successful
     """
-
-    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "drop", "alter"]):
+    if "insert" not in query.lower() or any(keyword in query.lower() for keyword in ["delete", "update", "drop", "alter"]):
         return ResponseCodes.inv_syntax
 
     db_engine = connect()
-    # try:
-    with db_engine.begin() as conn:
-        conn.exec_driver_sql(query)
-    # except Exception as e:
-    #     print(f"This is the exception {e}")
-    #     return ResponseCodes.failed_query
+    try:
+        with db_engine.begin() as conn:
+            conn.exec_driver_sql(query)
+    except Exception as e:
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
 
+    return ResponseCodes.success
+
+
+def update(query: str):
+    """
+        A function to make sure that the update query is restriced and is not doing anything else
+        Returns:
+            int: Based on if update was successful
+    """
+
+    if all(keyword in query.lower() for keyword in ["update", "where"]) or any(keyword in query.lower() for keyword in ["delete", "insert", "select", "drop", "alter"]):
+        return ResponseCodes.inv_syntax
+
+    db_engine = connect()
+    try:
+        with db_engine.begin() as conn:
+            conn.exec_driver_sql(query)
+    except Exception as e:
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
     return ResponseCodes.success
 
 
@@ -647,14 +731,31 @@ def select(query: str):
 
     db_engine = connect()
 
-    # try:
-    with db_engine.begin() as conn:
-        result = conn.exec_driver_sql(query).all()
-    # except Exception as e:
-    #     print(e)
-    #     return ResponseCodes.failed_query
+    try:
+        with db_engine.begin() as conn:
+            result = conn.exec_driver_sql(query).all()
+    except Exception as e:
+        print(e)
+        return ResponseCodes.failed_query
 
     return result
+
+def delete(query: str):
+
+    if all(keyword in query.lower() for keyword in ["delete", "where"]) or any(keyword in query.lower() for keyword in ["update", "insert", "select", "drop", "alter"]):
+        return ResponseCodes.inv_syntax
+
+    db_engine = connect()
+    try:
+        with db_engine.begin() as conn:
+            conn.exec_driver_sql(query)
+    except Exception as e:
+        print(f"This is the exception {e}")
+        return ResponseCodes.failed_query
+
+    return ResponseCodes.success
+
+
 
 
 def connect():
@@ -751,7 +852,6 @@ def format_http_args(args: MultiDict):
         formatted[k] = v
 
     return formatted
-
 
 
 def format_result(data: list[tuple], keys: list[str]):
@@ -866,7 +966,7 @@ class ResponseCodes(Enum):
 # def main(a, b):
     # app.run()
 
+
 if __name__ == "__main__":
     admins = [x[0] for x in select("SELECT userId FROM Admins")]
-    print(admins)
     app.run(debug=True, host="0.0.0.0", port=8080)
