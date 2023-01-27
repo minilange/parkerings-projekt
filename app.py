@@ -16,7 +16,6 @@ from werkzeug.datastructures import MultiDict
 
 
 app = Flask(__name__)
-# app.config["debug"] = True
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 admins = []
@@ -740,6 +739,7 @@ def select(query: str):
 
     return result
 
+
 def delete(query: str):
 
     if all(keyword in query.lower() for keyword in ["delete", "where"]) or any(keyword in query.lower() for keyword in ["update", "insert", "select", "drop", "alter"]):
@@ -754,8 +754,6 @@ def delete(query: str):
         return ResponseCodes.failed_query
 
     return ResponseCodes.success
-
-
 
 
 def connect():
