@@ -506,7 +506,12 @@ def parkings():
     """
 
     if request.method == "POST":
-
+        
+        # print(f"1 - {request.args}")
+        # print(f"2 - {request.form}")
+        # print(f"3 - {request.values}")
+        # print(f"4 - {request.json}")
+        # print(f"5 - {request.get_json()}")
         args = MultiDict(request.get_json())
 
         user_id = authorize_api_connection(args)
@@ -514,19 +519,30 @@ def parkings():
         if isinstance(user_id, ResponseCodes):
             return Response("", user_id.value)
 
-        required = ["licensePlate", "userId", "areaId",
+        required = ["licenseplate", "userId", "areaId",
                     "minutes", "price", "state", "timestamp"]
 
         if not all(r_key in args for r_key in required):
+            print(args, required)
             return Response("", ResponseCodes.inv_syntax.value)
 
-        state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timetamp}')".format(
+        print("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
             licenseplate=args.get("licenseplate"),
             userId=args.get("userId"),
+            areaId=args.get("areaId"),
             minutes=args.get("minutes"),
             price=args.get("price"),
             state=args.get("state"),
-            timetamp=args.get("timetamp")
+            timestamp=args.get("timestamp")
+        ))
+        state = insert("INSERT INTO parkings ([licenseplate], [userId], [areaId], [minutes], [price], [state], [timestamp]) VALUES('{licenseplate}', {userId}, {areaId}, {minutes}, {price}, '{state}', '{timestamp}')".format(
+            licenseplate=args.get("licenseplate"),
+            userId=args.get("userId"),
+            areaId=args.get("areaId"),
+            minutes=args.get("minutes"),
+            price=args.get("price"),
+            state=args.get("state"),
+            timestamp=args.get("timestamp")
         ))
 
         return Response("", state.value)

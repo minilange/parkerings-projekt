@@ -80,7 +80,7 @@ CREATE TABLE Parkings (
 	[userId] INT,
 	[areaId] INT,
 	[minutes] INT,
-	[price] INT,
+	[price] FLOAT,
 	[state] NVARCHAR(50),
 	[timestamp] DATETIME2,
 	FOREIGN KEY (licenseplate) REFERENCES dbo.RegisteredLicenseplates(licenseplate),
