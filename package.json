@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "@popperjs/core": "^2.11.6",
     "axios": "^1.2.2",
-    "bootstrap": "^5.0.1",
+    "bootstrap": "^5.2.3",
     "core-js": "^3.8.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",

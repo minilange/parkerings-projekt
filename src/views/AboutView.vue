@@ -87,6 +87,10 @@
   height: 100%;
 }
 
+.contact-row p {
+  margin-bottom: 0px;
+}
+
 .contact-us {
   flex-direction: column;
 }
@@ -94,10 +98,11 @@
 .contact-us .contact-row {
   margin-top: 15px;
   display: flex;
-  align-items: flex-end
+  align-items: center;
 }
 
 .contact-us .contact-row img {
   margin-right: 20px;
 }
+
 </style>

@@ -56,6 +56,13 @@ export default {
       },
     };
   },
+  mounted() {
+    // Check if user is already logged in local storage
+    if (localStorage.getItem("user")) {
+      this.$store.commit("setUser", JSON.parse(localStorage.getItem("user")));
+      this.$router.push("/");
+    }
+  },
   methods: {
     loginUser: function () {
       console.log('loginUser')

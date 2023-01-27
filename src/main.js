@@ -17,8 +17,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
 import { faCar, faPlus, faEdit, faParking } from '@fortawesome/free-solid-svg-icons'
 
-import './registerServiceWorker'
-
 /* add icons to the library */
 library.add(faCar, faPlus, faEdit, faParking)
 

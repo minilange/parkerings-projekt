@@ -71,7 +71,26 @@
           <section id="step-3" class="form-step d-none">
             <h2 class="font-normal">Set time</h2>
             <!-- Step 3 input fields -->
-            <TimeDial :area="form.selectedArea" :car="form.selectedCar" ref="timeDial" />
+            <!-- <TimeDial :area="form.selectedArea" :car="form.selectedCar" ref="timeDial" /> -->
+            <div class="row mt-3">
+              <div class="col-lg-6 dial-col mb-3 lg-mb-0">
+                <vue3-slider width="auto" height="6" v-model="form.time" orientation="circular" :max=24 trackColor="#d8956a" color="#000000" :step=0.05 /> <!-- :repeat=true -->
+                <input type="number" class="form-control dial-input" v-model="form.time" min="0" step="0.05" />
+              </div>
+              <div class="col-lg-6">
+                <h6>Your parking untill:</h6>
+                <p>{{ form.parkingUntil }}</p>
+                <hr>
+                <h6>Price:</h6>
+                <p>{{ form.price }} DKK</p>
+                <hr>
+                <h6>Car:</h6>
+                <p>{{ form.selectedCar.licenseplate }} - {{ form.selectedCar.brand }} {{ form.selectedCar.model }}</p>
+                <hr>
+                <h6>Area:</h6>
+                <p>{{ form.selectedArea.address }}</p>
+              </div>
+            </div>
 
             <div class="form-floating mt-3">
             </div>
@@ -81,7 +100,7 @@
                 Prev
               </button>
               <button class="button btn submit-btn" @click="submit"
-                :disabled="$store.state.time.hours == 0 && $store.state.time.minutes == 0">Save</button>
+                :disabled="form.time == 0">Save</button>
             </div>
           </section>
         </form>
@@ -122,19 +141,24 @@
 </template>
 
 <script>
-import TimeDial from "@/components/TimeDial.vue";
+// import TimeDial from "@/components/TimeDial.vue";
+import slider from "vue3-slider"
 import AreaMap from "@/components/AreaMap.vue";
 import axios from "axios";
+import moment from "moment";
 // import { TypedChainedSet } from "webpack-chain";
 
 export default {
   components: {
-    TimeDial,
+    "vue3-slider": slider,
     AreaMap
   },
   data() {
     return {
       form: {
+        time: 0,
+        price: 0,
+        parkingUntil: "No Time Selected",
         selectedCar: {},
         selectedArea: {},
       },
@@ -145,18 +169,21 @@ export default {
   },
   watch: {
     'form.selectedArea': function (value) {
-      console.log(value);
       // Set marker on map
       let coords = {
         "coordinates": [value.longitude, value.latitude],
       }
       let areaMap = this.$refs.area;
       areaMap.plotResult(coords);
-
     },
-    'form.selectedCar': function (value) {
+    'form.time': function (value) {
       console.log(value);
+        let minutes = Math.floor((value * 60))
+        this.form.price = Math.floor((minutes * 0.15) * 100) / 100
+        this.form.parkingUntil = moment().add(minutes, 'minutes').format('DD/MM/YYYY, h:mm');
+        this.form.time = Math.floor((minutes / 60) * 100 ) / 100
     }
+  
   },
   methods: {
     setArea() {
@@ -217,10 +244,15 @@ export default {
           userId: this.$store.getters.getUserInfo.userId,
           token: this.$store.getters.getUserInfo.token,
           areaId: this.form.selectedArea.areaId,
-          minutes: this.$store.getters.getParkingTimeMinutes,
-          price: this.$refs.timeDial.price,
           state: "active",
-          timestamp: this.$refs.timeDial.parkingUntil,
+          // NEW TIME DIAL:
+          minutes: this.form.time * 60,
+          price: this.form.price,
+          timestamp: this.form.parkingUntil
+          // OLD TIME DIAL:
+          // minutes: this.$store.getters.getParkingTimeMinutes,
+          // price: this.$refs.timeDial.price,
+          // timestamp: this.$refs.timeDial.parkingUntil, 
         },
       }).then((response) => {
         console.log(response);
@@ -230,26 +262,12 @@ export default {
       }
       );
 
-      
+
 
     }
   },
   mounted() {
     // Get registered cars
-    // this.$store.dispatch("callAPI", {
-    //   method: "GET",
-    //   endpoint: "userLicenseplates",
-    //   params: {
-    //     userId: this.$store.getters.getUserInfo.userId,
-    //     token: this.$store.getters.getUserInfo.token,
-    //   },
-    // }).then((response) => {
-    //   this.registeredCars = response.data;
-    //   console.log("registeredCars:", this.registeredCars)
-    // }).catch((error) => {
-    //   console.warn("userLicenseplates", error);
-    // });
-
 
     axios.get(this.$store.state.api + "/userLicenseplates/", { params: { userId: this.$store.getters.getUserInfo.userId, token: this.$store.getters.getUserInfo.token } }).then((response) => {
       this.registeredCars = response.data;
@@ -258,19 +276,7 @@ export default {
       console.warn("userLicenseplates", error);
     });
 
-
     // Get areas
-    // this.$store.dispatch("callAPI", {
-    //   method: "GET",
-    //   endpoint: "areas",
-    // }).then((response) => {
-    //   this.areas = response;
-    //   console.log(this.areas);
-    // }).catch((error) => {
-    //   console.warn("areas", error);
-    // });
-
-
     axios.get(this.$store.state.api + "/areas/", { params: { token: this.$store.getters.getUserInfo.token } }).then((response) => {
       this.areas = response.data;
       console.log(this.areas);
@@ -303,8 +309,31 @@ export default {
 </script>
 
 <style scoped>
+/* Hide arrows from parking dial input */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
-.action-prompt{
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.dial-input {
+  position: absolute;
+  max-width: 70%;
+  text-align: center;
+}
+
+.dial-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-prompt {
   height: auto
 }
 
@@ -361,6 +390,4 @@ h1 {
 h2 {
   margin: 0;
 }
-
-
 </style>

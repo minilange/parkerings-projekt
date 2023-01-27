@@ -43,7 +43,15 @@ export default new Vuex.Store({
     },
     SET_USER_INFO(state, userInfo) {
       console.log(userInfo)
+      try {
+        // Expiry two days from now
+        userInfo.tokenExpiration = new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000)
+      } catch (error) {
+        console.log(error)
+      }
       state.user = userInfo
+      // Save token and userId in local storage
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
     },
     SET_SEARCHING(state, searching) {
       state.searching = searching
@@ -53,12 +61,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setUserInfoFromLocalStorage() {
+      let userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      if (userInfo) {
+        this.commit('SET_USER_INFO', userInfo)
+      }
+    },
     async licensePlateLookup(state, licensePlate) {
       // Call Python backend to get car info from NummerpladeAPI.dk
 
       try {
+        console.log('licensePlateLookup: ' + licensePlate);
         this.commit('SET_SEARCHING', true) // Set searching to true
-        await axios.get(this.state.api + "/licenseplateLookup/?licenseplate=" + licensePlate)
+        await axios.get(this.state.api + "/licenseplateLookup/", { params: {token: this.state.user.token, userId: this.state.user.userId, licenseplate: licensePlate}})
           .then((response) => {
             this.commit('SET_CAR', response.data) // Set car in state
           })
@@ -75,6 +90,7 @@ export default new Vuex.Store({
     async detectLicensePlate(state, image) {
       let formData = new FormData();
       formData.append('file', image);
+      let result = '';
 
       try {
         this.commit('SET_SEARCHING', true) // Set searching to true
@@ -83,13 +99,17 @@ export default new Vuex.Store({
             console.log(response.data);
             // Lookup license plate
             console.log(response);
-            this.dispatch('licensePlateLookup', response.data.licenseplate)
+            // this.dispatch('licensePlateLookup', response.data.licenseplate)
+            this.commit('SET_SEARCHING', false) // Set searching to false
+            result = response.data.licenseplate;
           })
           .catch((error) => {
             console.error(error)
           })
-          
+
         this.commit('SET_SEARCHING', false) // Set searching to false
+        return result;
+          
 
       } catch (error) {
         console.log('licensePlateLookup: ' + error)

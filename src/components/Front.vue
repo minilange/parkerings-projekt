@@ -20,7 +20,7 @@
               started with your first parking 👋
             </p>
             <div>
-              <img class="img-container" src="../assets/parking.webp" alt="carParking" />
+              <img class="img-container" src="../assets/parking.webp" alt="carParking" width="150" height="118" />
             </div>
 
             <!-- <p>[PARKING INFO?]</p> -->
